@@ -49,24 +49,24 @@ const CartItem: React.FC<Props> = ({ cartItem }) => {
         <div className="bg-black/10 absolute inset-0"></div>
       </div>
       <div className="flex flex-col flex-1">
-        <div className="w-full line-clamp-1 text-sm text-left">
+        <div className="w-full line-clamp-1 text-xs text-left">
           {cartItem.product.title}
         </div>
         <div className="flex items-baseline text-gray-400">
-          <button
-            onClick={handleAdd}
-            className="border border-gray-200 h-7 w-7 flex justify-center items-center text-center hover:bg-gray-100 hover:text-gray-500 rounded-lg"
-          >
-            +
-          </button>
-          <div className="h-7 w-7">
-            {adding || removing ? `...` : cartItem.quantity}
-          </div>
           <button
             onClick={handleRemove}
             className="border border-gray-200 h-7 w-7 flex justify-center items-center text-center hover:bg-gray-100 hover:text-gray-500 rounded-lg"
           >
             -
+          </button>
+          <div className="h-7 w-7">
+            {adding || removing ? `...` : cartItem.quantity}
+          </div>
+          <button
+            onClick={handleAdd}
+            className="border border-gray-200 h-7 w-7 flex justify-center items-center text-center hover:bg-gray-100 hover:text-gray-500 rounded-lg"
+          >
+            +
           </button>
         </div>
       </div>

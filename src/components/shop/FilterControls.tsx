@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
 import { useFetchBrands } from "../../hooks/querys/getBrands";
 import type { FilterPayload } from "../../types/ProductsTypes";
+import Button from "../general/Button";
 
 interface FilterControlsProps {
   filters: FilterPayload;
@@ -13,7 +14,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
   const [localFilters, setLocalFilters] = useState(filters);
   const [priceRange, setPriceRange] = useState({
     min: filters.min_price || 0,
-    max: filters.max_price || 1000000, // Adjust based on your product prices
+    max: filters.max_price || 9999999999, // Adjust based on your product prices
   });
 
   // Fetch categories and brands for dropdowns
@@ -45,7 +46,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
     const { name, value } = e.target;
     const newPriceRange = {
       ...priceRange,
-      [name]: parseFloat(value) || 0,
+      [name]: parseFloat(value) || "",
     };
 
     setPriceRange(newPriceRange);
@@ -58,20 +59,46 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
 
   const handleReset = () => {
     setLocalFilters({});
-    setPriceRange({ min: 0, max: 1000000 });
+    setPriceRange({ min: 0, max: 999999999 });
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="bg-white p-4 rounded-md mb-6 h-fit">
+      <div className="grid grid-cols-1 divide-y-1 divide-gray-200">
+        {/* Price Range */}
+        <div className="text-sm py-4">
+          <label className="block text-sm text-left font-medium text-gray-700 mb-1">
+            Price Range
+          </label>
+          <div className="flex items-center space-x-2">
+            <input
+              type="number"
+              name="min"
+              value={priceRange.min}
+              onChange={handlePriceChange}
+              placeholder="Min"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+            <span className="text-gray-500">to</span>
+            <input
+              type="number"
+              name="max"
+              value={priceRange.max}
+              onChange={handlePriceChange}
+              placeholder="Max"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+        </div>
+
         {/* Search Input */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-4">
-          <label
+        <div className="py-4">
+          {/* <label
             htmlFor="search"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             Search
-          </label>
+          </label> */}
           <input
             type="text"
             name="search"
@@ -79,24 +106,24 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
             value={localFilters.search || ""}
             onChange={handleChange}
             placeholder="Search products..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         {/* Category Dropdown */}
-        <div>
+        <div className="py-4 flex items-center justify-between gap-2 text-sm">
           <label
             htmlFor="category"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block font-medium text-gray-700 mb-1"
           >
-            Category
+            Category:
           </label>
           <select
             name="category"
             id="category"
             value={localFilters.category || ""}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-[150px] px-1 py-2 border border-gray-300 rounded-md focus:outline-none"
           >
             <option value="">All Categories</option>
             {categories?.map((category) => (
@@ -108,7 +135,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
         </div>
 
         {/* Brand Dropdown */}
-        <div>
+        <div className="py-4 flex items-center justify-between gap-2 text-sm">
           <label
             htmlFor="brand"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -120,7 +147,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
             id="brand"
             value={localFilters.brand || ""}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-[150px] px-1 py-2 border border-gray-300 rounded-md focus:outline-none"
           >
             <option value="">All Brands</option>
             {brands?.map((brand) => (
@@ -131,34 +158,8 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
           </select>
         </div>
 
-        {/* Price Range */}
-        <div className="col-span-1 md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Price Range
-          </label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="number"
-              name="min"
-              value={priceRange.min}
-              onChange={handlePriceChange}
-              placeholder="Min"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-            <span className="text-gray-500">to</span>
-            <input
-              type="number"
-              name="max"
-              value={priceRange.max}
-              onChange={handlePriceChange}
-              placeholder="Max"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-
         {/* Sort Options */}
-        <div>
+        <div className="py-4 flex items-center justify-between gap-2 text-sm">
           <label
             htmlFor="order_by"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -170,7 +171,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
             id="order_by"
             value={localFilters.order_by || ""}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-[150px] px-1 py-2 border border-gray-300 rounded-md focus:outline-none"
           >
             <option value="title">Name (A-Z)</option>
             <option value="-title">Name (Z-A)</option>
@@ -182,7 +183,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
         </div>
 
         {/* Checkbox Filters */}
-        <div className="flex flex-wrap items-center gap-4 col-span-1 md:col-span-2 lg:col-span-4">
+        <div className="flex flex-col gap-4 py-4">
           <label className="inline-flex items-center">
             <input
               type="checkbox"
@@ -191,7 +192,9 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
               onChange={handleChange}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <span className="ml-2 text-sm text-gray-700">Featured</span>
+            <span className="ml-2 text-sm text-gray-700">
+              Featured Products
+            </span>
           </label>
 
           <label className="inline-flex items-center">
@@ -202,7 +205,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
               onChange={handleChange}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <span className="ml-2 text-sm text-gray-700">Promoted</span>
+            <span className="ml-2 text-sm text-gray-700">Best Sellers</span>
           </label>
 
           <label className="inline-flex items-center">
@@ -218,13 +221,18 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
         </div>
 
         {/* Reset Button */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-4 flex justify-end">
-          <button
+        <div className="py-4 flex justify-end">
+          <Button
+            label="Reset Filters"
+            onClick={handleReset}
+            className="!w-fit !text-black bg-transparent border-1 px-4 hover:bg-black hover:!text-white"
+          />
+          {/* <button
             onClick={handleReset}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
           >
             Reset Filters
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

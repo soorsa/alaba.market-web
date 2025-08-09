@@ -4,7 +4,7 @@ import { IoClose } from "react-icons/io5";
 import { useModalStore } from "../../zustand/ModalStore";
 
 const Modal = () => {
-  const { isOpen, content, closeModal } = useModalStore();
+  const { isOpen, content, title, theme, closeModal } = useModalStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -28,17 +28,22 @@ const Modal = () => {
       onClick={closeModal}
     >
       <div
-        className="bg-white p-10 rounded-[25px] shadow-lg w-full max-w-[400px] relative"
+        className={`${
+          theme === "light" ? `bg-white` : `bg-alaba-dark-500 text-gray-300`
+        } p-10 rounded-[25px] shadow-lg w-[90%] md:w-fit max-w-[550px] relative`}
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="absolute top-4 left-10 text-lg font-alaba-mid">
+          {title}
+        </div>
         <button
-          className="absolute top-4 right-3 text-gray-600 hover:text-gray-900 cursor-pointer"
+          className="absolute top-4 right-3 text-gray-400 hover:text-gray-200 cursor-pointer"
           onClick={closeModal}
           aria-label="Close Modal"
         >
           <IoClose size={24} />
         </button>
-        {content}
+        <div className="max-h-[550px] overflow-hidden">{content}</div>
       </div>
     </div>
   );

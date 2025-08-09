@@ -35,7 +35,7 @@ const IndexScreen = () => {
   const onSalesProducts = data?.promoted_products || [];
   const industrialProducts = data?.industrial_products || [];
   return (
-    <div className="relative">
+    <div className="relative w-full px-4 md:px-0 md:w-[95%] lg:w-[85%] mx-auto">
       {" "}
       {/* Added relative positioning */}
       <div className="flex w-full justify-center">

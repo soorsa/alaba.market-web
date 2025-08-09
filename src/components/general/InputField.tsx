@@ -13,33 +13,40 @@ interface InputFieldProps {
     | "textarea";
   placeholder?: string;
   name: string;
+  label?: string;
   icon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   className?: string;
   rows?: number;
+  theme?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
   type = "text",
   placeholder,
   name,
+  label,
   icon,
   rightIcon,
   className = "",
-  rows = 4,
+  rows = 6,
+  theme = "light",
 }) => {
   const [field, meta] = useField(name);
   const isTextarea = type === "textarea";
   const hasError = meta.touched && meta.error;
 
   return (
-    <div className="w-full">
+    <div className="w-full text-left">
+      <div className="text-sm">{label}</div>
       <div
         className={`w-full relative flex ${
           isTextarea ? "flex-col" : "flex-row"
         } border rounded-xl py-2 ${
           hasError
             ? "border-red-500"
+            : theme === "dark"
+            ? "border-gray-700"
             : "border-gray-200 focus:border-blue-400 active:border-blue-400"
         } ${className}`}
       >
@@ -55,7 +62,9 @@ const InputField: React.FC<InputFieldProps> = ({
           type={isTextarea ? undefined : type}
           placeholder={placeholder}
           rows={isTextarea ? rows : undefined}
-          className={` text-gray-900 text-sm rounded-lg focus:ring-0 block w-full px-5 outline-none resize-none ${
+          className={`${
+            theme === "dark" ? "text-gray-300" : "text-gray-900"
+          } text-sm rounded-lg focus:ring-0 block w-full px-5 outline-none resize-none ${
             isTextarea ? "min-h-[60px]" : ""
           }`}
         />

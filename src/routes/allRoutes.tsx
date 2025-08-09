@@ -12,10 +12,17 @@ import VendorIndex from "../pages/vendor/VendorIndex";
 import Modal from "../components/general/Modal";
 import Toast from "../components/general/Toast";
 import ShopScreen from "../pages/shop/ShopScreen";
+import CheckoutScreen from "../pages/shop/CheckoutScreen";
+import OrderHistoryPage from "../pages/shop/MyOrders";
+import ProductDetail from "../pages/shop/ProductDetail";
+import { useGetUser } from "../hooks/querys/useGetUser";
+import ProductsScreen from "../pages/staff/ProductsScreen";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
 const AllRoutes = () => {
+  const { data } = useGetUser();
+  console.log(data);
   return (
     <>
       <BrowserRouter>
@@ -25,13 +32,20 @@ const AllRoutes = () => {
               <Route element={<MainScreen />}>
                 <Route index element={<IndexScreen />} />
                 <Route path="shop" element={<ShopScreen />} />
+                <Route path="checkout" element={<CheckoutScreen />} />
+                <Route path="orders" element={<OrderHistoryPage />} />
+                <Route
+                  path="/products/:product_id"
+                  element={<ProductDetail />}
+                />
               </Route>
             </Route>
 
             {/* Protected Routes - Staff */}
-            <Route path="/staff" element={<StaffRoutes />}>
+            <Route path="/manager" element={<StaffRoutes />}>
               <Route element={<Dashboard />}>
                 <Route index element={<DashboardIndexScreen />} />
+                <Route path="/manager/products" element={<ProductsScreen />} />
               </Route>
             </Route>
 

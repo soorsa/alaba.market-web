@@ -10,9 +10,9 @@ const MainScreen = () => {
       {/* Main Content */}
       <main className="flex-1 bg-body-gray overflow-y-auto scrollbar-hide">
         <Navbar />
-        <div className="w-full px-4 md:px-0 md:w-[95%] lg:w-[85%] mx-auto">
-          <Outlet />
-        </div>
+        <Outlet />
+        {/* <div className="w-full px-4 md:px-0 md:w-[95%] lg:w-[85%] mx-auto">
+        </div> */}
       </main>
     </div>
   );

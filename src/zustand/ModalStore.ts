@@ -2,16 +2,22 @@
 import { create } from "zustand";
 import { type ReactNode } from "react";
 
+type Theme = "light" | "dark";
 interface ModalState {
   isOpen: boolean;
   content: ReactNode | null;
-  openModal: (content: ReactNode) => void;
+  title?: string;
+  theme?: Theme;
+  openModal: (content: ReactNode, title?: string, theme?: Theme) => void;
   closeModal: () => void;
 }
 
 export const useModalStore = create<ModalState>((set) => ({
   isOpen: false,
   content: null,
-  openModal: (content) => set({ isOpen: true, content }),
+  title: "",
+  theme: "light",
+  openModal: (content, title, theme) =>
+    set({ theme, title, isOpen: true, content }),
   closeModal: () => set({ isOpen: false, content: null }),
 }));

@@ -5,10 +5,10 @@ const StaffRoutes = () => {
   const { isLoggedIn, user } = useUserStore();
 
   // Redirect UNAUTHENTICATED users to login
-  if (!isLoggedIn) {
-    if (user?.role === "admin" || user?.role === "staff") {
+  if (isLoggedIn) {
+    if (user?.is_staff) {
       return <Outlet />;
-    } else if (user?.role === "vendor") {
+    } else if (user?.is_vendor) {
       return <Navigate to="/vendor" replace />;
     } else {
       return <Navigate to="/" replace />;

@@ -16,7 +16,9 @@ import { useModalStore } from "../../zustand/ModalStore";
 import Login from "../auth/Login";
 // import { logout } from "../../hooks/Auth";
 import { X } from "lucide-react";
-import { IoMenu } from "react-icons/io5";
+import { IoMenu, IoStorefrontOutline } from "react-icons/io5";
+import { LiaShippingFastSolid } from "react-icons/lia";
+import { MdOutlineSupportAgent, MdOutlineWidgets } from "react-icons/md";
 import { useFetchUserCart } from "../../hooks/querys/useGetUserCart";
 import { useLogout } from "../../hooks/Auth";
 import CartItemList from "../shop/CartItemList";
@@ -25,8 +27,10 @@ import Button from "./Button";
 import SmallLoader from "./SmallLoader";
 import NotAuthenticated from "../shop/NotAuthenticated";
 import EmptyCart from "../shop/EmptyCart";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
   const { openModal } = useModalStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,8 +55,8 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white mb-4 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3">
+    <nav className="bg-white sticky top-0 z-50">
+      <div className="mx-0 md:mx-10 px-4 py-2">
         {/* Top Row - Logo, Search, User Actions */}
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -63,7 +67,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="hidden md:flex flex-1 mx-10">
+          {/* <div className="hidden md:flex flex-1 mx-10">
             <form onSubmit={handleSearch} className="w-full flex">
               <div className="relative flex-1">
                 <input
@@ -87,25 +91,37 @@ const Navbar: React.FC = () => {
                 Search
               </button>
             </form>
+          </div> */}
+
+          {/* Links */}
+          <div className="hidden md:flex flex-1 items-center md:5 lg:gap-10 justify-center mx-10">
+            <Link to="/shop">Shop</Link>
+            <Link to="/contact-us">Contact</Link>
+            <Link to="/shop">Become a Vendor</Link>
           </div>
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
             <div className="relative">
               <button
-                className="p-2 text-gray-700 hover:text-indigo-600 relative"
+                className="p-2 text-gray-700 hover:text-indigo-600 flex divide-x-1 divide-gray-400"
                 onClick={() => setIsCartOpen(!isCartOpen)}
               >
-                <FiShoppingCart size={22} className="text-alaba" />
-                {user && isLoggedIn ? (
-                  <span className="absolute -top-1 -right-1 bg-alaba text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartQty}
-                  </span>
-                ) : isGettingCart ? (
-                  <span className="absolute top-0 right-0 inline-flex size-2 animate-ping rounded-full bg-alaba"></span>
-                ) : (
-                  ""
-                )}
+                <span className="text-gray-400 pr-2 hidden md:block">
+                  {formatPrice(cartData?.grandtotal || 0)}
+                </span>
+                <div className="relative pl-2">
+                  <FiShoppingCart size={22} className="text-alaba" />
+                  {user && isLoggedIn ? (
+                    <span className="absolute -top-3 -right-3 bg-alaba text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartQty}
+                    </span>
+                  ) : isGettingCart ? (
+                    <span className="absolute top-0 right-0 inline-flex size-2 animate-ping rounded-full bg-alaba"></span>
+                  ) : (
+                    ""
+                  )}
+                </div>
               </button>
             </div>
 
@@ -134,20 +150,43 @@ const Navbar: React.FC = () => {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-5 z-50">
                   <div className="px-2">
-                    <div className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md">
+                    <Link
+                      to="/profile"
+                      className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
+                    >
                       <FiUser />
                       <span>My Profile</span>
-                    </div>
-                    <div className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md">
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
+                    >
                       <BsBoxSeam />
                       <span>My Orders</span>
-                    </div>
+                    </Link>
+                    {user?.is_staff && (
+                      <Link
+                        to="/manager"
+                        className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
+                      >
+                        <IoStorefrontOutline />
+                        Store Manager
+                      </Link>
+                    )}
+                    {user?.is_vendor && (
+                      <Link
+                        to="/vendor"
+                        className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
+                      >
+                        <MdOutlineWidgets /> Vendor's Portal
+                      </Link>
+                    )}
                     <div
                       onClick={() => {
                         logout();
                         setIsProfileOpen(false);
                       }}
-                      className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
+                      className="cursor-pointer flex items-center gap-1 p-2 text-sm text-red-400 hover:bg-red-100/40 rounded-md"
                     >
                       <FiLogOut />
                       <span>Sign Out</span>
@@ -194,15 +233,19 @@ const Navbar: React.FC = () => {
                   <div className="overflow-scroll flex-1 scrollbar-hide">
                     <CartItemList cartItems={cartData?.cartitems || []} />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-4 py-2 border-t-1 border-gray-300">
                     <div className="flex flex-row justify-between">
                       <div className="">SubTotal:</div>
-                      <div className="font-bold text-xl">
+                      <div className="font-alaba-mid">
                         {formatPrice(cartData?.grandtotal || 0)}
                       </div>
                     </div>
                     <Button
                       label="Proceed to Checkout"
+                      onClick={() => {
+                        navigate("/checkout");
+                        setIsCartOpen(false);
+                      }}
                       rightIcon={<FiArrowRight />}
                     />
                   </div>
@@ -215,60 +258,43 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Bottom Row - Categories */}
-        {/* <div className="mt-3 relative">
-          <div className="flex items-center overflow-x-auto py-2 hide-scrollbar">
-            <div className="relative">
-              <button
-                className="flex items-center space-x-1 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              >
-                <span>All Categories</span>
-                <FiChevronDown size={16} />
-              </button>
-
-              {isCategoryOpen && (
-                <div className="absolute left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-1 z-50">
-                  {categories.map((category) => (
-                    <div key={category.id} className="group relative">
-                      <a
-                        href="#"
-                        className="px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 flex justify-between items-center"
-                      >
-                        {category.name}
-                        {category.subcategories && <FiChevronDown size={14} />}
-                      </a>
-                      {category.subcategories && (
-                        <div className="absolute left-full top-0 ml-1 hidden group-hover:block w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                          {category.subcategories.map((sub, idx) => (
-                            <a
-                              key={idx}
-                              href="#"
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-                            >
-                              {sub}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="flex space-x-6 ml-4">
-              {categories.map((category) => (
-                <a
-                  key={category.id}
-                  href="#"
-                  className="whitespace-nowrap px-2 py-1 text-gray-700 hover:text-indigo-600"
+        <div className="relative b-row hidden md:flex">
+          {/* Search Bar */}
+          <div className="hidden md:flex flex-1 mx-10">
+            <form onSubmit={handleSearch} className="w-full flex">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search for products..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-indigo-600"
                 >
-                  {category.name}
-                </a>
-              ))}
+                  <FiSearch size={20} className="text-alaba" />
+                </button>
+              </div>
+              <button
+                type="submit"
+                className="bg-alaba text-white px-4 py-2 rounded-r-md hover:bg-indigo-700 transition duration-200"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+          <div className="flex items-center gap-5 text-sm text-gray-400">
+            <div className="flex items-center gap-1">
+              <MdOutlineSupportAgent /> <span>24 Hours Support</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <LiaShippingFastSolid />
+              <span>Nation wide Delivery</span>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
 
       {/* Mobile Search (hidden on larger screens) */}
