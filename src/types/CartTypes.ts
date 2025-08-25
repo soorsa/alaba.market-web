@@ -1,8 +1,8 @@
 export type Product = {
   product_id: string;
-  category: string;
-  brand: string | null;
-  tag: string | null;
+  category_name: string;
+  brand_name: string | null;
+  tag_name: string | null;
   title: string;
   is_featured: boolean;
   price: string;

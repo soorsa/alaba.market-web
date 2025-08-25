@@ -94,8 +94,8 @@ const ProductDetail = () => {
             {product.title}
           </h1>
 
-          {product.brand && (
-            <p className="text-gray-600 mb-4">Brand: {product.brand}</p>
+          {product.brand_name && (
+            <p className="text-gray-600 mb-4">Brand: {product.brand_name}</p>
           )}
 
           <div className="flex items-center mb-6">
@@ -131,7 +131,7 @@ const ProductDetail = () => {
           <div className="border-t border-t-gray-300 pt-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>Category:</span>
-              <span className="font-medium">{product.category}</span>
+              <span className="font-medium">{product.category_name}</span>
             </div>
             {product.is_featured && (
               <div className="mt-2 inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">

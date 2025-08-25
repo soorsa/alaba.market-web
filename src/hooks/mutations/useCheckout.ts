@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
 import type { Product } from "../../types/ProductsTypes";
+import type { Order } from "../querys/useGetOrders";
 
 export interface CheckoutPayload {
   phoneNumber: string;
@@ -23,30 +24,30 @@ export interface OrderItem {
   quantity: number;
   total: number;
 }
-interface Customer {
-  username: string;
-  email: string;
-  last_name: string;
-  first_name: string;
-  phone_number: string;
-  profile_pic: string;
-  is_staff: boolean;
-}
+// interface Customer {
+//   username: string;
+//   email: string;
+//   last_name: string;
+//   first_name: string;
+//   phone_number: string;
+//   profile_pic: string;
+//   is_staff: boolean;
+// }
 
-export interface Order {
-  order_id: string;
-  products: OrderItem[];
-  deliver_address: string;
-  session_id: null;
-  total: string;
-  paid: boolean;
-  pay_on_delivery: boolean;
-  delivery_status: null;
-  confirmed: boolean;
-  order_date: string;
-  delivered: boolean;
-  customer: Customer;
-}
+// export interface Order {
+//   order_id: string;
+//   products: OrderItem[];
+//   deliver_address: string;
+//   session_id: null;
+//   total: string;
+//   paid: boolean;
+//   pay_on_delivery: boolean;
+//   delivery_status: null;
+//   confirmed: boolean;
+//   order_date: string;
+//   delivered: boolean;
+//   customer: Customer;
+// }
 export const checkout = async (payload: CheckoutPayload): Promise<Order> => {
   const formData = new FormData();
   if (payload.username) {

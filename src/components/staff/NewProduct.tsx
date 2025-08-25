@@ -1,33 +1,84 @@
 import React from "react";
-import type { Product } from "../../types/ProductsTypes";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Button from "../general/Button";
 import ImageUploadField from "./ImageUploadField";
 import InputField from "../general/InputField";
-import {
-  useUpdateProduct,
-  type ProductPayload,
-} from "../../hooks/mutations/useUpdateProduct";
 import { IoInformationCircle } from "react-icons/io5";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
 import { useFetchBrands } from "../../hooks/querys/getBrands";
 import SelectField from "../general/SelectField";
 import CheckboxField from "../general/CheckBox";
 import { useModalStore } from "../../zustand/ModalStore";
+import {
+  useCreateProduct,
+  type NewProductPayload,
+} from "../../hooks/mutations/useCreateProduct";
 
-const IdInfoSchema = Yup.object({
-  image: Yup.mixed().required("Image is required"),
-  image2: Yup.mixed().required("Image is required"),
-  image3: Yup.mixed().required("Image is required"),
+// const validationSchema = Yup.object({
+//   image: Yup.mixed().required("Image is required"),
+//   image2: Yup.mixed().required("Image is required"),
+//   image3: Yup.mixed().required("Image is required"),
+// });
+
+const validationSchema = Yup.object().shape({
+  // Required fields
+  title: Yup.string()
+    .required("Product title is required")
+    .min(3, "Title must be at least 3 characters")
+    .max(100, "Title cannot exceed 100 characters"),
+
+  category: Yup.string().required("Category is required"),
+
+  brand: Yup.string().required("Manufacturer is required"),
+
+  price: Yup.number()
+    .required("Price is required")
+    .positive("Price must be positive")
+    .typeError("Price must be a number"),
+
+  undiscounted_price: Yup.number()
+    .required("Original price is required")
+    .positive("Price must be positive")
+    .moreThan(
+      Yup.ref("price"),
+      "Discounted price must be lower than original price"
+    )
+    .typeError("Price must be a number"),
+
+  description: Yup.string()
+    .required("Description is required")
+    .min(10, "Description should be at least 10 characters")
+    .max(2000, "Description cannot exceed 2000 characters"),
+
+  // Image validations
+  image: Yup.mixed().required("Primary image is required"),
+
+  image2: Yup.mixed().required("Second image is required"),
+
+  image3: Yup.mixed().required("Third image is required"),
+
+  // Optional fields with validation
+  tag: Yup.string().max(50, "Tag cannot exceed 50 characters"),
+
+  vendor: Yup.string().max(100, "Vendor name cannot exceed 100 characters"),
+
+  // vendor_price: Yup.number()
+  //   .positive("Price must be positive")
+  //   .typeError("Price must be a number")
+  //   .when('price', (price, schema) => {
+  //     return price ? schema.max(price, "Vendor price must be less than sale price") : schema
+  //   }),
+
+  // Boolean fields
+  is_approved: Yup.boolean(),
+  is_featured: Yup.boolean(),
+  promote: Yup.boolean(),
 });
 
-interface Props {
-  product: Product;
-}
-const EditProduct: React.FC<Props> = ({ product }) => {
+const NewProduct: React.FC = () => {
   const { closeModal } = useModalStore();
-  const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
+  const { mutate: create, isPending: creating } = useCreateProduct();
   const { data: catData } = useFetchCategories();
   const { data: brandsData } = useFetchBrands();
   const categories = catData || [];
@@ -40,34 +91,29 @@ const EditProduct: React.FC<Props> = ({ product }) => {
     value: brand.id,
     label: brand.title,
   }));
-  const catValue = categoryOptions.find(
-    (category) => category.label === product.category_name
-  );
-  const brandValue = brandOptions.find(
-    (brand) => brand.label === product.brand_name
-  );
+
   const initialValues = {
-    product_id: product.product_id,
-    title: product.title,
-    brand: brandValue?.value,
-    tag: product.tag_name,
-    category: catValue?.value,
-    price: product.price,
-    vendor_price: product.vendor_price,
-    undiscounted_price: product.undiscounted_price,
-    description: product.description,
-    image: "https://alaba.market" + product.image,
-    image2: "https://alaba.market" + product.image2,
-    image3: "https://alaba.market" + product.image3,
-    vendor: product.vendor,
-    is_approved: product.is_approved,
-    is_featured: product.is_featured,
-    promote: product.promote,
+    product_id: "",
+    title: "",
+    brand: "",
+    tag: "",
+    category: "",
+    price: "",
+    vendor_price: "",
+    undiscounted_price: "",
+    description: "",
+    image: null,
+    image2: null,
+    image3: null,
+    vendor: "",
+    is_approved: false,
+    is_featured: false,
+    promote: false,
   };
   const handleSubmit = (values: typeof initialValues) => {
     const formData = new FormData();
     if (values.category) {
-      formData.append("category", values.category.toString());
+      formData.append("category", values.category);
     }
     if (values.brand) {
       formData.append("brand", values.brand);
@@ -84,13 +130,13 @@ const EditProduct: React.FC<Props> = ({ product }) => {
     if (values.description) {
       formData.append("description", values.description);
     }
-    if (typeof values.image !== "string") {
+    if (values.image) {
       formData.append("image", values.image);
     }
-    if (typeof values.image2 !== "string") {
+    if (values.image2) {
       formData.append("image2", values.image2);
     }
-    if (typeof values.image3 !== "string") {
+    if (values.image3) {
       formData.append("image3", values.image3);
     }
     if (values.is_approved !== undefined) {
@@ -102,45 +148,17 @@ const EditProduct: React.FC<Props> = ({ product }) => {
     if (values.promote !== undefined) {
       formData.append("promote", values.promote.toString());
     }
-    const payload: ProductPayload = {
-      product_id: product.product_id,
+    const payload: NewProductPayload = {
       formData: formData,
     };
-    updateProduct(payload);
-
-    // const payload: ProductPayload = {
-    //   product_id: product.product_id,
-    //   title: values.title,
-    //   category: values.category,
-    //   brand: values.brand || "",
-    //   tag: values.tag || "",
-    //   price: values.price,
-    //   undiscounted_price: values.undiscounted_price,
-    //   description: values.description,
-    //   is_approved: values.is_approved,
-    //   is_featured: values.is_featured,
-    //   promote: values.promote,
-    // };
-    // if (
-    //   typeof values.image !== "string" &&
-    //   typeof values.image2 !== "string" &&
-    //   typeof values.image3 !== "string"
-    // ) {
-    //   const imagesPayload = {
-    //     ...payload,
-    //     image: values.image,
-    //     image2: values.image2,
-    //     image3: values.image3,
-    //   };
-    // }
-    // updateProduct(payload);
+    create(payload);
   };
 
   return (
     <div className="w-full h-[550px]">
       <Formik
         initialValues={initialValues}
-        validationSchema={IdInfoSchema}
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ isValid }) => (
@@ -239,11 +257,11 @@ const EditProduct: React.FC<Props> = ({ product }) => {
                 className="!w-fit px-4 bg-transparent text-sm"
               />
               <Button
-                label="Update"
+                label="Save"
                 type="submit"
-                loadingLabel="Updating..."
-                isLoading={updating}
-                disabled={!isValid || updating}
+                loadingLabel="Saving..."
+                isLoading={creating}
+                disabled={!isValid || creating}
                 className="!w-fit px-6 text-sm"
               />
             </div>
@@ -254,4 +272,4 @@ const EditProduct: React.FC<Props> = ({ product }) => {
   );
 };
 
-export default EditProduct;
+export default NewProduct;

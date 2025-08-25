@@ -17,6 +17,8 @@ import OrderHistoryPage from "../pages/shop/MyOrders";
 import ProductDetail from "../pages/shop/ProductDetail";
 import { useGetUser } from "../hooks/querys/useGetUser";
 import ProductsScreen from "../pages/staff/ProductsScreen";
+import CategoriesScreen from "../pages/staff/CategoriesScreen";
+import OrdersScreen from "../pages/staff/OrdersScreen";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
@@ -46,6 +48,11 @@ const AllRoutes = () => {
               <Route element={<Dashboard />}>
                 <Route index element={<DashboardIndexScreen />} />
                 <Route path="/manager/products" element={<ProductsScreen />} />
+                <Route path="/manager/orders" element={<OrdersScreen />} />
+                <Route
+                  path="/manager/categories"
+                  element={<CategoriesScreen />}
+                />
               </Route>
             </Route>
 

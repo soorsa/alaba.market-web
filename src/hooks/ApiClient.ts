@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const alabaApi = axios.create({
-  baseURL: "https://alaba.market/api", // Replace with your actual API URL
+  baseURL: "https://api.alaba.market/api", // Replace with your actual API URL
   headers: {
     "Content-Type": "application/json",
   },

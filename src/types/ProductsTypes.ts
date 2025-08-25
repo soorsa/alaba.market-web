@@ -1,8 +1,8 @@
 export interface Product {
   product_id: string;
-  category: string;
-  brand: string | null;
-  tag: string | null;
+  category_name: string;
+  brand_name: string | null;
+  tag_name: string | null;
   title: string;
   is_featured: boolean;
   price: string;
@@ -20,12 +20,13 @@ export interface Product {
 }
 
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   slug: string;
   thumbnail: string;
   is_top: boolean;
-  parent: string;
+  sub_category: Category[] | null;
+  parent_category: string;
 }
 export interface Brand {
   id: string;

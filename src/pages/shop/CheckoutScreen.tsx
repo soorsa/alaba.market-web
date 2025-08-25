@@ -117,7 +117,11 @@ const CheckoutScreen = () => {
       Checkout(payload, {
         onSuccess() {
           navigate("/orders");
-          openModal(<SuccessModal text="Order Placed successfully!" />);
+          openModal(
+            <SuccessModal text="Order Placed successfully!" />,
+            "",
+            "light"
+          );
         },
       });
     }

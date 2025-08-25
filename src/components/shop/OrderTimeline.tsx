@@ -24,7 +24,7 @@ const steps: Step[] = [
   {
     title: "On Route",
     description:
-      "Order has been successfully processed and verified and is on route to the customer.",
+      "Order has been successfully processed and verified and is on route to you.",
   },
   {
     title: "Delivered",

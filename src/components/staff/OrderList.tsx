@@ -1,10 +1,13 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { formatPrice } from "../../utils/formatter";
+import { Link } from "react-router-dom";
+import { formatDate, formatPrice } from "../../utils/formatter";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import type { Order } from "../../hooks/mutations/useCheckout";
+// import type { Order } from "../../hooks/mutations/useCheckout";
 import { ArrowRightCircle } from "lucide-react";
+import type { Order } from "../../hooks/querys/useGetOrders";
+import { useModalStore } from "../../zustand/ModalStore";
+import OrderSummary from "./OrderSummary";
 type Props = {
   orders: Order[];
   isLoading: boolean;
@@ -12,14 +15,16 @@ type Props = {
 };
 
 const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
-  const navigate = useNavigate();
-
+  const { openModal } = useModalStore();
+  const viewOrder = (order: Order) => {
+    openModal(<OrderSummary order={order} />, "Order Summary", "dark");
+  };
   const renderList = () => {
     return (
       <ul className="space-y-2">
         {orders.map((order, index) => (
           <li
-            onClick={() => navigate(`/staff/order/${order.order_id}`)}
+            onClick={() => viewOrder(order)}
             key={index}
             className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
           >
@@ -40,9 +45,15 @@ const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
                 {order.products.length !== 1 ? "s" : ""} ordered by{" "}
                 {order.customer.first_name
                   ? order.customer.first_name
-                  : order.customer.username}
+                  : order.customer.username}{" "}
+                on{" "}
+                <em className="text-red-300">{formatDate(order.order_date)}</em>
               </p>
-              <p className="text-xs truncate">{order.deliver_address}</p>{" "}
+              <p className="text-xs truncate">
+                {order.deliver_address.address}{" "}
+                {order.deliver_address.state.name},
+                {order.deliver_address.country.name}
+              </p>{" "}
               {/* Added truncate for category too */}
             </div>
             <div className="text-right h-full flex flex-col items-end justify-between gap-1 text-xs">

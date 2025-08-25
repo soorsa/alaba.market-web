@@ -2,23 +2,31 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
 import type { Product } from "../../types/ProductsTypes";
-import { useModalStore } from "../../zustand/ModalStore";
 
-export const deleteProduct = async (product_id: string): Promise<Product> => {
-  const response = await alabaApi.delete(`/dashboard/product/${product_id}/`, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+export interface NewProductPayload {
+  formData: FormData;
+}
+
+export const createProduct = async (
+  payload: NewProductPayload
+): Promise<Product> => {
+  const response = await alabaApi.post(
+    `/dashboard/product/create/`,
+    payload.formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
   return response.data;
 };
 
-export const useDeleteProduct = () => {
+export const useCreateProduct = () => {
   const { showToast } = useToastStore();
-  const { closeModal } = useModalStore();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteProduct,
+    mutationFn: createProduct,
     onSuccess: () => {
       // Refetch relevant data if needed
       queryClient.invalidateQueries({
@@ -27,11 +35,10 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ["stats"],
       });
-      showToast("Deleted product successfully!", "success");
-      closeModal();
+      showToast("Created product successfully!", "success");
     },
     onError() {
-      showToast("Unable to Delete...try again later", "error");
+      showToast("Unable to create...try again later", "error");
     },
   });
 };

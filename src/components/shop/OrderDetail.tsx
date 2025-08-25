@@ -1,23 +1,50 @@
 import React from "react";
-import type { Order } from "../../hooks/mutations/useCheckout";
 import OrderTimeline from "./OrderTimeline";
+import type { Order } from "../../hooks/querys/useGetOrders";
+import { formatDate } from "../../utils/formatter";
+import { addDays, format } from "date-fns";
+import { IoInformationCircle } from "react-icons/io5";
 
 interface Props {
   order: Order;
 }
 const OrderDetail: React.FC<Props> = ({ order }) => {
   let step = 1;
-  if (order.confirmed) {
+  if (order.delivery_status === "Confirmed") {
     step = 2;
   }
-  if (order.confirmed && order.delivered) {
+  if (order.delivery_status === "On-route") {
+    step = 3;
+  }
+  if (order.delivery_status === "Delivered") {
     step = 4;
   }
+  const orderdate = addDays(order.order_date, 4);
   return (
     <div className="space-y-4 text-left py-2 h-[500px] overflow-y-scroll scrollbar-hide">
       <div className="mb-4">
-        <h4 className="font-medium text-gray-700 mb-2">Delivery Address</h4>
-        <p className="text-gray-600">{order.deliver_address}</p>
+        <h4 className="font-medium text-gray-700 mb-2">Delivery Address:</h4>
+        <p className="text-gray-600">
+          {order.deliver_address.address}, {order.deliver_address.city}{" "}
+          {order.deliver_address.state.name} state,{" "}
+          {order.deliver_address.country.name}{" "}
+        </p>
+      </div>
+      <div className="flex justify-between">
+        <div className="divide-y-1 divide-gray-200">
+          <p className="text-gray-700 mb-1 font-medium">Order Date:</p>
+          <p className="text-gray-600">{formatDate(order.order_date)}</p>
+        </div>
+        <div className="divide-y-1 divide-gray-200">
+          <p className="text-gray-700 mb-1 font-medium">Est. delivery Date:</p>
+          <p className="text-gray-600">{format(orderdate, "dd MMMM, yyyy")}</p>
+        </div>
+      </div>
+      <div className="flex gap-1 items-center text-xs text-gray-400">
+        <IoInformationCircle />
+        <span>
+          Note: order is offen delivered before estimated delivery date.
+        </span>
       </div>
       <div className="px-4">
         <OrderTimeline currentStep={step} />

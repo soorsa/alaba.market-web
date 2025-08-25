@@ -55,7 +55,8 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         </h3>
         <p className="text-[10px] line-clamp-1 text-gray-400">
           {" "}
-          <span className="text-gray-700">Category:</span> {product?.category}{" "}
+          <span className="text-gray-700">Category:</span>{" "}
+          {product?.category_name}{" "}
         </p>
         <div className="flex justify-between w-full items-center text-xs text-gray-700">
           <div className="flex line-through">

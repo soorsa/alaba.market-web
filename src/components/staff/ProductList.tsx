@@ -74,7 +74,7 @@ const ProductList: React.FC<Props> = ({ products, isError, isLoading }) => {
                 {/* Removed w-full as it's not needed */}
                 {product.title}
               </p>
-              <p className="text-xs truncate">{product.category}</p>{" "}
+              <p className="text-xs truncate">{product.category_name}</p>{" "}
               {/* Added truncate for category too */}
             </div>
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">

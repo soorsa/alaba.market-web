@@ -10,6 +10,7 @@ interface SelectFieldProps {
   disabled?: boolean;
   icon?: React.ReactNode;
   theme?: string;
+  label?: string;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -19,13 +20,16 @@ const SelectField: React.FC<SelectFieldProps> = ({
   className = "",
   disabled = false,
   icon,
+  label,
   theme = "light",
 }) => {
   const [field, meta] = useField(name);
   const hasError = meta.touched && meta.error;
 
   return (
-    <div className="w-full">
+    <div className="w-full text-left">
+      <div className="text-sm">{label}</div>
+
       <div
         className={`w-full relative flex flex-row items-center border rounded-xl py-2 ${
           hasError
