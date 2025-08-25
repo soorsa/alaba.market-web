@@ -33,7 +33,7 @@
 
 import React from "react";
 
-export const OrderHistorySkeleton = () => {
+export const OrderHistorySkeleton: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Order History</h1>

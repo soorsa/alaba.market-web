@@ -15,6 +15,7 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
   const orderdate = addDays(order.order_date, 4);
   const { showToast } = useToastStore();
   const handleRemoveOrderItem = (item: OrderItem) => {
+    console.log(item);
     if (order.paid) {
       showToast(
         "You can remove item... order has already been paid for!",

@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProductListSkeleton = () => {
+const ProductListSkeleton: React.FC = () => {
   return (
     <div className="py-2 pr-4 flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-full overflow-scroll scrollbar-hide">
       {[...Array(10)].map((_, index) => (

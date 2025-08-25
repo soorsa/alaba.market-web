@@ -1,6 +1,6 @@
 import React from "react";
 
-const VendorDashboard = () => {
+const VendorDashboard: React.FC = () => {
   return <div>VendorDashboard</div>;
 };
 

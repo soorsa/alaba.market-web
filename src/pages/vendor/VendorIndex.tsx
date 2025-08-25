@@ -1,6 +1,6 @@
 import React from "react";
 
-const VendorIndex = () => {
+const VendorIndex: React.FC = () => {
   return <div>VendorIndex</div>;
 };
 

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Order } from "../mutations/useCheckout";
 import alabaApi from "../ApiClient";
 import { useUserStore } from "../../zustand/useUserStore";
+import type { Order } from "./useGetOrders";
 
 export const getOrderHistory = async (username: string): Promise<Order[]> => {
   const response = await alabaApi.get(`/${username}/orderhistory`);

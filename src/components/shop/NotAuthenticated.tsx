@@ -3,7 +3,7 @@ import Button from "../general/Button";
 import { useModalStore } from "../../zustand/ModalStore";
 import Login from "../auth/Login";
 
-const NotAuthenticated = () => {
+const NotAuthenticated: React.FC = () => {
   const { openModal } = useModalStore();
   return (
     <div className="flex flex-col h-full">

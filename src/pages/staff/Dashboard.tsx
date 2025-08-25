@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../../components/staff/Header";
 import { FiArrowLeft } from "react-icons/fi";
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen bg-alaba-dark-500">
       {/* Sidebar */}

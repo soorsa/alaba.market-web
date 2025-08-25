@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../general/Button";
 
-const EmptyCart = () => {
+const EmptyCart: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       <div className="text-gray-500 text-lg">Oops... Cart is Empty</div>
