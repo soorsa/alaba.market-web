@@ -94,7 +94,7 @@ const Login = () => {
               <Button
                 label="Create an Account"
                 className="!text-purple-900 ml-1 !bg-transparent font-medium !w-fit underline"
-                onClick={() => openModal(<Register />)}
+                onClick={() => openModal(<Register />, "", "light")}
               />
             </>
           </p>

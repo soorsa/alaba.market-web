@@ -31,7 +31,9 @@ const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
             <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://alaba.market" + `${order.customer.profile_pic}`}
+                src={
+                  "https://api.alaba.market" + `${order.customer.profile_pic}`
+                }
                 alt={order.order_id}
                 className="object-cover w-full h-full"
               />

@@ -44,7 +44,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         </div>
       </button>
       <img
-        src={"https://alaba.market/" + `${product?.image}`}
+        src={"https://api.alaba.market/" + `${product?.image}`}
         className="h-[150px] w-full rounded-lg"
         alt=""
         onClick={viewProduct}

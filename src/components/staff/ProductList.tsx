@@ -1,10 +1,13 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { Product } from "../../types/ProductsTypes";
 import { ArrowRightCircle, Edit, Trash2 } from "lucide-react";
 import { formatPrice } from "../../utils/formatter";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
+import { useModalStore } from "../../zustand/ModalStore";
+import DeleteItem from "./DeleteItem";
+import EditProduct from "./EditProduct";
 type Props = {
   products: Product[];
   isLoading: boolean;
@@ -12,56 +15,26 @@ type Props = {
 };
 
 const ProductList: React.FC<Props> = ({ products, isError, isLoading }) => {
-  const navigate = useNavigate();
+  const { openModal } = useModalStore();
+  const handleDelete = (product: Product) => {
+    openModal(<DeleteItem item={product} />, "Delete", "dark");
+  };
+  const handleEdit = (product: Product) => {
+    openModal(<EditProduct product={product} />, "Edit Product", "dark");
+  };
 
   const renderList = () => {
     return (
-      //   <ul className="space-y-2">
-      //     {products.map((product, index) => (
-      //       <li
-      //         onClick={() => navigate(`/staff/product/${product.product_id}`)}
-      //         key={index}
-      //         className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
-      //       >
-      //         <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
-      //           <div className="bg-black/20 absolute inset-0"></div>
-      //           <img
-      //             src={"https://alaba.market" + `${product.image}`}
-      //             alt={product.title}
-      //             className="object-cover"
-      //           />
-      //         </div>
-      //         <div className="flex-1 text-left">
-      //           <p className="font-semibold text-xs md:text-sm w-full truncate">
-      //             {product.title}
-      //           </p>
-      //           <p className="text-xs">{product.category}</p>
-      //         </div>
-      //         <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
-      //           <div className="">{formatPrice(product.price)}</div>
-      //           <div className="flex gap-2 justify-end">
-      //             <div className="flex gap-1 items-center">
-      //               <Edit size={15} />
-      //             </div>
-      //             <div className="flex gap-1 items-center">
-      //               <Trash2 size={15} />
-      //             </div>
-      //           </div>
-      //         </div>
-      //       </li>
-      //     ))}
-      //   </ul>
       <ul className="space-y-2">
         {products.map((product, index) => (
           <li
-            onClick={() => navigate(`/staff/product/${product.product_id}`)}
             key={index}
             className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
           >
             <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://alaba.market" + `${product.image}`}
+                src={"https://api.alaba.market" + `${product.image}`}
                 alt={product.title}
                 className="object-cover w-full h-full"
               />
@@ -80,10 +53,16 @@ const ProductList: React.FC<Props> = ({ products, isError, isLoading }) => {
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
               <div className="">{formatPrice(product.price)}</div>
               <div className="flex gap-2 justify-end">
-                <div className="flex gap-1 items-center">
+                <div
+                  className="flex gap-1 items-center"
+                  onClick={() => handleEdit(product)}
+                >
                   <Edit size={15} />
                 </div>
-                <div className="flex gap-1 items-center">
+                <div
+                  className="flex gap-1 items-center"
+                  onClick={() => handleDelete(product)}
+                >
                   <Trash2 size={15} />
                 </div>
               </div>

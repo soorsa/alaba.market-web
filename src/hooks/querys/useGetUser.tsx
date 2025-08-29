@@ -16,6 +16,7 @@ export const useGetUser = () => {
   const queryResult = useQuery<User, Error>({
     queryKey: ["user"],
     queryFn: () => getUser(username),
+    enabled: !!username,
   });
 
   useEffect(() => {

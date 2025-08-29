@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
   };
 
   const openAuthModal = () => {
-    openModal(<Login />);
+    openModal(<Login />, "", "light");
   };
 
   return (

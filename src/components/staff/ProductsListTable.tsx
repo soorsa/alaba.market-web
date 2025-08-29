@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import type { FilterPayload, Product } from "../../types/ProductsTypes";
 import { Check, Edit, Search, Trash2 } from "lucide-react";
 import { formatPrice } from "../../utils/formatter";
@@ -32,7 +31,6 @@ const ProductListTable: React.FC<Props> = ({
   filters,
   onFilterChange,
 }) => {
-  const navigate = useNavigate();
   const { data: categories } = useFetchCategories();
   const { data: brands } = useFetchBrands();
   const { openModal } = useModalStore();
@@ -145,11 +143,11 @@ const ProductListTable: React.FC<Props> = ({
             <div
               className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden
             "
-              onClick={() => navigate(`/staff/product/${product.product_id}`)}
+              // onClick={() => navigate(`/staff/product/${product.product_id}`)}
             >
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://alaba.market" + `${product.image}`}
+                src={"https://api.alaba.market" + `${product.image}`}
                 alt={product.title}
                 className="object-cover w-full h-full"
               />

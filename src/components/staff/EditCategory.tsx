@@ -42,7 +42,7 @@ const EditCategory: React.FC<Props> = ({ item }) => {
     title: item.title,
     slug: item.slug,
     parent: item.parent_category,
-    thumbnail: "https://alaba.market" + item.thumbnail,
+    thumbnail: "https://api.alaba.market" + item.thumbnail,
     is_featured: item.is_top,
   };
   const handleSubmit = (values: typeof initialValues) => {
