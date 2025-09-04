@@ -131,7 +131,7 @@ const CategoryListTable: React.FC<Props> = ({
             >
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://alaba.market" + `${category.thumbnail}`}
+                src={"https://api.alaba.market" + `${category.thumbnail}`}
                 alt={category.title}
                 className="object-cover w-full h-full"
               />

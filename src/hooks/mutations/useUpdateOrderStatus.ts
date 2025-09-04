@@ -32,6 +32,9 @@ export const useUpdateOrderStatus = () => {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
+      });
       showToast("Updated Order successfully!", "success");
     },
     onError() {

@@ -2,7 +2,6 @@ import React from "react";
 import type { Category } from "../../types/ProductsTypes";
 import Button from "../general/Button";
 import { useModalStore } from "../../zustand/ModalStore";
-import SmallLoader from "../general/SmallLoader";
 import { IoInformationCircle } from "react-icons/io5";
 import { useDeleteCategory } from "../../hooks/mutations/useDeleteCategory";
 interface Props {
@@ -11,9 +10,6 @@ interface Props {
 const DeleteCategory: React.FC<Props> = ({ item }) => {
   const { closeModal } = useModalStore();
   const { mutate: deleteCategory, isPending } = useDeleteCategory();
-  if (isPending) {
-    return <SmallLoader />;
-  }
   return (
     <div>
       <div className="flex flex-col gap-10 w-full md:w-[225px]">
@@ -36,6 +32,8 @@ const DeleteCategory: React.FC<Props> = ({ item }) => {
         <div className="flex flex-col gap-2">
           <Button
             label="Yes, Delete"
+            isLoading={isPending}
+            disabled={isPending}
             className="bg-red-700 !text-gray-300"
             onClick={() => deleteCategory(item.slug)}
           />

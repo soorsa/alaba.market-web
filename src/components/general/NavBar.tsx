@@ -28,6 +28,8 @@ import SmallLoader from "./SmallLoader";
 import NotAuthenticated from "../shop/NotAuthenticated";
 import EmptyCart from "../shop/EmptyCart";
 import { Link, useNavigate } from "react-router-dom";
+import MobileMenuList from "./MobileMenuList";
+import MobileCategoryList from "./MobileCategoryList";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ const Navbar: React.FC = () => {
   const { openModal } = useModalStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [isCartOpen, setIsCartOpen] = useState(false);
-  // const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const { mutate: logout } = useLogout();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { data: cartData, isLoading: isGettingCart } = useFetchUserCart(
@@ -43,6 +45,9 @@ const Navbar: React.FC = () => {
   );
   const cartQty = cartData?.cartquantity || 0; // Sample cart item count
   const cartItems = cartData?.cartitems || [];
+  const tabs = ["Menu", "categories"];
+  type Tab = (typeof tabs)[number];
+  const [activeTab, setActiveTab] = useState<Tab>("Menu");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -295,11 +300,56 @@ const Navbar: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* Left side Menu and Category */}
+        <div
+          className={clsx(
+            "fixed inset-0 z-[60] transition-transform duration-300",
+            isCategoryOpen ? "translate-x-0" : "-translate-x-full",
+            "flex flex-row-reverse"
+          )}
+        >
+          {/* Transparent dark overlay */}
+          <div
+            className="flex-1 bg-black/50"
+            onClick={() => setIsCategoryOpen(false)}
+          />
+
+          {/* Side drawer menu */}
+          <div className="w-[300px] bg-white h-full p-6 shadow-lg flex flex-col">
+            <div className="flex justify-between mb-6">
+              <div className="flex items-center gap-4">
+                {tabs.map((tab, index) => (
+                  <span
+                    onClick={() => setActiveTab(tab)}
+                    className={clsx(
+                      "font-semibold uppercase cursor-pointer",
+                      activeTab === tab ? "border-b-2" : "text-gray-400"
+                    )}
+                    key={index}
+                  >
+                    {tab}
+                  </span>
+                ))}
+              </div>
+              <button
+                onClick={() => setIsCategoryOpen(false)}
+                className="hover:text-shadow-black text-shadow-2xs cursor-pointer"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            {activeTab === "Menu" ? <MobileMenuList /> : <MobileCategoryList />}
+          </div>
+        </div>
       </div>
 
       {/* Mobile Search (hidden on larger screens) */}
       <div className="md:hidden flex flex-row items-center px-4 pb-3 gap-2">
-        <IoMenu size={25} />
+        <IoMenu
+          size={25}
+          onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+          className="cursor-pointer"
+        />
         <form onSubmit={handleSearch} className="flex flex-1">
           <input
             type="text"

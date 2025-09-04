@@ -13,17 +13,11 @@ import { FiShoppingBag } from "react-icons/fi";
 import { LucidePackageCheck } from "lucide-react";
 import { LiaShippingFastSolid } from "react-icons/lia";
 
-const SideNav = () => {
+const MobileSideNav = () => {
   return (
-    <div className="flex flex-col p-5 gap-5 h-screen justify-between overflow-y-auto scrollbar-hide">
-      <img
-        src="/alaba_hor.png"
-        alt="Alaba Market"
-        className="w-[60%] mx-auto"
-      />
-
+    <div className="flex flex-col gap-5 h-screen justify-between overflow-y-auto scrollbar-hide">
       <div className="w-full flex-1 py-1.5">
-        <nav className="space-y-2 p-2">
+        <nav className="space-y-2">
           <NavItem
             label="Overview"
             icon={<MdOutlineDashboardCustomize className="w-4 h-4" />}
@@ -87,4 +81,4 @@ const SideNav = () => {
   );
 };
 
-export default SideNav;
+export default MobileSideNav;

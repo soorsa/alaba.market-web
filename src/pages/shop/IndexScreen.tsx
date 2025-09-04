@@ -1,5 +1,6 @@
 import Button from "../../components/general/Button";
-import Loader from "../../components/general/Loader";
+// import Loader from "../../components/general/Loader";
+import SplashScreen from "../../components/general/SplashScreen";
 import CategoryBar from "../../components/shop/CategoriesTab";
 import HeroGrid from "../../components/shop/HeroGrid";
 import HorizontalProductSlider from "../../components/shop/HorizontalProductSlider";
@@ -8,7 +9,7 @@ import { useGetLandingPage } from "../../hooks/querys/getLandingPageData";
 const IndexScreen = () => {
   const { data, isLoading } = useGetLandingPage();
   if (isLoading) {
-    return <Loader />;
+    return <SplashScreen className="w-full md:w-[40%]" />;
   }
   const mostViewedProducts = data?.most_viewed_products || [];
   const featuredProducts = data?.featured_products || [];

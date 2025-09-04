@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Loader from "../components/general/Loader";
+// import Loader from "../components/general/Loader";
 import ShopRoutes from "./shopRoutes";
 import IndexScreen from "../pages/shop/IndexScreen";
 import Dashboard from "../pages/staff/Dashboard";
@@ -19,6 +19,8 @@ import { useGetUser } from "../hooks/querys/useGetUser";
 import ProductsScreen from "../pages/staff/ProductsScreen";
 import CategoriesScreen from "../pages/staff/CategoriesScreen";
 import OrdersScreen from "../pages/staff/OrdersScreen";
+import SplashScreen from "../components/general/SplashScreen";
+import UserScreen from "../pages/staff/UsersScreen";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
@@ -28,7 +30,7 @@ const AllRoutes = () => {
   return (
     <>
       <BrowserRouter>
-        <Suspense fallback={<Loader className="h-[100px] w-[100px]" />}>
+        <Suspense fallback={<SplashScreen className="w-full md:w-[40%]" />}>
           <Routes>
             <Route path="/" element={<ShopRoutes />}>
               <Route element={<MainScreen />}>
@@ -53,6 +55,7 @@ const AllRoutes = () => {
                   path="/manager/categories"
                   element={<CategoriesScreen />}
                 />
+                <Route path="/manager/users" element={<UserScreen />} />
               </Route>
             </Route>
 

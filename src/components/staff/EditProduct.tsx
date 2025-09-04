@@ -66,6 +66,9 @@ const EditProduct: React.FC<Props> = ({ product }) => {
   };
   const handleSubmit = (values: typeof initialValues) => {
     const formData = new FormData();
+    if (values.title) {
+      formData.append("title", values.title);
+    }
     if (values.category) {
       formData.append("category", values.category.toString());
     }

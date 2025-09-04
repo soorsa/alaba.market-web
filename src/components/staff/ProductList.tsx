@@ -29,26 +29,23 @@ const ProductList: React.FC<Props> = ({ products, isError, isLoading }) => {
         {products.map((product, index) => (
           <li
             key={index}
-            className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
+            className={`p-2 cursor-pointer rounded-lg gap-4 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
           >
-            <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
-              <div className="bg-black/20 absolute inset-0"></div>
-              <img
-                src={"https://api.alaba.market" + `${product.image}`}
-                alt={product.title}
-                className="object-cover w-full h-full"
-              />
-            </div>
-            <div className="flex-1 min-w-0 text-left overflow-hidden">
-              {" "}
-              {/* Added min-w-0 and overflow-hidden */}
-              <p className="font-semibold text-xs md:text-sm truncate">
-                {" "}
-                {/* Removed w-full as it's not needed */}
-                {product.title}
-              </p>
-              <p className="text-xs truncate">{product.category_name}</p>{" "}
-              {/* Added truncate for category too */}
+            <div className="flex gap-2 flex-1 min-w-0">
+              <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
+                <div className="bg-black/20 absolute inset-0"></div>
+                <img
+                  src={"https://api.alaba.market" + `${product.image}`}
+                  alt={product.title}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="text-left overflow-hidden min-w-0 flex-1">
+                <p className="font-semibold text-xs md:text-sm truncate">
+                  {product.title}
+                </p>
+                <p className="text-xs truncate">{product.category_name}</p>{" "}
+              </div>
             </div>
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
               <div className="">{formatPrice(product.price)}</div>
@@ -98,7 +95,7 @@ const ProductList: React.FC<Props> = ({ products, isError, isLoading }) => {
   };
 
   return (
-    <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
+    <div className="border-1 border-gray-700 py-4 px-2 rounded-lg">
       <div className="flex items-center justify-between mb-6">
         <h4 className="text-lg text-gray-200">Top Products</h4>
         <Link

@@ -6,10 +6,10 @@ import ImageUploadField from "./ImageUploadField";
 import InputField from "../general/InputField";
 import CheckboxField from "../general/CheckBox";
 import { useModalStore } from "../../zustand/ModalStore";
-import { useCreateCategory } from "../../hooks/mutations/useCreateCategory";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
 import SelectField from "../general/SelectField";
 import type { Category } from "../../types/ProductsTypes";
+import { useUpdateCategory } from "../../hooks/mutations/useUpdateCategory";
 
 const validationSchema = Yup.object().shape({
   // Required fields
@@ -30,7 +30,7 @@ interface Props {
 }
 const EditCategory: React.FC<Props> = ({ item }) => {
   const { closeModal } = useModalStore();
-  const { mutate: create, isPending: creating } = useCreateCategory();
+  const { mutate: update, isPending: creating } = useUpdateCategory();
   const { data: categories } = useFetchCategories();
   const categoriesOption =
     categories?.map((item) => ({
@@ -40,7 +40,7 @@ const EditCategory: React.FC<Props> = ({ item }) => {
 
   const initialValues = {
     title: item.title,
-    slug: item.slug,
+    // slug: item.slug,
     parent: item.parent_category,
     thumbnail: "https://api.alaba.market" + item.thumbnail,
     is_featured: item.is_top,
@@ -50,9 +50,9 @@ const EditCategory: React.FC<Props> = ({ item }) => {
     if (values.title) {
       formData.append("title", values.title);
     }
-    if (values.slug) {
-      formData.append("slug", values.slug);
-    }
+    // if (values.slug) {
+    //   formData.append("slug", values.slug);
+    // }
     if (values.parent) {
       formData.append("parent", values.parent);
     }
@@ -64,8 +64,9 @@ const EditCategory: React.FC<Props> = ({ item }) => {
     }
     const payload = {
       formData: formData,
+      slug: item.slug,
     };
-    create(payload);
+    update(payload);
   };
 
   return (

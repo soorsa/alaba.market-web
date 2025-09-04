@@ -6,7 +6,7 @@ import { FiShoppingBag } from "react-icons/fi";
 import { useGetOrdersDashboard } from "../../hooks/querys/useGetOrders";
 import OrderListTable from "../../components/staff/OrderListTable";
 import Paginator from "../../components/staff/Paginator";
-type Status = "pending" | "confirmed" | "in transit" | "delivered";
+type Status = "Pending" | "Confirmed" | "On-route" | "Delivered";
 export interface OrderFilters {
   delivery_status?: Status;
   order_date__gte?: string;

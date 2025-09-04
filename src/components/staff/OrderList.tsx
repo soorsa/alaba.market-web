@@ -70,13 +70,7 @@ const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
                       : `border-gray-400 text-gray-300`
                   }`}
                 >
-                  <span className="">
-                    {order.confirmed
-                      ? `on route`
-                      : order.delivered
-                      ? `delivered`
-                      : `pending`}
-                  </span>
+                  <span className="">{order.delivery_status}</span>
                 </div>
               </div>
             </div>
@@ -111,7 +105,7 @@ const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
   };
 
   return (
-    <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
+    <div className="border-1 border-gray-700 py-4 px-2 rounded-lg">
       <div className="flex items-center justify-between mb-6">
         <h4 className="text-lg text-gray-200">Recent Orders</h4>
         <Link

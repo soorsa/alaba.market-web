@@ -3,16 +3,14 @@ import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
 import type { Product } from "../../types/ProductsTypes";
 
-export interface ProductPayload {
-  product_id: string;
+interface Payload {
   formData: FormData;
+  slug: string;
 }
 
-export const updateProduct = async (
-  payload: ProductPayload
-): Promise<Product> => {
+export const updateCategory = async (payload: Payload): Promise<Product> => {
   const response = await alabaApi.put(
-    `/dashboard/product/${payload.product_id}/`,
+    `/dashboard/category/${payload.slug}/update/`,
     payload.formData,
     {
       headers: {
@@ -23,26 +21,20 @@ export const updateProduct = async (
   return response.data;
 };
 
-export const useUpdateProduct = () => {
+export const useUpdateCategory = () => {
   const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: updateProduct,
+    mutationFn: updateCategory,
     onSuccess: () => {
       // Refetch relevant data if needed
       queryClient.invalidateQueries({
-        queryKey: ["products"],
+        queryKey: ["categories"],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["dashboard"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["stats"],
-      });
-      showToast("Updated product successfully!", "success");
+      showToast("Updated category successfully!", "success");
     },
     onError() {
-      showToast("Unable to update...try again later", "error");
+      showToast("Unable to create...try again later", "error");
     },
   });
 };

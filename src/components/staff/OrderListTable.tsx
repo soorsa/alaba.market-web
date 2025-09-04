@@ -19,13 +19,7 @@ type Props = {
   onFilterChange: (newFilters: OrderFilters) => void;
 };
 
-const tabs = [
-  "All",
-  "Pending",
-  "Confirmed",
-  "In transit",
-  "Delivered",
-] as const;
+const tabs = ["All", "Pending", "Confirmed", "On-route", "Delivered"] as const;
 type Tab = (typeof tabs)[number];
 
 const OrderListTable: React.FC<Props> = ({
@@ -39,54 +33,40 @@ const OrderListTable: React.FC<Props> = ({
   const { showToast } = useToastStore();
   const { openModal } = useModalStore();
   const [activeTab, setActiveTab] = useState<Tab>("All");
-  const newFilter = filters;
+  const [status, setstatus] = useState(filters.delivery_status);
   useEffect(() => {
     const timer = setTimeout(() => {
-      onFilterChange(newFilter);
+      onFilterChange({ delivery_status: status });
     }, 500); // Debounce to avoid too many API calls
 
     return () => clearTimeout(timer);
-  }, [newFilter, onFilterChange]);
+  }, [status, onFilterChange]);
 
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
     onPageChange(1);
 
-    // Create a new URLSearchParams object
-
-    // Update filters based on the selected tab
     switch (tab) {
       case "Pending":
-        newFilter.delivery_status = "pending";
+        setstatus("Pending");
         break;
       case "Confirmed":
-        newFilter.delivery_status = "confirmed";
+        setstatus("Confirmed");
         break;
-      case "In transit":
-        newFilter.delivery_status = "in transit";
+      case "On-route":
+        setstatus("On-route");
         break;
       case "Delivered":
-        newFilter.delivery_status = "delivered";
+        setstatus("Delivered");
         break;
       default: // "All"
-        newFilter.delivery_status = undefined;
+        setstatus(undefined);
         break;
     }
 
-    onFilterChange(newFilter);
-    console.log(newFilter);
+    onFilterChange({ delivery_status: status });
+    console.log("filters", filters);
   };
-  //   const handleChange = (
-  //     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  //   ) => {
-  //     const { name, value, type } = e.target as HTMLInputElement;
-
-  //     setLocalFilters((prev) => ({
-  //       ...prev,
-  //       [name]:
-  //         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-  //     }));
-  //   };
   const handleDelete = (order: Order) => {
     openModal(
       <DeleteOrder setselectedOrder={setselectedOrder} item={[order]} />,
@@ -103,9 +83,6 @@ const OrderListTable: React.FC<Props> = ({
       );
     }
   };
-  //   const handleEdit = (product: Product) => {
-  //     openModal(<EditProduct product={product} />, "Edit Product", "dark");
-  //   };
 
   // Add this state to your component
   const [selectedOrder, setselectedOrder] = useState<Order[]>([]); // Store product_ids

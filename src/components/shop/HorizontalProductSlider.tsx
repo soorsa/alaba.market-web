@@ -52,7 +52,7 @@ const HorizontalProductSlider: React.FC<Props> = ({ title, products }) => {
       </div>
       <div className="relative w-full mx-auto p-4">
         <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex space-x-4 p-4">
+          <div className="flex space-x-4 md:p-4">
             {products.map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}
