@@ -4,10 +4,11 @@ import SplashScreen from "../../components/general/SplashScreen";
 import CategoryBar from "../../components/shop/CategoriesTab";
 import HeroGrid from "../../components/shop/HeroGrid";
 import HorizontalProductSlider from "../../components/shop/HorizontalProductSlider";
+import ProductList from "../../components/shop/ProductList";
 import { useGetLandingPage } from "../../hooks/querys/getLandingPageData";
 
 const IndexScreen = () => {
-  const { data, isLoading } = useGetLandingPage();
+  const { data, isLoading, isError } = useGetLandingPage();
   if (isLoading) {
     return <SplashScreen className="w-full md:w-[40%]" />;
   }
@@ -42,7 +43,7 @@ const IndexScreen = () => {
           products={industrialProducts}
         />
         <div className="flex flex-row gap-2">
-          <div className="w-[30%] h-[450px] rounded-2xl overflow-hidden relative">
+          <div className="w-[30%] h-[450px] rounded-2xl overflow-hidden relative hidden md:block">
             <img src="/image.jpg" className="w-full h-full" alt="" />
             <div className="absolute inset-0 flex flex-col gap-2 justify-start bg-black/40 bg-opacity-30 text-white p-8">
               <h2 className="text-gray-300 font-bold">RICHTECH LTD.</h2>
@@ -59,7 +60,7 @@ const IndexScreen = () => {
               />
             </div>
           </div>
-          <div className="w-[70%]">
+          <div className="w-full md:w-[70%]">
             <HorizontalProductSlider
               title="RichTech Products"
               products={industrialProducts}
@@ -69,6 +70,18 @@ const IndexScreen = () => {
         <HorizontalProductSlider
           title="Popular Products"
           products={mostViewedProducts}
+        />
+      </div>
+      <div className="w-full">
+        <h2 className="text-left md:text-2xl">Our Products</h2>
+        <ProductList
+          products={mostViewedProducts}
+          isLoading={isLoading}
+          isError={isError}
+        />
+        <Button
+          label="Load More"
+          className="!w-fit px-18 md:px-7 text-sm my-5 !bg-black"
         />
       </div>
     </div>

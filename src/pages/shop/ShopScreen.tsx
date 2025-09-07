@@ -36,7 +36,7 @@ const ShopScreen = () => {
         <aside className="w-[280px] max-w-[300px] p-2 hidden md:flex">
           <FilterControls filters={filters} onFilterChange={setFilters} />{" "}
         </aside>
-        <div className="py-2 pr-4 flex-1 h-full overflow-scroll scrollbar-hide">
+        <div className="py-2 md:pr-4 flex-1 h-full bg-blue-500 overflow-scroll scrollbar-hide">
           <div
             className="flex md:hidden items-center"
             onClick={() =>
@@ -53,11 +53,13 @@ const ShopScreen = () => {
             <IoFilterOutline />
             <span>Filter</span>
           </div>
-          <ProductList
-            products={data?.results || []}
-            isError={isError}
-            isLoading={isLoading}
-          />
+          <div className="px-2">
+            <ProductList
+              products={data?.results || []}
+              isError={isError}
+              isLoading={isLoading}
+            />
+          </div>
           <PaginationForFilter
             currentPage={filters.page || 1}
             totalPages={Math.ceil((data?.count || 0) / 20)}

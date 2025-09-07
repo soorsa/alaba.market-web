@@ -21,6 +21,7 @@ import CategoriesScreen from "../pages/staff/CategoriesScreen";
 import OrdersScreen from "../pages/staff/OrdersScreen";
 import SplashScreen from "../components/general/SplashScreen";
 import UserScreen from "../pages/staff/UsersScreen";
+import BecomeVendorPage from "../pages/shop/BecomeVendorPage";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
@@ -41,6 +42,10 @@ const AllRoutes = () => {
                 <Route
                   path="/products/:product_id"
                   element={<ProductDetail />}
+                />
+                <Route
+                  path="/become-a-vendor/"
+                  element={<BecomeVendorPage />}
                 />
               </Route>
             </Route>

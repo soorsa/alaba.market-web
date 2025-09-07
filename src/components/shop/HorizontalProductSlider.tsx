@@ -42,7 +42,7 @@ const HorizontalProductSlider: React.FC<Props> = ({ title, products }) => {
   return (
     <div className="w-full my-7">
       <div className="flex items-center justify-between">
-        <h2 className="font-bold text-2xl">{title}</h2>
+        <h2 className="font-bold md:text-2xl">{title}</h2>
         <Button
           label="More Products"
           rightIcon={<FiChevronRight />}

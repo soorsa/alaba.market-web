@@ -17,7 +17,7 @@ const ProductList: React.FC<Props> = ({ products, isLoading }) => {
     return <NoProductFound text="Oops... No Products found!" />;
   }
   return (
-    <div className="py-2 pr-4 flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-full overflow-scroll scrollbar-hide">
+    <div className="py-2 md:pr-4 flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4 h-full overflow-scroll scrollbar-hide">
       {products.map((product) => (
         <div className="w-fit h-fit mx-auto" key={product.product_id}>
           <ProductCard product={product} />

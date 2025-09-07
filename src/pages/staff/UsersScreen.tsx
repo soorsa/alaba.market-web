@@ -4,6 +4,7 @@ import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
 import { useState } from "react";
 import CustomerListTable from "../../components/staff/CutomerListTable";
+import VendorsListTable from "../../components/staff/VendorsListTable";
 
 const UserScreen = () => {
   const {
@@ -20,7 +21,7 @@ const UserScreen = () => {
   };
   const renderUsers = () => {
     if (activeTab === "Vendors") {
-      return <CustomerListTable />;
+      return <VendorsListTable />;
     } else if (activeTab === "Staffs") {
       return <h1>Staffs</h1>;
     }

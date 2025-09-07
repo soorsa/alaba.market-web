@@ -2,15 +2,15 @@ import { useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useGetCustomers } from "../../hooks/querys/useGetCustomers";
 import type { User } from "../../zustand/useUserStore";
 import Paginator from "./Paginator";
+import { useGetVendors } from "../../hooks/querys/useGetVendors";
 
-const CustomerListTable = () => {
+const VendorsListTable = () => {
   const [selectedItem, setselectedItem] = useState<User[]>([]); // Store product_ids
   const [page, setpage] = useState(1);
-  const { data, isLoading, isError } = useGetCustomers(page);
-  const customers = data?.results ?? [];
+  const { data, isLoading, isError } = useGetVendors(page);
+  const vendors = data?.results ?? [];
   const handleDelete = (user: User) => {
     console.log(user);
     // openModal(
@@ -67,7 +67,7 @@ const CustomerListTable = () => {
   const renderList = () => {
     return (
       <ul className="space-y-2">
-        {customers?.map((user, index) => (
+        {vendors?.map((user, index) => (
           <li
             key={index}
             className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
@@ -139,7 +139,7 @@ const CustomerListTable = () => {
       );
     }
 
-    if (customers?.length === 0) {
+    if (vendors?.length === 0) {
       return (
         <div className="text-center py-4">
           <NoProductFound />
@@ -162,4 +162,4 @@ const CustomerListTable = () => {
   );
 };
 
-export default CustomerListTable;
+export default VendorsListTable;

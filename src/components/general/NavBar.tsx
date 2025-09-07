@@ -102,7 +102,7 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex flex-1 items-center md:5 lg:gap-10 justify-center mx-10">
             <Link to="/shop">Shop</Link>
             <Link to="/contact-us">Contact</Link>
-            <Link to="/shop">Become a Vendor</Link>
+            <Link to="/become-a-vendor">Become a Vendor</Link>
           </div>
 
           {/* User Actions */}

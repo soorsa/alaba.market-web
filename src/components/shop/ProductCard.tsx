@@ -33,7 +33,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
     navigate(`/products/${product.product_id}`);
   };
   return (
-    <div className="relative cursor-pointer min-w-[200px] max-w-[200px] flex flex-col bg-white p-2 md:p-4 rounded-2xl hover:shadow-lg">
+    <div className="relative cursor-pointer min-w-[185px] md:min-w-[200px] max-w-[200px] flex flex-col bg-white p-2 md:p-4 rounded-2xl hover:shadow-lg">
       <button
         type="button"
         className="group bg-black/50 rounded-full absolute top-5 right-5 p-2 text-white/50 hover:text-white"

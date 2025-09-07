@@ -10,10 +10,14 @@ import {
 } from "react-icons/ri";
 import NavItem from "./NavItem";
 import { FiShoppingBag } from "react-icons/fi";
-import { LucidePackageCheck } from "lucide-react";
+import { LogOut, LucidePackageCheck } from "lucide-react";
 import { LiaShippingFastSolid } from "react-icons/lia";
+import Button from "../general/Button";
+import { useLogout } from "../../hooks/Auth";
+import { Link } from "react-router-dom";
 
 const SideNav = () => {
+  const { mutate: logout } = useLogout();
   return (
     <div className="flex flex-col p-5 gap-5 h-screen justify-between overflow-y-auto scrollbar-hide">
       <img
@@ -65,6 +69,17 @@ const SideNav = () => {
             path="/manager/users"
           />
         </nav>
+        <div className="flex flex-col mt-5 text-xs gap-2">
+          <Button
+            className="!text-red-700 bg-transparent"
+            icon={<LogOut size={15} />}
+            label="Logout"
+            onClick={logout}
+          />
+          <Link to={"/"} className="text-alaba">
+            Go to Shop
+          </Link>
+        </div>
         {/* <nav className="space-y-2 p-2">
           <button
             onClick={() => {
