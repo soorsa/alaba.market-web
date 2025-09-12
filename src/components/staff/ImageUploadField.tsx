@@ -75,7 +75,7 @@ const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
       {label && <div className="font-medium mb-1">{label}</div>}
 
       {infoText && (
-        <div className="text-xs text-gray-500 mb-2 flex items-start">
+        <div className="text-xs text-gray-500 mb-2 flex items-start text-left">
           <span className="flex-1">{infoText}</span>
         </div>
       )}

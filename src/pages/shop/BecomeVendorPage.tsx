@@ -10,9 +10,9 @@ const BecomeVendorPage: React.FC = () => {
   const { user } = useUserStore();
   const getStarted = () => {
     modal.openModal(
-      <BecomeVendorStart />,
-      `Hello, ${user?.first_name}`,
-      "light"
+      <BecomeVendorStart goBack={getStarted} />,
+      `Hello, ${user?.first_name}`
+      // "light"
     );
   };
   return (

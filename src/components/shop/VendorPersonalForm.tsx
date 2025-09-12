@@ -6,10 +6,20 @@ import SelectField from "../general/SelectField";
 import ImageUploadField from "../staff/ImageUploadField";
 import Button from "../general/Button";
 import { useModalStore } from "../../zustand/ModalStore";
-
-const VendorPersonalForm: React.FC = () => {
+import VendorBusinessForm from "./VendorBusinessForm";
+import { ChevronLeft } from "lucide-react";
+type Props = {
+  goBack: () => void;
+};
+const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
   const { user } = useUserStore();
   const modal = useModalStore();
+  const gotoPeronsalForm = () => {
+    modal.openModal(
+      <VendorPersonalForm goBack={goBack} />,
+      "Personal Info Form"
+    );
+  };
   const initialValues = {
     first_name: user?.first_name,
     last_name: user?.last_name,
@@ -31,20 +41,18 @@ const VendorPersonalForm: React.FC = () => {
       >
         <Form className="mt-5">
           <div className="grid grid-cols-2 gap-2">
-            <div className="col-span-2 grid grid-cols-2 my-2">
+            <div className="col-span-2 grid grid-cols-2 my-2 gap-2">
               <ImageUploadField
                 name="profile_picture"
                 infoText="Profile picture"
-                width={100}
+                width={"100%"}
                 height={100}
-                className="!w-fit"
               />
               <ImageUploadField
                 name="profile_picture"
                 infoText="NIN/intn'l passport"
-                width={100}
+                width={"100%"}
                 height={100}
-                className="!w-fit"
               />
             </div>
             <label
@@ -89,33 +97,20 @@ const VendorPersonalForm: React.FC = () => {
               <span>State</span>
               <SelectField options={[]} name="state" />
             </label>
-            <label
-              htmlFor=""
-              className="text-left text-xs text-gray-500 space-xy2"
-            >
-              <span>First Name</span>
-              <InputField name="first_name" />
-            </label>
-            <label
-              htmlFor=""
-              className="text-left text-xs text-gray-500 space-xy2"
-            >
-              <span>First Name</span>
-              <InputField name="first_name" />
-            </label>
           </div>
           <div className="flex justify-between items-center mt-10 text-xs md:text-sm">
             <Button
-              label="Cancel"
-              className="!text-red-500 bg-transparent hover:font-alaba-bold"
-              onClick={modal.closeModal}
+              label="Back"
+              icon={<ChevronLeft size={18} />}
+              className="!text-black bg-transparent hover:font-alaba-bold"
+              onClick={goBack}
             />
             <Button
               label="Continue"
               onClick={() =>
                 modal.openModal(
-                  <VendorPersonalForm />,
-                  "Personal Info form",
+                  <VendorBusinessForm goBack={gotoPeronsalForm} />,
+                  "Business Info form",
                   "light"
                 )
               }

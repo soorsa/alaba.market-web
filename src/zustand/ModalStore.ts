@@ -7,7 +7,7 @@ interface ModalState {
   isOpen: boolean;
   content: ReactNode | null;
   title?: string;
-  theme?: Theme;
+  theme: Theme;
   openModal: (content: ReactNode, title?: string, theme?: Theme) => void;
   closeModal: () => void;
 }
@@ -17,7 +17,7 @@ export const useModalStore = create<ModalState>((set) => ({
   content: null,
   title: "",
   theme: "light",
-  openModal: (content, title, theme) =>
+  openModal: (content, title, theme = "light") =>
     set({ theme, title, isOpen: true, content }),
   closeModal: () => set({ isOpen: false, content: null }),
 }));
