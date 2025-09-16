@@ -7,7 +7,6 @@ import Dashboard from "../pages/staff/Dashboard";
 import DashboardIndexScreen from "../pages/staff/IndexScreen";
 import StaffRoutes from "./StaffRoutes";
 import VendorRoutes from "./VendorRoutes";
-import VendorDashboard from "../pages/vendor/VendorDashboard";
 import VendorIndex from "../pages/vendor/VendorIndex";
 import Modal from "../components/general/Modal";
 import Toast from "../components/general/Toast";
@@ -22,6 +21,7 @@ import OrdersScreen from "../pages/staff/OrdersScreen";
 import SplashScreen from "../components/general/SplashScreen";
 import UserScreen from "../pages/staff/UsersScreen";
 import BecomeVendorPage from "../pages/shop/BecomeVendorPage";
+import VendorDashboardLayout from "../pages/vendor/VendorDashboardLayout";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
@@ -66,7 +66,7 @@ const AllRoutes = () => {
 
             {/* Protected Routes - Vendor */}
             <Route path="/vendor" element={<VendorRoutes />}>
-              <Route element={<VendorDashboard />}>
+              <Route element={<VendorDashboardLayout />}>
                 <Route index element={<VendorIndex />} />
               </Route>
             </Route>
