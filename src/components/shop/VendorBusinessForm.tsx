@@ -1,4 +1,6 @@
 import { Form, Formik } from "formik";
+import * as Yup from "yup";
+
 import React from "react";
 import ImageUploadField from "../staff/ImageUploadField";
 import InputField from "../general/InputField";
@@ -25,8 +27,20 @@ const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
     cac_number: "",
     cac_image: null,
   };
-  const validationSchema = {};
-  const save = () => {};
+  const validationSchema = Yup.object({
+    cac_image: Yup.mixed().required("Required"),
+    business_name: Yup.string().required("Required."),
+    cac_number: Yup.number().required("Required."),
+    business_phone_number: Yup.number().required("Required."),
+    business_email: Yup.string().email("Invalid Email").required("Required."),
+    office_address: Yup.string().required("Required."),
+  });
+  const save = () => {
+    modal.openModal(
+      <VendorBankForm goBack={gotoBusinessForm} />,
+      "Bank Details Form"
+    );
+  };
   return (
     <div>
       <div className="flex items-start text-left gap-2 text-xs text-gray-500 py-2">
@@ -42,71 +56,65 @@ const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
         validationSchema={validationSchema}
         onSubmit={save}
       >
-        <Form className="mt-5">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="col-span-2 grid gap-2 grid-cols-2 my-2 items-end">
-              <ImageUploadField
-                name="cac_image"
-                infoText="CAC Proof"
-                width={"100%"}
-                height={100}
-                // className="!w-fit"
-              />
+        {({ isValid }) => (
+          <Form className="mt-5">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="col-span-2 grid gap-2 grid-cols-2 my-2 items-end">
+                <ImageUploadField
+                  name="cac_image"
+                  infoText="CAC Proof"
+                  width={"100%"}
+                  height={100}
+                  // className="!w-fit"
+                />
+                <label
+                  htmlFor=""
+                  className="text-left text-xs text-gray-500 space-xy2"
+                >
+                  <span>CAC Number</span>
+                  <InputField name="cac_number" />
+                </label>
+              </div>
+              <label
+                htmlFor=""
+                className="text-left text-xs text-gray-500 space-y-2"
+              >
+                <span>Business Name</span>
+                <InputField name="business_name" />
+              </label>
+              <label
+                htmlFor=""
+                className="text-left text-xs text-gray-500 space-y-2"
+              >
+                <span>Phone No.</span>
+                <InputField name="business_phone_number" />
+              </label>
+              <label
+                htmlFor=""
+                className="text-left text-xs text-gray-500 spyce-x-2"
+              >
+                <span>Email</span>
+                <InputField name="business_email" />
+              </label>
               <label
                 htmlFor=""
                 className="text-left text-xs text-gray-500 space-xy2"
               >
-                <span>CAC Number</span>
-                <InputField name="cac_number" />
+                <span>Office Address</span>
+                <InputField name="office_address" />
               </label>
             </div>
-            <label
-              htmlFor=""
-              className="text-left text-xs text-gray-500 space-y-2"
-            >
-              <span>Business Name</span>
-              <InputField name="business_name" />
-            </label>
-            <label
-              htmlFor=""
-              className="text-left text-xs text-gray-500 space-y-2"
-            >
-              <span>Phone No.</span>
-              <InputField name="business_phone_number" />
-            </label>
-            <label
-              htmlFor=""
-              className="text-left text-xs text-gray-500 spyce-x-2"
-            >
-              <span>Email</span>
-              <InputField name="business_email" />
-            </label>
-            <label
-              htmlFor=""
-              className="text-left text-xs text-gray-500 space-xy2"
-            >
-              <span>Office Address</span>
-              <InputField name="office_address" />
-            </label>
-          </div>
-          <div className="flex justify-between items-center mt-10 text-xs md:text-sm">
-            <Button
-              label="Back"
-              icon={<ChevronLeft size={18} />}
-              className="!text-black bg-transparent hover:font-alaba-bold"
-              onClick={goBack}
-            />
-            <Button
-              label="Continue"
-              onClick={() =>
-                modal.openModal(
-                  <VendorBankForm goBack={gotoBusinessForm} />,
-                  "Bank Details Form"
-                )
-              }
-            />
-          </div>
-        </Form>
+            <div className="flex justify-between items-center mt-10 text-xs md:text-sm">
+              <Button
+                label="Back"
+                icon={<ChevronLeft size={18} />}
+                className="!text-black bg-transparent hover:font-alaba-bold"
+                onClick={goBack}
+              />
+              <Button label="Continue" type="submit" disabled={!isValid} />
+            </div>
+          </Form>
+        )}
       </Formik>
     </div>
   );
