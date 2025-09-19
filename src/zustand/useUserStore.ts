@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type User = {
+  id: number;
   phone_number: string;
   email: string;
   first_name: string;
@@ -13,7 +14,7 @@ export type User = {
   country: string | null;
   state: string | null;
   lga: string | null;
-  profile_picture: string | null;
+  profile_pic: string | null;
   gender: string | null;
   device_id: string;
   address: string | null;

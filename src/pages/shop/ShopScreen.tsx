@@ -36,7 +36,7 @@ const ShopScreen = () => {
         <aside className="w-[280px] max-w-[300px] p-2 hidden md:flex">
           <FilterControls filters={filters} onFilterChange={setFilters} />{" "}
         </aside>
-        <div className="py-2 md:pr-4 flex-1 h-full bg-blue-500 overflow-scroll scrollbar-hide">
+        <div className="py-2 md:pr-4 flex-1 h-full overflow-scroll scrollbar-hide">
           <div
             className="flex md:hidden items-center"
             onClick={() =>
