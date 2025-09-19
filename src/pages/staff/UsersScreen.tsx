@@ -5,6 +5,7 @@ import { FiShoppingBag } from "react-icons/fi";
 import { useState } from "react";
 import CustomerListTable from "../../components/staff/CutomerListTable";
 import VendorsListTable from "../../components/staff/VendorsListTable";
+import StaffListTable from "../../components/staff/StaffListTable";
 
 const UserScreen = () => {
   const {
@@ -23,7 +24,7 @@ const UserScreen = () => {
     if (activeTab === "Vendors") {
       return <VendorsListTable />;
     } else if (activeTab === "Staffs") {
-      return <h1>Staffs</h1>;
+      return <StaffListTable />;
     }
     return <CustomerListTable />;
   };
@@ -61,7 +62,7 @@ const UserScreen = () => {
           <h4 className="text-lg text-left text-gray-200">{activeTab}</h4>
         </div>
         <div className="flex justify-between items-center mb-4 px-4 ">
-          <div className="flex gap-1 md:gap-4 text-sm font-medium">
+          <div className="flex gap-5 text-sm font-medium">
             {tabs.map((tab) => (
               <button
                 key={tab}

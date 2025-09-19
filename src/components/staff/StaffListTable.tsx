@@ -2,46 +2,18 @@ import { useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useGetCustomers } from "../../hooks/querys/useGetCustomers";
 import type { User } from "../../zustand/useUserStore";
 import Paginator from "./Paginator";
-import { useModalStore } from "../../zustand/ModalStore";
-import EditCustomer from "./CustomerDetail";
+import { useGetStaff } from "../../hooks/querys/useGetCustomers";
 
-const CustomerListTable = () => {
+const StaffListTable = () => {
   const [selectedItem, setselectedItem] = useState<User[]>([]); // Store product_ids
   const [page, setpage] = useState(1);
-  const { data, isLoading, isError } = useGetCustomers(page);
-  const modal = useModalStore();
+  const { data, isLoading, isError } = useGetStaff(page);
   const customers = data?.results ?? [];
-  const handleEdit = (user: User) => {
-    modal.openModal(
-      <EditCustomer customer={user} />,
-      "Update Customer",
-      "dark"
-    );
-  };
   const handleDelete = (user: User) => {
     console.log(user);
-    // openModal(
-    //   <DeleteOrder setselectedItem={setselectedItem} item={[order]} />,
-    //   "Delete",
-    //   "dark"
-    // );
   };
-  //   const handleDeleteAll = () => {
-  //     if (confirm("Are you sure?")) {
-  //       openModal(
-  //         <DeleteAllOrder setselectedOrder={setselectedOrder} />,
-  //         "Delete all Orders",
-  //         "dark"
-  //       );
-  //     }
-  //   };
-
-  // Add this state to your component
-
-  // Add these handler functions
   const handleSelectOrder = (user: User, isChecked: boolean) => {
     setselectedItem((prev) =>
       isChecked
@@ -50,25 +22,6 @@ const CustomerListTable = () => {
     );
   };
 
-  //   const handleSelectAll = (isChecked: boolean) => {
-  //     setselectedItem(isChecked ? data?.map((user) => user) : []);
-  //   };
-
-  //   const handleDeleteSelected = () => {
-  //     if (selectedOrder.length === 0) {
-  //       showToast("Oops... no order seleted!", "info");
-  //     } else {
-  //       openModal(
-  //         <DeleteOrder
-  //           setselectedOrder={setselectedOrder}
-  //           item={selectedOrder}
-  //           isMultiple={true}
-  //         />,
-  //         "Delete Order",
-  //         "dark"
-  //       );
-  //     }
-  //   };
   const viewOrder = (user: User) => {
     console.log(user);
     // openModal(<OrderSummary order={order} />, "Order Summary", "dark");
@@ -118,7 +71,7 @@ const CustomerListTable = () => {
               <div className="flex gap-2 justify-end">
                 <div
                   className="flex gap-1 items-center text-blue-300"
-                  onClick={() => handleEdit(user)}
+                  //   onClick={() => handleEdit(order)}
                 >
                   <Edit size={15} />
                 </div>
@@ -172,4 +125,4 @@ const CustomerListTable = () => {
   );
 };
 
-export default CustomerListTable;
+export default StaffListTable;

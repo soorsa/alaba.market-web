@@ -40,8 +40,8 @@ const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
     address: user?.address,
     state: user?.state || "",
     country: user?.country || "",
-    profile_picture: user?.profile_picture,
-    userID_photo: user?.profile_picture,
+    profile_picture: user?.profile_pic,
+    userID_photo: user?.profile_pic,
   };
   const validationSchema = Yup.object({
     profile_picture: Yup.mixed().required("Required"),
