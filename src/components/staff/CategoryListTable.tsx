@@ -94,17 +94,6 @@ const CategoryListTable: React.FC<Props> = ({
             key={index}
             className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
           >
-            {/* <label className="flex justify-center cursor-pointer">
-              <input
-                id="orange-checkbox"
-                type="checkbox"
-                value=""
-                className="w-6 h-6 peer hidden appearance-none border-1 border-gray-700 rounded-lg checked:bg-alaba hover:border-alaba/50 cursor-pointer"
-              />{" "}
-              <div className="p-1 border-1 peer-checked:text-alaba peer-checked:border-alaba border-gray-700 rounded-lg text-gray-700 hover:border-gray-300 hover:text-gray-300">
-                <Check className="h-5 w-5" />
-              </div>
-            </label> */}
             <label className="flex justify-center cursor-pointer">
               <input
                 type="checkbox"
@@ -201,7 +190,7 @@ const CategoryListTable: React.FC<Props> = ({
 
   return (
     <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
-      <div className="flex flex-col-reverse md:flex-row items-center justify-between mb-6 px-4">
+      <div className="flex items-center justify-between mb-6 px-0">
         <h4 className="text-sm text-left text-gray-200">Categories</h4>
         <div className="flex flex-wrap justify-end items-center gap-2">
           <div className="px-3 py-2 flex items-center border border-gray-700 text-gray-300 rounded-lg text-sm">
@@ -212,7 +201,7 @@ const CategoryListTable: React.FC<Props> = ({
               value={localFilters.search || ""}
               onChange={handleChange}
               placeholder="Search products..."
-              className="w-[250px] max-w-[400px] focus:outline-none focus:ring-blue-700 focus:border-blue-700"
+              className="md:w-[250px] max-w-[400px] focus:outline-none focus:ring-blue-700 focus:border-blue-700"
             />
             <Search />
           </div>

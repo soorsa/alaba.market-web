@@ -58,7 +58,7 @@ const UserScreen = () => {
         />
       </div>
       <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
-        <div className="flex flex-col-reverse md:flex-row items-center justify-between mb-6 px-4">
+        <div className="mb-6 px-4">
           <h4 className="text-lg text-left text-gray-200">{activeTab}</h4>
         </div>
         <div className="flex justify-between items-center mb-4 px-4 ">

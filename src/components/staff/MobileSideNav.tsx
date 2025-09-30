@@ -43,9 +43,9 @@ const MobileSideNav = () => {
             path="/payments"
           />
           <NavItem
-            label="Notifications"
+            label="Requests"
             icon={<RiNotificationBadgeFill className=" w-4 h-4" />}
-            path="/notifications"
+            path="/manager/requests"
           />
           <NavItem
             label="Orders"

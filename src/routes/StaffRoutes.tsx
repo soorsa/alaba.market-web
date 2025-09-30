@@ -8,7 +8,7 @@ const StaffRoutes = () => {
   if (isLoggedIn) {
     if (user?.is_staff) {
       return <Outlet />;
-    } else if (user?.is_vendor) {
+    } else if (user?.vendor_active && user.is_vendor) {
       return <Navigate to="/vendor" replace />;
     } else {
       return <Navigate to="/" replace />;

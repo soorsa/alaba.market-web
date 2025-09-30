@@ -2,16 +2,15 @@ import { useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import type { User } from "../../zustand/useUserStore";
 import Paginator from "./Paginator";
-import { useGetVendors } from "../../hooks/querys/useGetVendors";
+import { useGetVendors, type Vendor } from "../../hooks/querys/useGetVendors";
 
 const VendorsListTable = () => {
-  const [selectedItem, setselectedItem] = useState<User[]>([]); // Store product_ids
+  const [selectedItem, setselectedItem] = useState<Vendor[]>([]); // Store product_ids
   const [page, setpage] = useState(1);
   const { data, isLoading, isError } = useGetVendors(page);
   const vendors = data?.results ?? [];
-  const handleDelete = (user: User) => {
+  const handleDelete = (user: Vendor) => {
     console.log(user);
     // openModal(
     //   <DeleteOrder setselectedItem={setselectedItem} item={[order]} />,
@@ -32,7 +31,7 @@ const VendorsListTable = () => {
   // Add this state to your component
 
   // Add these handler functions
-  const handleSelectOrder = (user: User, isChecked: boolean) => {
+  const handleSelectOrder = (user: Vendor, isChecked: boolean) => {
     setselectedItem((prev) =>
       isChecked
         ? [...prev, user]
@@ -59,7 +58,7 @@ const VendorsListTable = () => {
   //       );
   //     }
   //   };
-  const viewOrder = (user: User) => {
+  const viewOrder = (user: Vendor) => {
     console.log(user);
     // openModal(<OrderSummary order={order} />, "Order Summary", "dark");
   };
@@ -94,17 +93,29 @@ const VendorsListTable = () => {
               onClick={() => viewOrder(user)}
             >
               <div className="min-w-0">
-                <div className="font-semibold text-xs md:text-sm truncate">
-                  {user.first_name} {user.last_name}
+                <div className="flex item-center gap-3">
+                  <div className="font-semibold text-xs md:text-sm truncate">
+                    {user.first_name} {user.last_name}
+                  </div>
+                  <div className="font-semibold text-xs md:text-sm truncate">
+                    CAC No.:
+                    <span className="bg-gray-700 rounded-sm text-xs px-2 ml-2">
+                      {user.cac_number || "None"}
+                    </span>
+                  </div>
                 </div>
                 <div className="text-xs truncate">
-                  <span>Email: </span>
-                  <span className="text-blue-500">{user.email}</span>
+                  <span>Bussiness Name: </span>
+                  <span className="text-blue-500">
+                    {user.business_name || "None"}
+                  </span>
                 </div>{" "}
               </div>
             </div>
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
-              <div className="">{user.role}</div>
+              <div className={user.active ? "text-green-500" : "text-red-500"}>
+                {user.active ? "Approved" : "Not Approved"}
+              </div>
               <div className="flex gap-2 justify-end">
                 <div
                   className="flex gap-1 items-center text-blue-300"

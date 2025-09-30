@@ -114,7 +114,13 @@ const CustomerListTable = () => {
               </div>
             </div>
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
-              <div className="">{user.role}</div>
+              <div className="text-white">
+                {user.is_staff
+                  ? "Staff"
+                  : user.is_vendor
+                  ? "vendor"
+                  : "Customer"}
+              </div>
               <div className="flex gap-2 justify-end">
                 <div
                   className="flex gap-1 items-center text-blue-300"

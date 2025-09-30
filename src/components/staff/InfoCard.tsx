@@ -22,18 +22,22 @@ const InfoCard: React.FC<Props> = ({
   }
   return (
     <div
-      className={`flex flex-col hover:bg-gray-500/10 cursor-pointer border-1 border-gray-700 rounded-lg p-4 gap-4 text-white text-left ${
+      className={`flex flex-col hover:bg-gray-500/10 cursor-pointer border-1 border-gray-700 rounded-lg p-2 sm:p-4 gap-1 sm:gap-4 text-white text-left ${
         isActive && `bg-gray-700/50`
       }`}
     >
       <div className="flex justify-between items-start ">
         <div className="flex flex-col gap-2 min-w-0">
-          <div className="text-sm">{title}</div>
+          <div className="text-xs sm:text-sm line-clamp-1">{title}</div>
           <div className="text-2xl truncate">{value}</div>
         </div>
-        <div className="bg-alaba-50 p-4 rounded-full">{icon}</div>
+        <div className="bg-alaba-50 p-4 rounded-full hidden sm:block">
+          {icon}
+        </div>
       </div>
-      <div className="text-xs line-clamp-2 w-full">{description}</div>
+      <div className="text-[10px] sm:text-xs line-clamp-2 w-full">
+        {description}
+      </div>
     </div>
   );
 };
