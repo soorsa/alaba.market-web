@@ -8,11 +8,15 @@ import Button from "../general/Button";
 import { useModalStore } from "../../zustand/ModalStore";
 import { ChevronLeft, Info } from "lucide-react";
 import VendorBankForm from "./VendorBankForm";
+import { useUserStore } from "../../zustand/useUserStore";
+import { useVendorApplicationPayload } from "../../zustand/vendor-application.payload";
 type Props = {
   goBack: () => void;
 };
 const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
   const modal = useModalStore();
+  const { user } = useUserStore();
+  const { updateVendorApplicationPayload } = useVendorApplicationPayload();
   const gotoBusinessForm = () => {
     modal.openModal(
       <VendorBusinessForm goBack={goBack} />,
@@ -20,12 +24,12 @@ const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
     );
   };
   const initialValues = {
-    business_name: "",
-    office_address: "",
-    business_phone_number: "",
-    business_email: "",
-    cac_number: "",
-    cac_image: null,
+    business_name: user?.bank_name || "",
+    office_address: user?.office_address || "",
+    business_phone_number: user?.vendor_phone_number || "",
+    business_email: user?.business_email || "",
+    cac_number: user?.cac_number || "",
+    cac_image: user?.cac_upload || null,
   };
   const validationSchema = Yup.object({
     cac_image: Yup.mixed().required("Required"),
@@ -35,7 +39,17 @@ const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
     business_email: Yup.string().email("Invalid Email").required("Required."),
     office_address: Yup.string().required("Required."),
   });
-  const save = () => {
+  const save = (values: typeof initialValues) => {
+    updateVendorApplicationPayload({
+      business_name: values.business_name,
+      business_email: values.business_email,
+      phone_number: String(values.business_phone_number),
+      office_address: String(values.office_address),
+      cac_number: String(values.cac_number),
+      cac_upload:
+        typeof values.cac_image === "string" ? null : values.cac_image,
+    });
+
     modal.openModal(
       <VendorBankForm goBack={gotoBusinessForm} />,
       "Bank Details Form"

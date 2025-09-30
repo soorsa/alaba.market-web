@@ -16,6 +16,10 @@ export const getSatffs = async (page: number): Promise<CustomersResponse> => {
   const response = await alabaApi.get(`/dashboard/users/staffs/?page=${page}`);
   return response.data;
 };
+export const getVendors = async (page: number): Promise<CustomersResponse> => {
+  const response = await alabaApi.get(`/dashboard/users/vendors/?page=${page}`);
+  return response.data;
+};
 // Query hook to get user Cart
 export const useGetCustomers = (page: number) => {
   return useQuery<CustomersResponse>({
@@ -27,5 +31,11 @@ export const useGetStaff = (page: number) => {
   return useQuery<CustomersResponse>({
     queryKey: ["staffs", page],
     queryFn: () => getSatffs(page),
+  });
+};
+export const useGetVendors = (page: number) => {
+  return useQuery<CustomersResponse>({
+    queryKey: ["vendors", page],
+    queryFn: () => getVendors(page),
   });
 };

@@ -10,11 +10,13 @@ import { useModalStore } from "../../zustand/ModalStore";
 import VendorBusinessForm from "./VendorBusinessForm";
 import { ChevronLeft, Info } from "lucide-react";
 import { useGetCountryandState } from "../../hooks/querys/useGetCountryandState";
+import { useVendorApplicationPayload } from "../../zustand/vendor-application.payload";
 type Props = {
   goBack: () => void;
 };
 const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
   const { user } = useUserStore();
+  const { updateVendorApplicationPayload } = useVendorApplicationPayload();
   const modal = useModalStore();
   const {
     countries,
@@ -33,15 +35,16 @@ const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
     );
   };
   const initialValues = {
-    first_name: user?.first_name,
-    last_name: user?.last_name,
-    phone_number: user?.phone_number,
-    email: user?.email,
-    address: user?.address,
-    state: user?.state || "",
-    country: user?.country || "",
+    first_name: user?.first_name || "",
+    last_name: user?.last_name || "",
+    phone_number: user?.phone_number || "",
+    email: user?.email || "",
+    address: user?.address || "",
+    state: "",
+    country: "",
+    nin: user?.nin || "",
     profile_picture: user?.profile_pic,
-    userID_photo: user?.profile_pic,
+    userID_photo: user?.user_passport,
   };
   const validationSchema = Yup.object({
     profile_picture: Yup.mixed().required("Required"),
@@ -50,11 +53,25 @@ const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
     last_name: Yup.string().required("Required."),
     phone_number: Yup.number().required("Required."),
     email: Yup.string().email("Invalid Email").required("Required."),
-    address: Yup.string().required("Required."),
+    // address: Yup.string().required("Required."),
     // state: Yup.string().required("Required."),
     // country: Yup.string().required("Required."),
   });
-  const save = () => {
+  const save = (values: typeof initialValues) => {
+    updateVendorApplicationPayload({
+      first_name: values.first_name,
+      last_name: values.last_name,
+      email: values.email,
+      phone_number: String(values.phone_number),
+      address: String(values.address),
+      nin: values.nin,
+      profile_pic:
+        typeof values.profile_picture === "string"
+          ? null
+          : values.profile_picture,
+      user_passport:
+        typeof values.userID_photo === "string" ? null : values.userID_photo,
+    });
     modal.openModal(
       <VendorBusinessForm goBack={gotoPeronsalForm} />,
       "Business Info form",
@@ -133,27 +150,45 @@ const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
                 </label>
                 <label
                   htmlFor=""
-                  className="text-left text-xs text-gray-500 spacy-x-2"
+                  className="text-left text-xs text-gray-500 space-y-2"
                 >
-                  <span>Country</span>
-                  <SelectField options={countryOptions} name="country" />
+                  <span>NIN No.</span>
+                  <InputField name="nin" />
                 </label>
+
                 <label
                   htmlFor=""
-                  className="text-left text-xs text-gray-500 spyce-x-2"
+                  className="text-left text-xs text-gray-500 space-y-2"
                 >
-                  <span>State</span>
-                  <SelectField
-                    name="state"
-                    placeholder={
-                      values.country
-                        ? "Select your state"
-                        : "Select country first"
-                    }
-                    options={stateOptions}
-                    disabled={!values.country || isCountryStateLoading}
-                  />
+                  <span>Res. Address</span>
+                  <InputField name="address" />
                 </label>
+
+                <div className="hidden">
+                  <label
+                    htmlFor=""
+                    className="text-left text-xs text-gray-500 spacy-x-2"
+                  >
+                    <span>Country</span>
+                    <SelectField options={countryOptions} name="country" />
+                  </label>
+                  <label
+                    htmlFor=""
+                    className="text-left text-xs text-gray-500 spyce-x-2"
+                  >
+                    <span>State</span>
+                    <SelectField
+                      name="state"
+                      placeholder={
+                        values.country
+                          ? "Select your state"
+                          : "Select country first"
+                      }
+                      options={stateOptions}
+                      disabled={!values.country || isCountryStateLoading}
+                    />
+                  </label>
+                </div>
               </div>
               <div className="flex justify-between items-center mt-10 text-xs md:text-sm">
                 <Button

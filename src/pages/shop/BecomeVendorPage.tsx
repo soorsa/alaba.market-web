@@ -4,16 +4,22 @@ import { ChartLine, ShoppingBag } from "lucide-react";
 import { useModalStore } from "../../zustand/ModalStore";
 import BecomeVendorStart from "../../components/shop/BecomeVendorStart";
 import { useUserStore } from "../../zustand/useUserStore";
+import { useToastStore } from "../../zustand/ToastStore";
 
 const BecomeVendorPage: React.FC = () => {
   const modal = useModalStore();
   const { user } = useUserStore();
+  const toast = useToastStore();
   const getStarted = () => {
-    modal.openModal(
-      <BecomeVendorStart goBack={getStarted} />,
-      `Hello, ${user?.first_name}`
-      // "light"
-    );
+    if (user?.is_vendor || user?.vendor_active) {
+      toast.showToast("Your have already applied!", "info");
+    } else {
+      modal.openModal(
+        <BecomeVendorStart goBack={getStarted} />,
+        `Hello, ${user?.first_name}`
+        // "light"
+      );
+    }
   };
   return (
     <div className="w-[98%] md:w-[95%] mx-auto my-2">

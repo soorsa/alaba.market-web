@@ -16,7 +16,7 @@ const Header = () => {
         >
           <Menu />
         </div>
-        <div className="text-3xl font-bold">Store Manager</div>
+        <div className="text-xl sm:text-3xl font-bold">Store Manager</div>
       </div>
       <div className="flex items-center gap-4 text-gray-400">
         <TbUserSquareRounded size={30} /> <BsChatLeftDots size={25} />

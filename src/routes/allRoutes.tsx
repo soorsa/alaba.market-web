@@ -14,7 +14,7 @@ import ShopScreen from "../pages/shop/ShopScreen";
 import CheckoutScreen from "../pages/shop/CheckoutScreen";
 import OrderHistoryPage from "../pages/shop/MyOrders";
 import ProductDetail from "../pages/shop/ProductDetail";
-import { useGetUser } from "../hooks/querys/useGetUser";
+import { useGetUnifiedUser } from "../hooks/querys/useGetUser";
 import ProductsScreen from "../pages/staff/ProductsScreen";
 import CategoriesScreen from "../pages/staff/CategoriesScreen";
 import OrdersScreen from "../pages/staff/OrdersScreen";
@@ -22,12 +22,12 @@ import SplashScreen from "../components/general/SplashScreen";
 import UserScreen from "../pages/staff/UsersScreen";
 import BecomeVendorPage from "../pages/shop/BecomeVendorPage";
 import VendorDashboardLayout from "../pages/vendor/VendorDashboardLayout";
+import RequestScreen from "../pages/staff/RequestScreen";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
 const AllRoutes = () => {
-  const { data } = useGetUser();
-  console.log(data);
+  useGetUnifiedUser();
   return (
     <>
       <BrowserRouter>
@@ -61,6 +61,7 @@ const AllRoutes = () => {
                   element={<CategoriesScreen />}
                 />
                 <Route path="/manager/users" element={<UserScreen />} />
+                <Route path="/manager/requests" element={<RequestScreen />} />
               </Route>
             </Route>
 

@@ -217,11 +217,11 @@ const OrderListTable: React.FC<Props> = ({
 
   return (
     <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
-      <div className="flex flex-col-reverse md:flex-row items-center justify-between mb-6 px-4">
+      <div className="mb-6 px-4">
         <h4 className="text-lg text-left text-gray-200">{activeTab} Orders</h4>
       </div>
-      <div className="flex justify-between items-center mb-4 px-4 ">
-        <div className="flex gap-1 md:gap-4 text-sm font-medium">
+      <div className="mb-4 px-4 ">
+        <div className="flex gap-1 justify-between md:justify-normal md:gap-4 text-sm font-medium">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -234,26 +234,8 @@ const OrderListTable: React.FC<Props> = ({
             </button>
           ))}
         </div>
-        <div className="flex gap-4">
-          {selectedOrder.length > 0 && (
-            <div
-              className="flex items-center cursor-pointer text-red-300 text-xs gap-1"
-              onClick={handleDeleteSelected}
-            >
-              <Trash2 size={15} />
-              <span>Delete selected ({selectedOrder.length})</span>
-            </div>
-          )}{" "}
-          <div
-            className="flex items-center cursor-pointer text-red-300 text-xs gap-1"
-            onClick={handleDeleteAll}
-          >
-            <Trash2 size={15} />
-            <span>Delete all</span>
-          </div>
-        </div>
       </div>
-      <div className="flex items-center gap-2 px-2 border-b-1 border-b-gray-700 pb-2">
+      <div className="flex items-center justify-between gap-2 px-2 border-b-1 border-b-gray-700 pb-2">
         <label className="flex gap-1 items-center cursor-pointer">
           <input
             type="checkbox"
@@ -274,6 +256,24 @@ const OrderListTable: React.FC<Props> = ({
           </div>
           <span className="ml-1 text-gray-300">Select all</span>
         </label>
+        <div className="flex gap-4">
+          {selectedOrder.length > 0 && (
+            <div
+              className="flex items-center cursor-pointer text-red-300 text-xs gap-1"
+              onClick={handleDeleteSelected}
+            >
+              <Trash2 size={15} />
+              <span>Delete selected ({selectedOrder.length})</span>
+            </div>
+          )}{" "}
+          <div
+            className="flex items-center cursor-pointer text-red-300 text-xs gap-1"
+            onClick={handleDeleteAll}
+          >
+            <Trash2 size={15} />
+            <span>Delete all</span>
+          </div>
+        </div>
       </div>
       {/* LIST */}
       {renderContent()}

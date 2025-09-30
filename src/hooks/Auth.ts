@@ -84,6 +84,9 @@ export const useLogout = () => {
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
     },
   });
 };
