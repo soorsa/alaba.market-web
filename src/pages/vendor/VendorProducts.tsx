@@ -1,29 +1,24 @@
 import { useState } from "react";
-// import { useModalStore } from "../../zustand/ModalStore";
+import { useFilterProducts } from "../../hooks/querys/filterProducts";
 import type { FilterPayload } from "../../types/ProductsTypes";
-import InfoCard from "../../components/staff/InfoCard";
 import { formatNumber } from "../../utils/formatter";
 import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
-import { useFetchCategories } from "../../hooks/querys/getCategories";
-import CategoryListTable from "../../components/staff/CategoryListTable";
-import { useGetEvents } from "../../hooks/querys/useEventsandTags";
-import EventsListTable from "../../components/staff/EventsListTable";
+import InfoCard from "../../components/vendor/InfoCard";
+import VendorProductListTable from "../../components/vendor/VendorProductListTable";
+import VendorProductsPaginationForFilter from "../../components/vendor/VendorProductPagination";
+import { useUserStore } from "../../zustand/useUserStore";
 
-const CategoriesScreen = () => {
-  //   const { openModal } = useModalStore();
+const VendorProductsScreen = () => {
+  const { user } = useUserStore();
   const [filters, setFilters] = useState<FilterPayload>({
     category: "",
     order_by: "-views",
     page: 1,
+    vendor: user?.username || "",
   });
 
-  const { data: categories, isError, isLoading } = useFetchCategories();
-  const {
-    data: events,
-    isError: eventError,
-    isLoading: isGettingEvents,
-  } = useGetEvents();
+  const { data, isLoading, isError } = useFilterProducts(filters);
   const {
     data: statsData,
     isLoading: isLoadingStats,
@@ -46,7 +41,7 @@ const CategoriesScreen = () => {
           isError={isErrorStats}
           isloading={isLoadingStats}
           value={formatNumber(statsData?.total_approved_products || 0)}
-          title="Total Categories"
+          title="Approved Products"
           description="his implementation gives you flexible number"
           icon={<FiShoppingBag size={24} />}
         />
@@ -54,27 +49,25 @@ const CategoriesScreen = () => {
           isError={isErrorStats}
           isloading={isLoadingStats}
           value={formatNumber(statsData?.total_disapproved_products || 0)}
-          title="Total Manufacturers"
+          title="UnApproved Products"
           description="his implementation gives you flexible number"
           icon={<FiShoppingBag size={24} />}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <CategoryListTable
-          categories={categories || []}
-          isError={isError}
-          isLoading={isLoading}
-          filters={filters}
-          onFilterChange={setFilters}
-        />
-        <EventsListTable
-          events={events || []}
-          isError={eventError}
-          isLoading={isGettingEvents}
-        />
-      </div>
+      <VendorProductListTable
+        products={data?.results || []}
+        isError={isError}
+        isLoading={isLoading}
+        filters={filters}
+        onFilterChange={setFilters}
+      />
+      <VendorProductsPaginationForFilter
+        currentPage={filters.page || 1}
+        totalPages={Math.ceil((data?.count || 0) / 20)}
+        onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
+      />
     </div>
   );
 };
 
-export default CategoriesScreen;
+export default VendorProductsScreen;

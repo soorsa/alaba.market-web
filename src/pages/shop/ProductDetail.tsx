@@ -63,7 +63,7 @@ const ProductDetail = () => {
           <div className="sticky top-4">
             <div className="h-96 w-full bg-gray-100 rounded-lg overflow-hidden mb-4">
               <img
-                src={`https://alaba.market` + images[currentImage]}
+                src={`https://api.alaba.market` + images[currentImage]}
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
@@ -78,7 +78,7 @@ const ProductDetail = () => {
                   }`}
                 >
                   <img
-                    src={`https://alaba.market` + img}
+                    src={`https://api.alaba.market` + img}
                     alt={`${product.title} thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />

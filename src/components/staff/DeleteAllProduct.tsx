@@ -4,7 +4,7 @@ import { useModalStore } from "../../zustand/ModalStore";
 import SmallLoader from "../general/SmallLoader";
 import { useDeleteAllProducts } from "../../hooks/mutations/useDeleteAllProducts";
 const DeleteAllProducts: React.FC = () => {
-  const { closeModal } = useModalStore();
+  const { closeModal, theme } = useModalStore();
   const { mutate: deleteAll, isPending } = useDeleteAllProducts();
   if (isPending) {
     return <SmallLoader />;
@@ -26,7 +26,11 @@ const DeleteAllProducts: React.FC = () => {
           <Button
             label="No, Cancel"
             onClick={closeModal}
-            className="bg-transparent border-1 border-gray-700 !text-gray-300"
+            className={`${
+              theme === "light"
+                ? "!text-gray-700 border-gray-300"
+                : "!text-gay-300 border-gray-700"
+            } bg-transparent border-1`}
           />
         </div>
       </div>

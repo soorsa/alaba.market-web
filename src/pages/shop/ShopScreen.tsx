@@ -12,9 +12,10 @@ import { useModalStore } from "../../zustand/ModalStore";
 const ShopScreen = () => {
   const { openModal } = useModalStore();
   const [filters, setFilters] = useState<FilterPayload>({
-    category: "Industrial",
-    order_by: "-views",
+    category: "",
+    order_by: "",
     page: 1,
+    approved: true,
   });
 
   const { data, isLoading, isError } = useFilterProducts(filters);

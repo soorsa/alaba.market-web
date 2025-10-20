@@ -23,6 +23,8 @@ import UserScreen from "../pages/staff/UsersScreen";
 import BecomeVendorPage from "../pages/shop/BecomeVendorPage";
 import VendorDashboardLayout from "../pages/vendor/VendorDashboardLayout";
 import RequestScreen from "../pages/staff/RequestScreen";
+import VendorProductsScreen from "../pages/vendor/VendorProducts";
+import VendorOrders from "../pages/vendor/VendorOrders";
 
 const MainScreen = lazy(() => import("../pages/shop/MainScreen"));
 
@@ -69,6 +71,11 @@ const AllRoutes = () => {
             <Route path="/vendor" element={<VendorRoutes />}>
               <Route element={<VendorDashboardLayout />}>
                 <Route index element={<VendorIndex />} />
+                <Route
+                  path="/vendor/products"
+                  element={<VendorProductsScreen />}
+                />
+                <Route path="/vendor/orders" element={<VendorOrders />} />
               </Route>
             </Route>
 

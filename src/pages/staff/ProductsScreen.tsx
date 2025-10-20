@@ -13,7 +13,7 @@ const ProductsScreen = () => {
   //   const { openModal } = useModalStore();
   const [filters, setFilters] = useState<FilterPayload>({
     category: "",
-    order_by: "-views",
+    order_by: "newest",
     page: 1,
   });
 

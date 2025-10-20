@@ -8,6 +8,7 @@ export interface Product {
   price: string;
   vendor_price: string;
   undiscounted_price: string;
+  seller_percentage: string;
   description: string;
   image: string;
   image2: string;
@@ -17,6 +18,8 @@ export interface Product {
   is_approved: boolean;
   promote: boolean;
   vendor: string | null; // adjust type if you have vendor object structure
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Category {
@@ -48,6 +51,7 @@ export interface FilterPayload {
   order_by?: string;
   search?: string;
   page?: number;
+  vendor?: string;
 }
 
 export interface ProductListResponse {
