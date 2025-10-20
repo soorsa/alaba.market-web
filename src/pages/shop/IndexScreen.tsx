@@ -10,7 +10,7 @@ import { useGetLandingPage } from "../../hooks/querys/getLandingPageData";
 const IndexScreen = () => {
   const { data, isLoading, isError } = useGetLandingPage();
   if (isLoading) {
-    return <SplashScreen className="w-full md:w-[40%]" />;
+    return <SplashScreen className="w-[80%] md:w-[40%]" />;
   }
   const mostViewedProducts = data?.most_viewed_products || [];
   const featuredProducts = data?.featured_products || [];
@@ -18,7 +18,6 @@ const IndexScreen = () => {
   const industrialProducts = data?.industrial_products || [];
   return (
     <div className="relative w-full px-4 md:px-0 md:w-[95%] lg:w-[95%] mx-auto mt-2">
-      {" "}
       {/* Added relative positioning */}
       <div className="flex w-full justify-center">
         <div className="w-[20%] hidden lg:flex min-w-[200px]">

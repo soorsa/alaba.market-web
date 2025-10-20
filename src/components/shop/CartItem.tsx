@@ -42,7 +42,7 @@ const CartItem: React.FC<Props> = ({ cartItem }) => {
       )}
       <div className="relative h-[60px] w-[60px] rounded-lg overflow-hidden">
         <img
-          src={`https://alaba.market/` + cartItem.product.image}
+          src={`https://api.alaba.market/` + cartItem.product.image}
           alt={cartItem.product.title}
           className="w-full h-full"
         />

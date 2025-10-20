@@ -3,7 +3,7 @@ export const formatPrice = (amount: number | string): string => {
     style: "currency",
     currency: "NGN",
     // minimumFractionDigits: 0,
-    // maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(Number(amount));
 };
 

@@ -178,7 +178,8 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
             <option value="price">Price (Low to High)</option>
             <option value="-price">Price (High to Low)</option>
             <option value="-views">Most Viewed</option>
-            <option value="-id">Newest</option>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
           </select>
         </div>
 

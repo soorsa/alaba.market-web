@@ -41,6 +41,7 @@ export interface User {
   customer_date_joined: string | null; // ISO date string
 
   // Vendor profile fields
+  vendor_id: string;
   user_passport: string | null;
   cac_upload: string | null;
   cac_image: string | null;

@@ -59,10 +59,14 @@ const ProductCard: React.FC<Props> = ({ product }) => {
           {product?.category_name}{" "}
         </p>
         <div className="flex justify-between w-full items-center text-xs text-gray-700">
-          <div className="flex line-through">
-            {formatPrice(product.undiscounted_price)}
+          {Number(product.undiscounted_price) > 0 && (
+            <div className="flex line-through text-gray-400">
+              {formatPrice(product.undiscounted_price)}
+            </div>
+          )}
+          <div className="flex font-alaba-mid">
+            {formatPrice(product.price)}
           </div>
-          <div className="flex">{formatPrice(product.price)}</div>
         </div>
         <Button
           icon={<IoCartOutline />}

@@ -1,10 +1,11 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import SideNav from "../../components/vendor/SideNav";
 import Header from "../../components/vendor/Header";
 
 const VendorDashboardLayout: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen">
       {/* Sidebar */}
@@ -17,8 +18,8 @@ const VendorDashboardLayout: React.FC = () => {
 
       {/* Main Content */}
       <main className="pt-0 lg:pt-2 flex-1 overflow-y-auto mb-0 py-5 scrollbar-hide">
-        <div className="absolute top-13 text-gray-500 cursor-pointer left-[280px] z-50 bg-white hover:bg-gray-100 h-10 w-10 rounded-full hidden lg:flex items-center justify-center border-1 border-gray-100">
-          <FiArrowLeft />
+        <div className="absolute top-13 text-gray-500 cursor-pointer left-[280px] z-50 bg-white hover:bg-gray-100 h-10 w-10 rounded-full hidden lg:flex items-center justify-center border-1 border-gray-200">
+          <FiArrowLeft onClick={() => navigate(-1)} />
         </div>
 
         <div className="border-b-1 border-b-gray-200 w-full mb-5">

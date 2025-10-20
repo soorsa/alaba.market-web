@@ -1,40 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Button from "../general/Button";
+import type { Events } from "../../hooks/querys/useEventsandTags";
 
-interface Slide {
-  id: number;
-  imageUrl: string;
-  altText: string;
-  title?: string;
-  subtitle?: string;
+interface Props {
+  items: Events[];
 }
 
-const HeroSlider: React.FC = () => {
+const HeroSlider: React.FC<Props> = ({ items }) => {
   // Sample slides data
-  const slides: Slide[] = [
-    {
-      id: 1,
-      imageUrl: "/image.jpg",
-
-      altText: "Slide 1",
-      title: "Summer Collection",
-      subtitle: "Discover our new arrivals",
-    },
-    {
-      id: 2,
-      imageUrl: "/image.jpg",
-      altText: "Slide 2",
-      title: "Electronics Sale",
-      subtitle: "Up to 30% off",
-    },
-    {
-      id: 3,
-      imageUrl: "/image.jpg",
-      altText: "Slide 3",
-      title: "New Arrivals",
-      subtitle: "Shop the latest trends",
-    },
-  ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -44,11 +17,11 @@ const HeroSlider: React.FC = () => {
     let interval: ReturnType<typeof setTimeout>;
     if (isAutoPlaying) {
       interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentSlide((prev) => (prev + 1) % items.length);
       }, 5000);
     }
     return () => clearInterval(interval);
-  }, [isAutoPlaying, slides.length]);
+  }, [isAutoPlaying, items.length]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -57,13 +30,13 @@ const HeroSlider: React.FC = () => {
   };
 
   const goToNext = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setCurrentSlide((prev) => (prev + 1) % items.length);
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
   const goToPrev = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setCurrentSlide((prev) => (prev - 1 + items.length) % items.length);
     setIsAutoPlaying(false);
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
@@ -75,22 +48,20 @@ const HeroSlider: React.FC = () => {
         className="flex h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {slides.map((slide) => (
+        {items.map((slide) => (
           <div key={slide.id} className="w-full h-full flex-shrink-0 relative">
             <img
-              src={slide.imageUrl}
-              alt={slide.altText}
+              src={slide.banner}
+              alt={slide.title}
               className="w-full h-full object-cover"
             />
-            {(slide.title || slide.subtitle) && (
+            {(slide.title || slide.title) && (
               <div className="absolute inset-0 flex items-center justify-start bg-black/30 bg-opacity-30 text-white p-8">
                 <div className="w-[265px] max-w-[270px]">
                   {slide.title && (
                     <h2 className="text-4xl font-bold mb-2">{slide.title}</h2>
                   )}
-                  {slide.subtitle && (
-                    <p className="text-xl mb-4">{slide.subtitle}</p>
-                  )}
+                  {slide.title && <p className="text-xl mb-4">{slide.title}</p>}
                   <Button label="Shop Now" className="bg-white !text-black" />
                 </div>
               </div>
@@ -143,7 +114,7 @@ const HeroSlider: React.FC = () => {
 
       {/* Dots indicator */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
+        {items.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}

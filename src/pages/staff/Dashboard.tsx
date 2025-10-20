@@ -1,10 +1,11 @@
 import React from "react";
 import SideNav from "../../components/staff/SideNav";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Header from "../../components/staff/Header";
 import { FiArrowLeft } from "react-icons/fi";
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen bg-alaba-dark-500">
       {/* Sidebar */}
@@ -18,7 +19,7 @@ const Dashboard: React.FC = () => {
       {/* Main Content */}
       <main className="pt-0 lg:pt-2 flex-1 overflow-y-auto mb-0 py-5 scrollbar-hide">
         <div className="absolute top-13 text-white cursor-pointer left-[280px] z-50 bg-alaba-dark-500 hover:bg-gray-700 h-10 w-10 rounded-full hidden lg:flex items-center justify-center border-1 border-gray-700">
-          <FiArrowLeft />
+          <FiArrowLeft onClick={() => navigate(-1)} />
         </div>
 
         <div className="border-b-1 border-b-gray-700 w-full mb-5">

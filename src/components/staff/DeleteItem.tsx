@@ -8,7 +8,7 @@ interface Props {
   item: Product;
 }
 const DeleteItem: React.FC<Props> = ({ item }) => {
-  const { closeModal } = useModalStore();
+  const { closeModal, theme } = useModalStore();
   const { mutate: deleteProduct, isPending } = useDeleteProduct();
   if (isPending) {
     return <SmallLoader />;
@@ -33,7 +33,11 @@ const DeleteItem: React.FC<Props> = ({ item }) => {
           <Button
             label="No, Cancel"
             onClick={closeModal}
-            className="bg-transparent border-1 border-gray-700 !text-gray-300"
+            className={`${
+              theme === "light"
+                ? "!text-gray-700 border-gray-300"
+                : "!text-gay-300 border-gray-700"
+            } bg-transparent border-1`}
           />
         </div>
       </div>

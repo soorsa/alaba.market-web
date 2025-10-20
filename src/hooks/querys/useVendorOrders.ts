@@ -1,0 +1,53 @@
+import { useQuery } from "@tanstack/react-query";
+import alabaApi from "../ApiClient";
+
+// Base types
+interface Vendor {
+  id: number;
+  name: string | null;
+}
+
+interface DeliveryAddress {
+  street: string;
+  city: string;
+  state: string;
+}
+
+interface VendorItem {
+  product_id: string;
+  product_title: string;
+  quantity: number;
+  total: number;
+}
+
+interface Order {
+  order_id: string;
+  customer_name: string;
+  order_date: string;
+  total_order_amount: number;
+  vendor_order_total: number;
+  delivery_status: string;
+  paid: boolean;
+  vendor_item_count: number;
+  vendor_items: VendorItem[];
+  delivery_address: DeliveryAddress;
+}
+
+// Main response type
+interface VendorOrdersResponse {
+  vendor: Vendor;
+  orders: Order[];
+  total_orders: number;
+}
+
+export const getVendorOrders = async (vendor_id: number) => {
+  const response = await alabaApi.get(`/vendor/orders/${vendor_id}`);
+  return response.data;
+};
+// Query hook to get user Cart
+export const useGetVendorOrders = (vendor_id: number) => {
+  return useQuery<VendorOrdersResponse>({
+    queryKey: ["vendor-orders", vendor_id],
+    queryFn: () => getVendorOrders(vendor_id),
+  });
+};
