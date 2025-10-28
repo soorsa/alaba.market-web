@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import type { FilterPayload, Product } from "../../types/ProductsTypes";
-import { Check, Edit, Search, Trash2 } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  CheckCircle2,
+  Edit,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { formatPrice } from "../../utils/formatter";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
@@ -155,7 +162,7 @@ const VendorProductListTable: React.FC<Props> = ({
               {/* Added truncate for category too */}
             </div>
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
-              <div className="">{formatPrice(product.price)}</div>
+              <div className="">{formatPrice(product.vendor_price)}</div>
               <div className="flex gap-2 justify-end">
                 <div
                   className="flex gap-1 items-center text-blue-300"
@@ -168,6 +175,13 @@ const VendorProductListTable: React.FC<Props> = ({
                   onClick={() => handleDelete(product)}
                 >
                   <Trash2 size={15} />
+                </div>
+                <div className="">
+                  {product.is_approved ? (
+                    <CheckCircle2 size={15} className="text-green-500" />
+                  ) : (
+                    <AlertCircle size={15} className="text-orange-500" />
+                  )}
                 </div>
               </div>
             </div>

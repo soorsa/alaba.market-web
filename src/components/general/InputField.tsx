@@ -121,7 +121,7 @@ const InputField: React.FC<InputFieldProps> = ({
               ? "border-red-500"
               : theme === "dark"
               ? "border-gray-700"
-              : "border-gray-200 focus:border-blue-400 active:border-blue-400"
+              : "border-gray-400 focus:border-blue-400 active:border-blue-400"
           } ${className}`}
         >
           {/* Left Icon */}

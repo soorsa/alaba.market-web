@@ -274,7 +274,7 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
                     >
                       <div className="relative w-9 h-9 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
                         <img
-                          src={`https://api.alaba.market${item.products.image}`}
+                          src={`${item.products.image}`}
                           alt={item.products.title}
                           className="w-full h-full object-cover"
                         />
