@@ -1,7 +1,7 @@
 import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { RiNotificationBadgeLine } from "react-icons/ri";
 import { FiShoppingBag } from "react-icons/fi";
-import { DollarSign, LogOut, LucidePackageCheck } from "lucide-react";
+import { LogOut, LucidePackageCheck } from "lucide-react";
 import Button from "../general/Button";
 import { useLogout } from "../../hooks/Auth";
 import { Link } from "react-router-dom";
@@ -30,19 +30,14 @@ const SideNav = () => {
             path="/vendor/products"
           />
           <NavItem
-            label="Earnings"
-            icon={<DollarSign className=" w-4 h-4" />}
-            path="/vendor/earnings"
+            label="Orders"
+            icon={<LucidePackageCheck className=" w-4 h-4" />}
+            path="/vendor/orders"
           />
           <NavItem
             label="Notifications"
             icon={<RiNotificationBadgeLine className=" w-4 h-4" />}
             path="/vendor/notifications"
-          />
-          <NavItem
-            label="Orders"
-            icon={<LucidePackageCheck className=" w-4 h-4" />}
-            path="/vendor/orders"
           />
         </nav>
         <div className="flex flex-col mt-5 text-xs gap-2">

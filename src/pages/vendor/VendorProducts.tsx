@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useFilterProducts } from "../../hooks/querys/filterProducts";
 import type { FilterPayload } from "../../types/ProductsTypes";
 import { formatNumber } from "../../utils/formatter";
-import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
 import InfoCard from "../../components/vendor/InfoCard";
 import VendorProductListTable from "../../components/vendor/VendorProductListTable";
 import VendorProductsPaginationForFilter from "../../components/vendor/VendorProductPagination";
 import { useUserStore } from "../../zustand/useUserStore";
+import { useGetVendorDashboardData } from "../../hooks/querys/useGetVendorDashboardPage";
 
 const VendorProductsScreen = () => {
   const { user } = useUserStore();
@@ -23,7 +23,7 @@ const VendorProductsScreen = () => {
     data: statsData,
     isLoading: isLoadingStats,
     isError: isErrorStats,
-  } = useGetStats();
+  } = useGetVendorDashboardData();
 
   return (
     <div className="space-y-4">
@@ -33,7 +33,7 @@ const VendorProductsScreen = () => {
           isloading={isLoadingStats}
           value={formatNumber(statsData?.total_products || 0)}
           title="Total Products"
-          description="his implementation gives you flexible number"
+          description="Total number of products you have on Alaba Market."
           icon={<FiShoppingBag size={24} />}
           isActive
         />
@@ -42,7 +42,7 @@ const VendorProductsScreen = () => {
           isloading={isLoadingStats}
           value={formatNumber(statsData?.total_approved_products || 0)}
           title="Approved Products"
-          description="his implementation gives you flexible number"
+          description="Number of product approved for sale on Alaba Market."
           icon={<FiShoppingBag size={24} />}
         />
         <InfoCard
@@ -50,7 +50,7 @@ const VendorProductsScreen = () => {
           isloading={isLoadingStats}
           value={formatNumber(statsData?.total_disapproved_products || 0)}
           title="UnApproved Products"
-          description="his implementation gives you flexible number"
+          description="Number of product not approved for sale on Alaba Market."
           icon={<FiShoppingBag size={24} />}
         />
       </div>
