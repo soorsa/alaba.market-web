@@ -1,13 +1,12 @@
+import { Form, Formik } from "formik";
 import React from "react";
-import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import Button from "../general/Button";
-import ImageUploadField from "./ImageUploadField";
-import InputField from "../general/InputField";
-import CheckboxField from "../general/CheckBox";
-import { useModalStore } from "../../zustand/ModalStore";
-import type { Events } from "../../hooks/querys/useEventsandTags";
 import { useUpdateEvents } from "../../hooks/mutations/useUpdateEvents";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
+import CheckboxField from "../general/CheckBox";
+import InputField from "../general/InputField";
+import ImageUploadField from "./ImageUploadField";
 
 const validationSchema = Yup.object().shape({
   // Required fields

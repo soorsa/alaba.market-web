@@ -1,5 +1,3 @@
-import type { Product } from "./ProductsTypes";
-
 export interface LandingPageResponse {
   most_viewed_products: Product[];
   fashion_products: Product[];

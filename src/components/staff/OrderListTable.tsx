@@ -1,6 +1,5 @@
 import { Check, Edit, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import type { OrderFilters } from "../../pages/staff/OrdersScreen";
 import { formatDate, formatPrice } from "../../utils/formatter";
 import { useModalStore } from "../../zustand/ModalStore";
 import { useToastStore } from "../../zustand/ToastStore";
@@ -13,9 +12,9 @@ type Props = {
   orders: Order[];
   isLoading: boolean;
   isError: boolean;
-  filters: OrderFilters;
+  filters: OrderFilterParams;
   onPageChange: (page: number) => void;
-  onFilterChange: (newFilters: OrderFilters) => void;
+  onFilterChange: (newFilters: OrderFilterParams) => void;
 };
 
 const tabs = ["All", "Pending", "Confirmed", "On-route", "Delivered"] as const;

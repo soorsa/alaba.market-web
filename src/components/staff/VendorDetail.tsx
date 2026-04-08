@@ -143,7 +143,7 @@ const VendorDetail: React.FC<Props> = ({ application }) => {
           <div className="font-alaba-mid min-w-[100px] w-[120px] truncate">
             Bank Account No.:
           </div>
-          <div className="">{vendor.account_number || "..."}</div>
+          <div className="">{vendor.bank_account_number || "..."}</div>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 pt-0">

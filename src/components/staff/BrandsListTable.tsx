@@ -7,7 +7,6 @@ import Button from "../general/Button";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
 import DeleteAllProducts from "./DeleteAllProduct";
-import EditEvent from "./EditEvent";
 import NewBrand from "./NewBrand";
 type Props = {
   brands: Brand[];
@@ -25,8 +24,8 @@ const BrandsListTable: React.FC<Props> = ({ brands, isError, isLoading }) => {
   const handleDeleteAll = () => {
     openModal(<DeleteAllProducts />, "Delete All", "dark");
   };
-  const handleEdit = (event: Brand) => {
-    openModal(<EditEvent item={event} />, "Edit Event", "dark");
+  const handleEdit = () => {
+    // openModal(<EditEvent item={event} />, "Edit Event", "dark");
   };
 
   const handleNewProduct = () => {
@@ -116,7 +115,7 @@ const BrandsListTable: React.FC<Props> = ({ brands, isError, isLoading }) => {
               <div className="flex gap-2 justify-end">
                 <div
                   className="flex gap-1 items-center text-blue-300"
-                  onClick={() => handleEdit(brand)}
+                  onClick={handleEdit}
                 >
                   <Edit size={15} />
                 </div>
