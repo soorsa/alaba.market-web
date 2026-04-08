@@ -1,17 +1,5 @@
 import { Form, Formik } from "formik";
-import * as Yup from "yup";
 import { ArrowRight } from "lucide-react";
-import CartItemList from "../../components/shop/CartItemList";
-import { useFetchUserCart } from "../../hooks/querys/useGetUserCart";
-import { useUserStore } from "../../zustand/useUserStore";
-import SmallLoader from "../../components/general/SmallLoader";
-import EmptyCart from "../../components/shop/EmptyCart";
-import { formatPrice } from "../../utils/formatter";
-import Button from "../../components/general/Button";
-import NotAuthenticated from "../../components/shop/NotAuthenticated";
-import InputField from "../../components/general/InputField";
-import SelectField from "../../components/general/SelectField";
-import { useGetCountryandState } from "../../hooks/querys/useGetCountryandState";
 import { useState } from "react";
 import { FaTruckMoving, FaTruckPickup } from "react-icons/fa";
 import {
@@ -19,40 +7,53 @@ import {
   IoCheckmarkCircle,
   IoInformationCircle,
 } from "react-icons/io5";
-import {
-  useCheckout,
-  type CheckoutPayload,
-} from "../../hooks/mutations/useCheckout";
-import { useModalStore } from "../../zustand/ModalStore";
-import SuccessModal from "../../components/shop/SuccessModal";
-import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import Button from "../../components/general/Button";
+import SmallLoader from "../../components/general/SmallLoader";
+import CartItemList from "../../components/shop/CartItemList";
+import EmptyCart from "../../components/shop/EmptyCart";
+import NotAuthenticated from "../../components/shop/NotAuthenticated";
+import ProfileCheckoutForm from "../../components/shop/ProfileCheckoutForm";
+import ShippingForm from "../../components/shop/ShippingForm";
+import { useCheckout } from "../../hooks/mutations/useCheckout";
+import { useSetShipping } from "../../hooks/mutations/useShipping";
+import { useUpdateProfile } from "../../hooks/mutations/useUser";
+import { useGetCountryandState } from "../../hooks/querys/useGetCountryandState";
+import { useFetchUserCart } from "../../hooks/querys/useGetUserCart";
+import { useGetUserShipping } from "../../hooks/querys/useShipping";
 import { usePaystackPayment } from "../../hooks/usePaystack";
+import { formatPrice } from "../../utils/formatter";
 import { useToastStore } from "../../zustand/ToastStore";
+import { useUserStore } from "../../zustand/useUserStore";
 // import { useState } from "react";
 const CheckoutScreen = () => {
-  const { user, isLoggedIn } = useUserStore();
-  // const [selectedCountryId, setSelectedCountryId] = useState<number>();
+  const { user, isLoggedIn, shippingAddress } = useUserStore();
+  const { data: cartData, isLoading: isGettingCart } = useFetchUserCart();
+  const cartItems = cartData?.cartitems || [];
   const {
     countries,
     states,
     isLoading: isCountryStateLoading,
   } = useGetCountryandState(); // Transform countries and states for SelectField options
   const countryOptions = countries.map((country) => ({
-    value: country.name,
+    value: country.id,
     label: country.name,
   }));
-  const { data: cartData, isLoading: isGettingCart } = useFetchUserCart(
-    user?.username || ""
-  );
-  const cartItems = cartData?.cartitems || [];
-  const paymentMethods = ["pay on delivery", "card", "pick up"];
+
+  const paymentMethods: PaymentMethod[] = [
+    "Pay on Delivery",
+    "Paystack",
+    "Pickup",
+  ];
   const [selectedPaymentMethod, setselectedPaymentMethod] =
-    useState("pay on delivery");
+    useState<PaymentMethod>("Pay on Delivery");
+  useGetUserShipping();
+  const { mutate: setShipping, isPending: settingShipping } = useSetShipping();
+  const { mutate: updateProfile, isPending: setttingProfile } =
+    useUpdateProfile();
   const paystack = usePaystackPayment();
   const { mutate: Checkout, isPending } = useCheckout();
-  const { openModal } = useModalStore();
   const { showToast } = useToastStore();
-  const navigate = useNavigate();
 
   const initialValues = {
     firstName: user?.first_name || "",
@@ -60,12 +61,12 @@ const CheckoutScreen = () => {
     username: user?.username || "",
     email: user?.email || "",
     phoneNumber: user?.phone_number || "",
-    country: "",
-    state: "",
-    city: "",
+    phoneNumber2: "",
+    country: shippingAddress?.country?.id || "",
+    state: shippingAddress?.state?.id || "",
+    town: shippingAddress?.town || "",
     note: "",
-    address: user?.address || "",
-    address2: "",
+    address: shippingAddress?.address || "",
     paymentMethod: selectedPaymentMethod,
   };
   const validationSchema = Yup.object({
@@ -75,56 +76,53 @@ const CheckoutScreen = () => {
     phoneNumber: Yup.string().required("Required"),
     country: Yup.string().required("Required"),
     state: Yup.string().required("Required"),
-    city: Yup.string().required("Required"),
+    town: Yup.string().required("Required"),
     address: Yup.string().required("Required"),
     paymentMethod: Yup.string().required("Required"),
   });
+
   const handleSubmit = (
     values: typeof initialValues,
     setSubmitting: (isSubmitting: boolean) => void
   ) => {
     const payload: CheckoutPayload = {
-      username: user?.username || "",
-      email: values.email,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      phoneNumber: values.phoneNumber,
-      country: values.country,
-      state: values.state,
-      city: values.city,
-      address: values.address,
-      paymentMethod: values.paymentMethod,
-      note: values.note,
+      deliver_address: shippingAddress?.id,
+      payment_method: values.paymentMethod,
     };
-    if (values.paymentMethod === "card") {
-      paystack({
-        email: user?.email || "",
-        amount: cartData?.grandtotal || 0, // in Naira
-        onSuccess: () => {
-          Checkout(payload, {
-            onSuccess() {
-              navigate("/orders");
-              openModal(<SuccessModal text="Order Placed successfully!" />);
-            },
-          });
-          // TODO: call your backend API to confirm payment
-        },
-        onClose: () => {
-          showToast("Payment cancel...Please try again. ", "error");
-        },
-      });
-    } else {
-      Checkout(payload, {
-        onSuccess() {
-          navigate("/orders");
-          openModal(
-            <SuccessModal text="Order Placed successfully!" />,
-            "",
-            "light"
-          );
-        },
-      });
-    }
+    const shipping_payload: ShippingPayload = {
+      state: Number(values.state),
+      country: Number(values.country),
+      town: values.town,
+      address: values.address,
+    };
+    const profile_payload: UserProfileUpdatePayload = {
+      first_name: values.firstName,
+      last_name: values.lastName,
+      phone_number: values.phoneNumber,
+    };
+    setShipping(shipping_payload, {
+      onSuccess() {
+        updateProfile(profile_payload, {
+          onSuccess() {
+            if (values.paymentMethod === "Paystack") {
+              paystack({
+                email: user?.email || "",
+                amount: cartData?.grandtotal || 0, // in Naira
+                onSuccess: () => {
+                  Checkout(payload);
+                },
+                onClose: () => {
+                  showToast("Payment cancel...Please try again. ", "error");
+                },
+              });
+            } else {
+              Checkout(payload);
+            }
+          },
+        });
+      },
+    });
+
     setSubmitting(false);
   };
 
@@ -142,120 +140,41 @@ const CheckoutScreen = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        // onSubmit={handleSubmit}
         onSubmit={(values, { setSubmitting }) =>
           handleSubmit(values, setSubmitting)
         }
       >
         {({ isSubmitting, isValid, values, setFieldValue }) => {
           const filteredStates = values.country
-            ? states.filter((state) => state.country === values.country)
+            ? states.filter(
+                (state) => Number(state.country.id) === Number(values.country)
+              )
             : [];
 
           // State options (filtered by selected country)
           const stateOptions = filteredStates.map((state) => ({
-            value: state.name,
+            value: state.id,
             label: state.name,
           }));
+
           return (
             <Form className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10 w-[90%] md:w-[85%] mx-auto">
-              <div className="bg-white h-fit rounded-lg py-10 px-4 md:col-span-2 grid grid-cols-2 gap-2">
-                <div className="text-xl col-span-2 font-bold uppercase text-left mb-5 border-b-1 pr-10 border-b-gray-300">
-                  Billing and Shipping Details
+              <div className="h-fit md:col-span-2 grid gap-2">
+                <div className="bg-white p-4 md:p-10 rounded-2xl space-y-5">
+                  <h2 className="text-2xl font-alaba-mid text-gray-700 text-left">
+                    1. Contact information
+                  </h2>
+                  <ProfileCheckoutForm />
                 </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    Last Name
-                  </label>
-                  <InputField name="lastName" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    First Name
-                  </label>
-                  <InputField name="firstName" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    Email Address
-                  </label>
-                  <InputField name="email" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    Phone No.
-                  </label>
-                  <InputField name="phoneNumber" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    Country
-                  </label>
-                  <SelectField
-                    name="country"
-                    placeholder="Select your country"
-                    options={countryOptions}
-                    // onChange={(value) => {
-                    //   setFieldValue("countryId", value);
-                    //   setFieldValue("stateId", ""); // Reset state when country changes
-                    //   setSelectedCountryId(Number(value));
-                    // }}
-                    disabled={isCountryStateLoading}
-                  />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    State
-                  </label>
-                  <SelectField
-                    name="state"
-                    placeholder={
-                      values.country
-                        ? "Select your state"
-                        : "Select country first"
-                    }
-                    options={stateOptions}
-                    disabled={!values.country || isCountryStateLoading}
-                  />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    Town/City/LGA
-                  </label>
-                  <InputField name="city" />
-                </div>
-                <div className="flex flex-col items-start">
-                  <label htmlFor="" className="text-sm">
-                    Nationality.
-                  </label>
-                  <InputField placeholder="Nationality" name="nationality" />
-                </div>
-
-                <div className="flex flex-col items-start col-span-2">
-                  <label htmlFor="" className="text-sm">
-                    Address
-                  </label>
-                  <InputField
-                    name="address"
-                    placeholder="Residential street address"
-                  />
-                </div>
-                <div className="flex flex-col items-start col-span-2">
-                  <label htmlFor="" className="text-sm">
-                    Alt Address
-                  </label>
-                  <InputField
-                    name="address2"
-                    placeholder="Residential/Office street address"
-                  />
-                </div>
-                <div className="flex flex-col items-start col-span-2">
-                  <label htmlFor="" className="text-sm">
-                    Delivery Note
-                  </label>
-                  <InputField
-                    name="note"
-                    placeholder="You can state how,when or where you want it delivered"
+                <div className="bg-white p-4 md:p-10 rounded-2xl space-y-5">
+                  <h2 className="text-2xl font-alaba-mid text-gray-700 text-left">
+                    2. Shipping information
+                  </h2>
+                  <ShippingForm
+                    isloading={isCountryStateLoading}
+                    countryOption={countryOptions}
+                    statesOption={stateOptions}
+                    values={values}
                   />
                 </div>
               </div>
@@ -265,30 +184,32 @@ const CheckoutScreen = () => {
                 ) : cartItems.length < 1 ? (
                   <EmptyCart />
                 ) : (
-                  <div className="flex flex-col h-full rounded-2xl">
-                    <div className="font-bold text-left py-1 mb-4 border-b-1 border-b-gray-300">
-                      Your Order
-                    </div>
+                  <div className="flex flex-col h-full rounded-2xl bg-white p-4">
+                    <h2 className="mb-4 text-2xl font-alaba-mid text-gray-700 text-left">
+                      3. Order Summary
+                    </h2>
                     <div className="overflow-scroll flex-1 scrollbar-hide">
                       <CartItemList cartItems={cartData?.cartitems || []} />
                     </div>
-                    <div className=" py-2 divide-y-1 divide-gray-300">
-                      <div className="flex flex-row justify-between py-2">
-                        <div className="">SubTotal:</div>
-                        <div className="font-alaba-mid">
-                          {formatPrice(cartData?.grandtotal || 0)}
+                    <div className="py-2">
+                      <div className="divide-y divide-gray-300">
+                        <div className="flex flex-row justify-between py-2">
+                          <div className="">Sub-total:</div>
+                          <div className="font-alaba-mid">
+                            {formatPrice(cartData?.grandtotal || 0)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex flex-row justify-between py-2">
-                        <div className="">Shipping:</div>
-                        <div className="font-alaba-mid">
-                          {formatPrice(15000)}
+                        <div className="flex flex-row justify-between py-2">
+                          <div className="">Shipping:</div>
+                          <div className="font-alaba-mid">
+                            {formatPrice(15000)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex flex-row justify-between py-2">
-                        <div className="">Total:</div>
-                        <div className="font-alaba-mid">
-                          {formatPrice((cartData?.grandtotal || 0) + 15000)}
+                        <div className="flex flex-row justify-between py-2">
+                          <div className="">Total:</div>
+                          <div className="font-alaba-mid">
+                            {formatPrice((cartData?.grandtotal || 0) + 15000)}
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2 py-5">
@@ -320,9 +241,9 @@ const CheckoutScreen = () => {
                             <div
                               className={`flex p-2 rounded-full text-alaba bg-alaba-55`}
                             >
-                              {option === "pay on delivery" ? (
+                              {option === "Pay on Delivery" ? (
                                 <FaTruckMoving />
-                              ) : option === "pick up" ? (
+                              ) : option === "Pickup" ? (
                                 <FaTruckPickup />
                               ) : (
                                 <IoCard />
@@ -340,9 +261,20 @@ const CheckoutScreen = () => {
                       <Button
                         label="Place Order"
                         type="submit"
-                        isLoading={isSubmitting || isPending}
+                        isLoading={
+                          isSubmitting ||
+                          isPending ||
+                          settingShipping ||
+                          setttingProfile
+                        }
                         loadingLabel="Placing Order"
-                        disabled={!isValid || isSubmitting || isPending}
+                        disabled={
+                          !isValid ||
+                          isSubmitting ||
+                          isPending ||
+                          settingShipping ||
+                          setttingProfile
+                        }
                       />
                     </div>
                   </div>

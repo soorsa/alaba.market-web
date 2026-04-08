@@ -1,18 +1,22 @@
-// ProductsList.tsx
-
+import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import { useFilterProducts } from "../../hooks/querys/filterProducts";
-import PaginationForFilter from "../../components/shop/PaginationForFilter";
+import { useSearchParams } from "react-router-dom";
 import FilterControls from "../../components/shop/FilterControls";
-import type { FilterPayload } from "../../types/ProductsTypes";
+import Paginator from "../../components/shop/PaginationForFilter";
 import ProductList from "../../components/shop/ProductList";
-import { IoFilterOutline } from "react-icons/io5";
+import { useFilterProducts } from "../../hooks/querys/filterProducts";
 import { useModalStore } from "../../zustand/ModalStore";
 
 const ShopScreen = () => {
   const { openModal } = useModalStore();
+  const [params] = useSearchParams();
+  const categoryUrlParam = params.get("category");
+  const brandUrlParam = params.get("brand");
+  const eventUrlParam = params.get("event");
   const [filters, setFilters] = useState<FilterPayload>({
-    category: "",
+    category: categoryUrlParam || "",
+    brand: brandUrlParam || "",
+    event: eventUrlParam || "",
     order_by: "",
     page: 1,
     approved: true,
@@ -33,39 +37,44 @@ const ShopScreen = () => {
       </div>
       {/* <div className="relative w-full h-fit">
       </div> */}
-      <div className="flex">
-        <aside className="w-[280px] max-w-[300px] p-2 hidden md:flex">
+      <div className="grid md:grid-cols-3 w-[95%] gap-4 mx-auto mt-4">
+        <aside className="hidden md:flex">
           <FilterControls filters={filters} onFilterChange={setFilters} />{" "}
         </aside>
-        <div className="py-2 md:pr-4 flex-1 h-full overflow-scroll scrollbar-hide">
-          <div
-            className="flex md:hidden items-center"
-            onClick={() =>
-              openModal(
-                <FilterControls
-                  filters={filters}
-                  onFilterChange={setFilters}
-                />,
-                "Filter Products",
-                "light"
-              )
-            }
-          >
-            <IoFilterOutline />
-            <span>Filter</span>
+        <div className="md:col-span-2 md:pr-4 flex-1 h-full overflow-scroll scrollbar-hide">
+          <div className="p-2 flex md:hidden items-center justify-between">
+            <div className="text-xl font-alaba-mid">Products</div>
+            <div
+              className="cursor-pointer flex items-center gap-2 bg-white py-2 px-4 rounded-xl w-fit"
+              onClick={() =>
+                openModal(
+                  <FilterControls
+                    filters={filters}
+                    onFilterChange={setFilters}
+                  />,
+                  "Filter Products",
+                  "light"
+                )
+              }
+            >
+              <SlidersHorizontal />
+              <span>Filter</span>
+            </div>
           </div>
-          <div className="px-2">
+          <div className="">
             <ProductList
               products={data?.results || []}
               isError={isError}
               isLoading={isLoading}
             />
           </div>
-          <PaginationForFilter
-            currentPage={filters.page || 1}
-            totalPages={Math.ceil((data?.count || 0) / 20)}
-            onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
-          />
+          {data?.results && data.results.length > 0 && (
+            <Paginator
+              currentPage={filters.page || 1}
+              totalPages={Math.ceil((data?.count || 0) / 20)}
+              onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
+            />
+          )}
         </div>
       </div>
     </div>

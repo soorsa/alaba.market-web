@@ -22,7 +22,7 @@ const Register = () => {
     confirm_password: "",
   };
   const validationSchema = Yup.object({
-    username: Yup.string().min(3).required("Required"),
+    username: Yup.string().required("Required"),
     email: Yup.string().email("Invalid email").required("Required"),
     first_name: Yup.string().required("Required"),
     last_name: Yup.string().required("Required"),
@@ -40,6 +40,7 @@ const Register = () => {
       username: values.username,
       email: values.email,
       password: values.password,
+      // password2: values.confirm_password,
       first_name: values.first_name,
       last_name: values.last_name,
     };
@@ -59,8 +60,8 @@ const Register = () => {
             Register
           </h1>
           {/* Render based on state */}
-          <InputField name="username" placeholder="Username" />
           <InputField name="email" placeholder="Email Address" />
+          <InputField name="username" placeholder="Username" />
           <div className="grid grid-cols-2 items-center gap-1">
             <InputField name="first_name" placeholder="First Name" />
             <InputField name="last_name" placeholder="Last Name" />

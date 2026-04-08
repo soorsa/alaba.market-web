@@ -1,5 +1,4 @@
 import React from "react";
-import type { Category } from "../../types/ProductsTypes";
 import Button from "../general/Button";
 import { useModalStore } from "../../zustand/ModalStore";
 import { IoInformationCircle } from "react-icons/io5";
@@ -35,7 +34,7 @@ const DeleteCategory: React.FC<Props> = ({ item }) => {
             isLoading={isPending}
             disabled={isPending}
             className="bg-red-700 !text-gray-300"
-            onClick={() => deleteCategory(item.slug)}
+            onClick={() => deleteCategory(item.id)}
           />
           <Button
             label="No, Cancel"

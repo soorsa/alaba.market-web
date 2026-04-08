@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useGetStaff } from "../../hooks/querys/useGetUserByRole";
+import type { User } from "../../zustand/useUserStore";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import type { User } from "../../zustand/useUserStore";
 import Paginator from "./Paginator";
-import { useGetStaff } from "../../hooks/querys/useGetCustomers";
 
 const StaffListTable = () => {
   const [selectedItem, setselectedItem] = useState<User[]>([]); // Store product_ids

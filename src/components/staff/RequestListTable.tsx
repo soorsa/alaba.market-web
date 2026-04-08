@@ -1,33 +1,32 @@
+import { Check, Eye, Trash2 } from "lucide-react";
 import React, { useState } from "react";
-import { Check, CheckCircle2, Eye, Trash2, X } from "lucide-react";
 import { formatDate } from "../../utils/formatter";
-import SmallLoader from "../general/SmallLoader";
-import NoProductFound from "../shop/NoProductFound";
 import { useModalStore } from "../../zustand/ModalStore";
 import { useToastStore } from "../../zustand/ToastStore";
-import type { Vendor } from "../../hooks/querys/useGetVendors";
-import { useUpdateVendorStatus } from "../../hooks/mutations/useReviewVendorRequest";
+import SmallLoader from "../general/SmallLoader";
+import NoProductFound from "../shop/NoProductFound";
 import VendorDetail from "./VendorDetail";
 type Props = {
-  vendors: Vendor[];
+  applications: VendorApplication[];
   isLoading: boolean;
   isError: boolean;
+  filterParams: VendorApplicationFilterParams;
+  onSetParams: (newFilterParams: VendorApplicationFilterParams) => void;
 };
 
-const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
+const RequestListTable: React.FC<Props> = ({
+  applications,
+  isError,
+  isLoading,
+  filterParams,
+  onSetParams,
+}) => {
+  const tabs = ["pending", "approved", "rejected"] as const;
+  type Tab = (typeof tabs)[number];
   const { showToast } = useToastStore();
+  const [activeTab, setActiveTab] = useState<Tab>(filterParams.status);
+
   const { openModal } = useModalStore();
-  const { mutate: review, isPending } = useUpdateVendorStatus();
-  const handleReview = (item: Vendor, status: boolean) => {
-    const payload = new FormData();
-    payload.append("active", String(status));
-    // payload.append("vendor_id", String(item.vendor_id));
-    const data = {
-      id: Number(item.id),
-      payload,
-    };
-    review(data);
-  };
   const handleDeleteAll = () => {
     if (confirm("Are you sure?")) {
       openModal(
@@ -39,10 +38,15 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
   };
 
   // Add this state to your component
-  const [selectedRequest, setselectedRequest] = useState<Vendor[]>([]); // Store product_ids
+  const [selectedRequest, setselectedRequest] = useState<VendorApplication[]>(
+    []
+  ); // Store product_ids
 
   // Add these handler functions
-  const handleSelectOrder = (request: Vendor, isChecked: boolean) => {
+  const handleSelectOrder = (
+    request: VendorApplication,
+    isChecked: boolean
+  ) => {
     setselectedRequest((prev) =>
       isChecked
         ? [...prev, request]
@@ -51,7 +55,7 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
   };
 
   const handleSelectAll = (isChecked: boolean) => {
-    setselectedRequest(isChecked ? vendors.map((item) => item) : []);
+    setselectedRequest(isChecked ? applications.map((item) => item) : []);
   };
 
   const handleDeleteSelected = () => {
@@ -69,14 +73,14 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
       );
     }
   };
-  const viewRequest = (request: Vendor) => {
-    openModal(<VendorDetail vendor={request} />, "Vendor Details", "dark");
+  const viewRequest = (request: VendorApplication) => {
+    openModal(<VendorDetail application={request} />, "Vendor Details", "dark");
   };
 
   const renderList = () => {
     return (
       <ul className="space-y-2">
-        {vendors.map((request, index) => (
+        {applications.map((request, index) => (
           <li
             key={index}
             className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
@@ -104,13 +108,14 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
             >
               <div className="min-w-0">
                 <div className="font-semibold text-xs md:text-sm truncate">
-                  Request to be a vendor by{" "}
                   <span className=" hover:underline underline-offset-2 text-blue-300">
-                    {request.first_name} {request.last_name}
+                    {request.vendor.first_name} {request.vendor.last_name}
                   </span>{" "}
+                  applied to be a Vendor
                 </div>
                 <div className="text-xs truncate text-gray-400">
-                  <span>{formatDate(request.date_joined || "")}</span>
+                  Applied on{" "}
+                  <span>{formatDate(request.application_date || "")}</span>
                   {/* <span className={"text-blue-500"}>
                     {request.business_name}
                   </span> */}
@@ -123,27 +128,8 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
                 onClick={() => viewRequest(request)}
               >
                 <Eye size={15} />
-                View
+                View application
               </div>
-              {isPending ? (
-                <div className="">Updating...</div>
-              ) : (
-                <div className="flex gap-2 md:gap-4 justify-end">
-                  <div
-                    className="flex gap-1 items-center text-green-300"
-                    onClick={() => handleReview(request, true)}
-                  >
-                    <CheckCircle2 fill="green" color="white" size={15} />{" "}
-                    Approve
-                  </div>
-                  <div
-                    className="flex gap-1 items-center text-red-300"
-                    onClick={() => handleReview(request, false)}
-                  >
-                    <X size={15} /> Reject
-                  </div>
-                </div>
-              )}
             </div>
           </li>
         ))}
@@ -164,9 +150,10 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
       );
     }
 
-    if (vendors.length === 0) {
+    if (applications.length === 0) {
       return (
         <div className="text-center py-4">
+          <div className="">Yes</div>
           <NoProductFound />
         </div>
       );
@@ -177,13 +164,38 @@ const RequestListTable: React.FC<Props> = ({ vendors, isError, isLoading }) => {
 
   return (
     <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
+      <div className="space-y-3 pb-4 px-2">
+        <h2 className="text-left font-alaba-bold text-xl text-white">
+          Vendor Applications
+        </h2>
+        <div className="flex gap-4 text-sm font-medium">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              className={`${
+                activeTab === tab ? "text-white border-b-2" : "text-gray-400"
+              } transition text-xs`}
+              onClick={() => {
+                setActiveTab(tab);
+                onSetParams({
+                  page: filterParams.page,
+                  status: tab,
+                });
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex items-center justify-between gap-2 px-2 border-b-1 border-b-gray-700 pb-2">
         <label className="flex gap-1 items-center cursor-pointer">
           <input
             type="checkbox"
             checked={
               selectedRequest.length > 0 &&
-              selectedRequest.length === vendors.length
+              selectedRequest.length === applications.length
             }
             onChange={(e) => handleSelectAll(e.target.checked)}
             className="w-5 h-5 p-1 peer hidden appearance-none border-1 border-gray-700 rounded-lg checked:bg-alaba hover:border-alaba/50 cursor-pointer"

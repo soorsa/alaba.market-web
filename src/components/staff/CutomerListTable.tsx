@@ -1,17 +1,31 @@
-import { useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useGetUsersByRole } from "../../hooks/querys/useGetUserByRole";
+import { useModalStore } from "../../zustand/ModalStore";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useGetCustomers } from "../../hooks/querys/useGetCustomers";
-import type { User } from "../../zustand/useUserStore";
-import Paginator from "./Paginator";
-import { useModalStore } from "../../zustand/ModalStore";
 import EditCustomer from "./CustomerDetail";
+import Paginator from "./Paginator";
 
 const CustomerListTable = () => {
-  const [selectedItem, setselectedItem] = useState<User[]>([]); // Store product_ids
-  const [page, setpage] = useState(1);
-  const { data, isLoading, isError } = useGetCustomers(page);
+  const tabs = ["customer", "vendor", "manager"] as const;
+  type Tab = (typeof tabs)[number];
+
+  const [activeTab, setactiveTab] = useState<Tab>("customer");
+  const handleTabChange = (tab: Tab) => {
+    setParams((prev) => ({
+      ...prev,
+      role: tab,
+    }));
+    setactiveTab(tab);
+  };
+
+  const [selectedItem, setselectedItem] = useState<User[]>([]);
+  const [params, setParams] = useState<usersFiltersParams>({
+    page: 1,
+    role: "customer",
+  });
+  const { data, isLoading, isError } = useGetUsersByRole(params);
   const modal = useModalStore();
   const customers = data?.results ?? [];
   const handleEdit = (user: User) => {
@@ -23,24 +37,7 @@ const CustomerListTable = () => {
   };
   const handleDelete = (user: User) => {
     console.log(user);
-    // openModal(
-    //   <DeleteOrder setselectedItem={setselectedItem} item={[order]} />,
-    //   "Delete",
-    //   "dark"
-    // );
   };
-  //   const handleDeleteAll = () => {
-  //     if (confirm("Are you sure?")) {
-  //       openModal(
-  //         <DeleteAllOrder setselectedOrder={setselectedOrder} />,
-  //         "Delete all Orders",
-  //         "dark"
-  //       );
-  //     }
-  //   };
-
-  // Add this state to your component
-
   // Add these handler functions
   const handleSelectOrder = (user: User, isChecked: boolean) => {
     setselectedItem((prev) =>
@@ -48,30 +45,6 @@ const CustomerListTable = () => {
         ? [...prev, user]
         : prev.filter((item) => item.username !== user.username)
     );
-  };
-
-  //   const handleSelectAll = (isChecked: boolean) => {
-  //     setselectedItem(isChecked ? data?.map((user) => user) : []);
-  //   };
-
-  //   const handleDeleteSelected = () => {
-  //     if (selectedOrder.length === 0) {
-  //       showToast("Oops... no order seleted!", "info");
-  //     } else {
-  //       openModal(
-  //         <DeleteOrder
-  //           setselectedOrder={setselectedOrder}
-  //           item={selectedOrder}
-  //           isMultiple={true}
-  //         />,
-  //         "Delete Order",
-  //         "dark"
-  //       );
-  //     }
-  //   };
-  const viewOrder = (user: User) => {
-    console.log(user);
-    // openModal(<OrderSummary order={order} />, "Order Summary", "dark");
   };
 
   const renderList = () => {
@@ -99,13 +72,10 @@ const CustomerListTable = () => {
                 <Check className="h-5 w-5" />
               </div>
             </label>
-            <div
-              className="flex-1 min-w-0 text-left overflow-hidden"
-              onClick={() => viewOrder(user)}
-            >
+            <div className="flex-1 min-w-0 text-left overflow-hidden">
               <div className="min-w-0">
                 <div className="font-semibold text-xs md:text-sm truncate">
-                  {user.first_name} {user.last_name}
+                  Name: {user.first_name} {user.last_name}
                 </div>
                 <div className="text-xs truncate">
                   <span>Email: </span>
@@ -114,12 +84,14 @@ const CustomerListTable = () => {
               </div>
             </div>
             <div className="text-right h-full flex flex-col justify-between gap-1 text-xs">
-              <div className="text-white">
-                {user.is_staff
-                  ? "Staff"
-                  : user.is_vendor
-                  ? "vendor"
-                  : "Customer"}
+              <div
+                className={`border rounded-full px-2 ${
+                  user.role === "manager" && "text-yellow-500"
+                } ${user.role === "vendor" && "text-purple-500"} ${
+                  user.role === "customer" && "text-green-500"
+                }`}
+              >
+                {user.role}
               </div>
               <div className="flex gap-2 justify-end">
                 <div
@@ -168,11 +140,38 @@ const CustomerListTable = () => {
 
   return (
     <div className="">
+      <div className="">
+        <div className="mb-6 px-4">
+          <h4 className="text-lg text-left text-gray-200 capitalize">
+            {activeTab + "s"}
+          </h4>
+        </div>
+        <div className="flex justify-between items-center mb-4 px-4 ">
+          <div className="flex gap-5 text-sm font-medium">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                className={`${
+                  activeTab === tab ? "text-white border-b-2" : "text-gray-400"
+                } transition text-xs capitalize`}
+                onClick={() => handleTabChange(tab)}
+              >
+                {tab + "s"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
       {renderContent()}
       <Paginator
-        currentPage={page}
+        currentPage={params.page || 1}
         totalPages={Math.ceil((data?.count || 0) / 10)}
-        onPageChange={setpage}
+        onPageChange={(page) =>
+          setParams((prev) => ({
+            ...prev,
+            page,
+          }))
+        }
       />
     </div>
   );

@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from "react";
-import type { FilterPayload, Product } from "../../types/ProductsTypes";
 import { Check, Edit, Search, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { MdAdd } from "react-icons/md";
+import { useFetchCategories } from "../../hooks/querys/getCategories";
+import { useGetBrands } from "../../hooks/querys/useEventsandTags";
 import { formatPrice } from "../../utils/formatter";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
-import { useModalStore } from "../../zustand/ModalStore";
+import DeleteAllProducts from "./DeleteAllProduct";
 import DeleteItem from "./DeleteItem";
 import EditProduct from "./EditProduct";
-import DeleteAllProducts from "./DeleteAllProduct";
-import Button from "../general/Button";
-import { MdAdd } from "react-icons/md";
 import NewProduct from "./NewProduct";
 type Props = {
   products: Product[];
   isLoading: boolean;
   isError: boolean;
-  filters: FilterPayload;
-  onFilterChange: (newFilters: FilterPayload) => void;
+  filters: ProductFilters;
+  onFilterChange: (newFilters: ProductFilters) => void;
 };
 
 const tabs = ["All", "Approved", "Pending"] as const;
@@ -32,7 +31,7 @@ const ProductListTable: React.FC<Props> = ({
   onFilterChange,
 }) => {
   const { data: categories } = useFetchCategories();
-  const { data: brands } = useFetchBrands();
+  const { data: brands } = useGetBrands();
   const { openModal } = useModalStore();
   const [activeTab, setActiveTab] = useState<Tab>("All");
   const [localFilters, setLocalFilters] = useState(filters);
@@ -70,7 +69,7 @@ const ProductListTable: React.FC<Props> = ({
   };
 
   // Add this state to your component
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]); // Store product_ids
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]); // Store ids
 
   // Add these handler functions
   const handleSelectProduct = (productId: string, isChecked: boolean) => {
@@ -80,7 +79,7 @@ const ProductListTable: React.FC<Props> = ({
   };
 
   const handleSelectAll = (isChecked: boolean) => {
-    setSelectedProducts(isChecked ? filteredData.map((p) => p.product_id) : []);
+    setSelectedProducts(isChecked ? filteredData.map((p) => p.id) : []);
   };
 
   const handleDeleteSelected = () => {
@@ -124,15 +123,15 @@ const ProductListTable: React.FC<Props> = ({
             <label className="flex justify-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={selectedProducts.includes(product.product_id)}
+                checked={selectedProducts.includes(product.id)}
                 onChange={(e) =>
-                  handleSelectProduct(product.product_id, e.target.checked)
+                  handleSelectProduct(product.id, e.target.checked)
                 }
                 className="w-6 h-6 peer hidden appearance-none border-1 border-gray-700 rounded-lg checked:bg-alaba hover:border-alaba/50 cursor-pointer"
               />
               <div
                 className={`p-1 border-1 peer-checked:text-alaba peer-checked:border-alaba border-gray-700 rounded-lg ${
-                  selectedProducts.includes(product.product_id)
+                  selectedProducts.includes(product.id)
                     ? "text-alaba border-alaba"
                     : "text-gray-700 hover:border-gray-300 hover:text-gray-300"
                 }`}
@@ -143,11 +142,11 @@ const ProductListTable: React.FC<Props> = ({
             <div
               className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden
             "
-              // onClick={() => navigate(`/staff/product/${product.product_id}`)}
+              // onClick={() => navigate(`/staff/product/${product.id}`)}
             >
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://api.alaba.market" + `${product.image}`}
+                src={`${product.image}`}
                 alt={product.title}
                 className="object-cover w-full h-full"
               />
@@ -222,9 +221,9 @@ const ProductListTable: React.FC<Props> = ({
           <div className="px-3 py-2 flex items-center border border-gray-700 text-gray-300 rounded-lg text-sm">
             <input
               type="text"
-              name="search"
-              id="search"
-              value={localFilters.search || ""}
+              name="title"
+              id="title"
+              value={localFilters.title || ""}
               onChange={handleChange}
               placeholder="Search products..."
               className="w-2xs md:w-[250px] max-w-[400px] focus:outline-none focus:ring-blue-700 focus:border-blue-700"
@@ -241,7 +240,7 @@ const ProductListTable: React.FC<Props> = ({
               className="w-[150px] px-1 py-2 border border-gray-700 rounded-lg text-gray-300 focus:outline-none"
             >
               <option value="">All Categories</option>
-              {categories?.map((category) => (
+              {categories?.results.map((category) => (
                 <option
                   key={category.slug}
                   value={category.slug}
@@ -263,7 +262,7 @@ const ProductListTable: React.FC<Props> = ({
               className="w-[150px] px-1 py-2 border border-gray-700 rounded-lg text-gray-300 focus:outline-none"
             >
               <option value="">All Manufactures</option>
-              {brands?.map((brand, index) => (
+              {brands?.results.map((brand, index) => (
                 <option
                   key={index}
                   value={brand.slug}

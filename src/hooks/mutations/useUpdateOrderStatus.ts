@@ -1,19 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../zustand/ToastStore";
+import toast from "react-hot-toast";
 import alabaApi from "../ApiClient";
-import type { Order } from "../querys/useGetOrders";
-
-export interface OrderPayload {
-  order_id: string;
-  formData: FormData;
-}
 
 export const updateOrderStatus = async (
-  payload: OrderPayload
+  payload: OrderUpdatePayload
 ): Promise<Order> => {
   const response = await alabaApi.put(
-    `/dashboard/orders/${payload.order_id}/update-status/`,
-    payload.formData,
+    `/admin/orders/${payload.order_id}/`,
+    payload,
     {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -24,7 +18,6 @@ export const updateOrderStatus = async (
 };
 
 export const useUpdateOrderStatus = () => {
-  const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateOrderStatus,
@@ -35,10 +28,10 @@ export const useUpdateOrderStatus = () => {
       queryClient.invalidateQueries({
         queryKey: ["dashboard"],
       });
-      showToast("Updated Order successfully!", "success");
+      toast.success("Updated Order successfully!");
     },
     onError() {
-      showToast("Unable to update...try again later", "error");
+      toast.error("Unable to update...try again later");
     },
   });
 };

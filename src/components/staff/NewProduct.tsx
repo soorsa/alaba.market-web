@@ -1,20 +1,23 @@
+import { Form, Formik } from "formik";
 import React from "react";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
-import Button from "../general/Button";
-import ImageUploadField from "./ImageUploadField";
-import InputField from "../general/InputField";
 import { IoInformationCircle } from "react-icons/io5";
-import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
-import SelectField from "../general/SelectField";
-import CheckboxField from "../general/CheckBox";
-import { useModalStore } from "../../zustand/ModalStore";
+import * as Yup from "yup";
 import {
   useCreateProduct,
   type NewProductPayload,
 } from "../../hooks/mutations/useCreateProduct";
+import { useFetchCategories } from "../../hooks/querys/getCategories";
+import {
+  useGetBrands,
+  useGetEvents,
+} from "../../hooks/querys/useEventsandTags";
 import { formatPrice } from "../../utils/formatter";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
+import CheckboxField from "../general/CheckBox";
+import InputField from "../general/InputField";
+import SelectField from "../general/SelectField";
+import ImageUploadField from "./ImageUploadField";
 
 // const validationSchema = Yup.object({
 //   image: Yup.mixed().required("Image is required"),
@@ -31,7 +34,7 @@ const validationSchema = Yup.object().shape({
 
   category: Yup.string().required("Category is required"),
 
-  brand: Yup.string().required("Manufacturer is required"),
+  // brand: Yup.string().required("Manufacturer is required"),
 
   vendor_price: Yup.number()
     .required("Price is required")
@@ -57,7 +60,7 @@ const validationSchema = Yup.object().shape({
   image3: Yup.mixed().required("Third image is required"),
 
   // Optional fields with validation
-  tag: Yup.string().max(50, "Tag cannot exceed 50 characters"),
+  event: Yup.string().max(50, "Tag cannot exceed 50 characters"),
 
   vendor: Yup.string().max(100, "Vendor name cannot exceed 100 characters"),
 
@@ -78,9 +81,11 @@ const NewProduct: React.FC = () => {
   const { closeModal } = useModalStore();
   const { mutate: create, isPending: creating } = useCreateProduct();
   const { data: catData } = useFetchCategories();
-  const { data: brandsData } = useFetchBrands();
-  const categories = catData || [];
-  const brands = brandsData || [];
+  const { data: brandsData } = useGetBrands();
+  const { data: eventsData } = useGetEvents();
+  const categories = catData?.results || [];
+  const brands = brandsData?.results || [];
+  const events = eventsData?.results || [];
   const categoryOptions = categories.map((category) => ({
     value: category.id,
     label: category.title,
@@ -89,12 +94,16 @@ const NewProduct: React.FC = () => {
     value: brand.id,
     label: brand.title,
   }));
+  const eventOptions = events.map((event) => ({
+    value: event.id,
+    label: event.title,
+  }));
 
   const initialValues = {
     product_id: "",
     title: "",
     brand: "",
-    tag: "",
+    event: "",
     category: "",
     seller_percentage: "",
     vendor_price: "",
@@ -119,8 +128,8 @@ const NewProduct: React.FC = () => {
     if (values.brand) {
       formData.append("brand", values.brand);
     }
-    if (values.tag) {
-      formData.append("tag", values.tag);
+    if (values.event) {
+      formData.append("event", values.event);
     }
     if (values.seller_percentage) {
       formData.append("seller_percentage", values.seller_percentage);
@@ -163,7 +172,7 @@ const NewProduct: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-[550px]">
+    <div className="w-md max-w-sm md:max-w-md h-[550px]">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -180,19 +189,19 @@ const NewProduct: React.FC = () => {
                 <div className="flex md:grid grid-cols-3 gap-2 overflow-scroll scrollbar-hide">
                   <ImageUploadField
                     name="image"
-                    width={150}
+                    width={"100%"}
                     height={125}
                     theme="dark"
                   />
                   <ImageUploadField
                     name="image2"
-                    width={150}
+                    width={"100%"}
                     height={125}
                     theme="dark"
                   />
                   <ImageUploadField
                     name="image3"
-                    width={150}
+                    width={"100%"}
                     height={125}
                     theme="dark"
                   />
@@ -252,6 +261,14 @@ const NewProduct: React.FC = () => {
                   placeholder="Select Manufacturer"
                   theme="dark"
                 />
+                <div className="col-span-2">
+                  <SelectField
+                    name="event"
+                    options={eventOptions}
+                    placeholder="Select Events"
+                    theme="dark"
+                  />
+                </div>
 
                 <div className="col-span-2">
                   <InputField
@@ -280,11 +297,11 @@ const NewProduct: React.FC = () => {
                 />{" "}
               </div>
             </div>
-            <div className="flex justify-between">
+            <div className="grid grid-cols-2 gap-2 justify-between">
               <Button
-                label="Back"
+                label="Cancel"
                 onClick={closeModal}
-                className="!w-fit px-4 bg-transparent text-sm"
+                className=" px-4 bg-transparent text-sm"
               />
               <Button
                 label="Save"
@@ -292,7 +309,7 @@ const NewProduct: React.FC = () => {
                 loadingLabel="Saving..."
                 isLoading={creating}
                 disabled={!isValid || creating}
-                className="!w-fit px-6 text-sm"
+                className="px-6 text-sm"
               />
             </div>
           </Form>

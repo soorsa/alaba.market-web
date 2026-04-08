@@ -1,6 +1,5 @@
 // hooks/useCategories.ts
 import { useQuery } from "@tanstack/react-query";
-import type { Brand } from "../../types/ProductsTypes";
 import alabaApi from "../ApiClient";
 
 export const useFetchBrands = () => {

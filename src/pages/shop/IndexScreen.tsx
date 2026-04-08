@@ -1,25 +1,42 @@
 import Button from "../../components/general/Button";
+import LinkButton from "../../components/general/LinkButton";
 // import Loader from "../../components/general/Loader";
-import SplashScreen from "../../components/general/SplashScreen";
 import CategoryBar from "../../components/shop/CategoriesTab";
 import HeroGrid from "../../components/shop/HeroGrid";
 import HorizontalProductSlider from "../../components/shop/HorizontalProductSlider";
 import ProductList from "../../components/shop/ProductList";
-import { useGetLandingPage } from "../../hooks/querys/getLandingPageData";
+import {
+  useFilterProducts,
+  useGetProducts,
+} from "../../hooks/querys/filterProducts";
+import { useGetBrands } from "../../hooks/querys/useEventsandTags";
 
 const IndexScreen = () => {
-  const { data, isLoading, isError } = useGetLandingPage();
+  const { data: bData } = useGetBrands();
+  const { data } = useGetProducts({ page: 1 });
+
+  const {
+    data: featuredData,
+    isLoading,
+    isError,
+  } = useFilterProducts({ featured: true });
+  const { data: industrialData } = useFilterProducts({
+    category: "industrial",
+  });
+  const { data: bestSellerData } = useFilterProducts({ promote: true });
   if (isLoading) {
-    return <SplashScreen className="w-[80%] md:w-[40%]" />;
+    // return <SplashScreen className="w-[80%] md:w-[40%]" />;
   }
-  const mostViewedProducts = data?.most_viewed_products || [];
-  const featuredProducts = data?.featured_products || [];
-  const onSalesProducts = data?.promoted_products || [];
-  const industrialProducts = data?.industrial_products || [];
+  const brands = bData?.results || [];
+  const richTec = brands.find((i) => i.top_rated);
+  const mostViewedProducts = bestSellerData?.results || [];
+  const featuredProducts = featuredData?.results || [];
+  const onSalesProducts = featuredData?.results || [];
+  const industrialProducts = industrialData?.results || [];
   return (
     <div className="relative w-full px-4 md:px-0 md:w-[95%] lg:w-[95%] mx-auto mt-2">
       {/* Added relative positioning */}
-      <div className="flex w-full justify-center">
+      <div className="flex w-full justify-center gap-2">
         <div className="w-[20%] hidden lg:flex min-w-[200px]">
           {" "}
           {/* Added min-width */}
@@ -43,18 +60,23 @@ const IndexScreen = () => {
         />
         <div className="flex flex-row gap-2">
           <div className="w-[30%] h-[450px] rounded-2xl overflow-hidden relative hidden md:block">
-            <img src="/image.jpg" className="w-full h-full" alt="" />
-            <div className="absolute inset-0 flex flex-col gap-2 justify-start bg-black/40 bg-opacity-30 text-white p-8">
-              <h2 className="text-gray-300 font-bold">RICHTECH LTD.</h2>
-              <h2 className="text-2xl font-bold">
+            <img
+              src={richTec?.thumbnail || "/image.jpg"}
+              className="w-full h-full"
+              alt=""
+            />
+            <div className="absolute inset-0 flex flex-col justify-center items-center gap-2 bg-black/40 bg-opacity-30 text-white p-8">
+              <h2 className="text-gray-300 uppercase">{richTec?.title}</h2>
+              <h2 className="text-2xl font-alaba-bold">
                 Nigeria's Biggest Manufacturer
               </h2>
               <p className="text-sm">
                 We are the leading manufacturer of industrial equipment in
                 Nigeria.
               </p>
-              <Button
+              <LinkButton
                 label="Shop Now"
+                link={`/shop?brand=${richTec?.slug}`}
                 className="bg-white !text-black text-sm"
               />
             </div>
@@ -72,9 +94,12 @@ const IndexScreen = () => {
         />
       </div>
       <div className="w-full">
-        <h2 className="text-left md:text-2xl">Our Products</h2>
+        <h2 className="text-left md:text-2xl font-alaba-bold text-gray-700 mb-6">
+          Our Products
+        </h2>
         <ProductList
-          products={mostViewedProducts}
+          size="full"
+          products={data?.results ?? []}
           isLoading={isLoading}
           isError={isError}
         />

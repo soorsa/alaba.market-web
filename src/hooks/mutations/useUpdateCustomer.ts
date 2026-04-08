@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
 
 interface Payload {
   formData: FormData;

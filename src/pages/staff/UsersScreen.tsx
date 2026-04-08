@@ -1,11 +1,8 @@
-import InfoCard from "../../components/staff/InfoCard";
-import { formatNumber } from "../../utils/formatter";
-import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
-import { useState } from "react";
 import CustomerListTable from "../../components/staff/CutomerListTable";
-import VendorsListTable from "../../components/staff/VendorsListTable";
-import StaffListTable from "../../components/staff/StaffListTable";
+import InfoCard from "../../components/staff/InfoCard";
+import { useGetStats } from "../../hooks/querys/useGetAllStats";
+import { formatNumber } from "../../utils/formatter";
 
 const UserScreen = () => {
   const {
@@ -13,21 +10,6 @@ const UserScreen = () => {
     isLoading: isLoadingStats,
     isError: isErrorStats,
   } = useGetStats();
-  const tabs = ["Customers", "Vendors", "Staffs"] as const;
-  type Tab = (typeof tabs)[number];
-
-  const [activeTab, setactiveTab] = useState<Tab>("Customers");
-  const handleTabChange = (tab: Tab) => {
-    setactiveTab(tab);
-  };
-  const renderUsers = () => {
-    if (activeTab === "Vendors") {
-      return <VendorsListTable />;
-    } else if (activeTab === "Staffs") {
-      return <StaffListTable />;
-    }
-    return <CustomerListTable />;
-  };
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-2">
@@ -58,25 +40,7 @@ const UserScreen = () => {
         />
       </div>
       <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
-        <div className="mb-6 px-4">
-          <h4 className="text-lg text-left text-gray-200">{activeTab}</h4>
-        </div>
-        <div className="flex justify-between items-center mb-4 px-4 ">
-          <div className="flex gap-5 text-sm font-medium">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                className={`${
-                  activeTab === tab ? "text-white border-b-2" : "text-gray-400"
-                } transition text-xs`}
-                onClick={() => handleTabChange(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-        </div>
-        {renderUsers()}
+        <CustomerListTable />
       </div>
     </div>
   );

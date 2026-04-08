@@ -1,15 +1,13 @@
 import React from "react";
 import { IoCartOutline, IoHeartOutline } from "react-icons/io5";
-// import { useNavigate } from "react-router-dom";
-import type { Product } from "../../types/ProductsTypes";
-import Button from "../general/Button";
+import { useNavigate } from "react-router-dom";
+import { useAddtoCart } from "../../hooks/mutations/useCart";
 import { formatPrice } from "../../utils/formatter";
-import { useAddtoCart } from "../../hooks/mutations/useAddtoCart";
-import { useUserStore } from "../../zustand/useUserStore";
 import { useModalStore } from "../../zustand/ModalStore";
 import { useToastStore } from "../../zustand/ToastStore";
+import { useUserStore } from "../../zustand/useUserStore";
 import Login from "../auth/Login";
-import { useNavigate } from "react-router-dom";
+import Button from "../general/Button";
 type Props = {
   product: Product;
 };
@@ -18,19 +16,17 @@ const ProductCard: React.FC<Props> = ({ product }) => {
   const { openModal } = useModalStore();
   const { showToast } = useToastStore();
   const { user, isLoggedIn } = useUserStore();
-  const { mutate: addToCart, isPending, isError } = useAddtoCart();
+  const { mutate: addToCart, isPending } = useAddtoCart();
   const handleAddTocart = () => {
     if (user && isLoggedIn) {
-      addToCart({ productID: product.product_id, username: user.username });
-    } else if (isError) {
-      showToast("Failed to add to cart", "error");
+      addToCart({ product_id: product.id, quantity: 1 });
     } else {
       showToast("Please login to proceed", "info");
       openModal(<Login />);
     }
   };
   const viewProduct = () => {
-    navigate(`/products/${product.product_id}`);
+    navigate(`/products/${product.id}`);
   };
   return (
     <div className="relative cursor-pointer min-w-[185px] md:min-w-[200px] max-w-[200px] flex flex-col bg-white p-2 md:p-4 rounded-2xl hover:shadow-lg">
@@ -44,7 +40,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         </div>
       </button>
       <img
-        src={"https://api.alaba.market/" + `${product?.image}`}
+        src={`${product?.image}`}
         className="h-[150px] w-full rounded-lg"
         alt=""
         onClick={viewProduct}

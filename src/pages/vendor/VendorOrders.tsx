@@ -1,24 +1,22 @@
-import React from "react";
-import { useGetVendorOrders } from "../../hooks/querys/useVendorOrders";
-import { useUserStore } from "../../zustand/useUserStore";
-import OrderListTable from "../../components/vendor/OrderListTable";
-import { useGetVendorDashboardData } from "../../hooks/querys/useGetVendorDashboardPage";
-import InfoCard from "../../components/vendor/InfoCard";
-import { formatCompactPrice, formatNumber } from "../../utils/formatter";
-import { FiShoppingBag } from "react-icons/fi";
 import { Box, DollarSign } from "lucide-react";
+import React, { useState } from "react";
+import { FiShoppingBag } from "react-icons/fi";
+import InfoCard from "../../components/vendor/InfoCard";
+import OrderListTable from "../../components/vendor/OrderListTable";
+import Paginator from "../../components/vendor/Paginator";
+import { useGetVendorDashboardData } from "../../hooks/querys/useGetVendorDashboardPage";
+import { useGetVendorOrders } from "../../hooks/querys/useVendorOrders";
+import { formatCompactPrice, formatNumber } from "../../utils/formatter";
 
 const VendorOrders: React.FC = () => {
-  const { user } = useUserStore();
+  const [page, setpage] = useState(1);
   const {
     data: dataStat,
     isLoading: loadingStat,
     isError: statError,
   } = useGetVendorDashboardData();
 
-  const { data, isLoading } = useGetVendorOrders(
-    Number(user?.vendor_id || null)
-  );
+  const { data, isLoading } = useGetVendorOrders(page);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-2">
@@ -49,15 +47,15 @@ const VendorOrders: React.FC = () => {
         />
       </div>
       <OrderListTable
-        orders={data?.orders || []}
+        orders={data?.results || []}
         isError={false}
         isLoading={isLoading}
       />
-      {/* <Paginator
+      <Paginator
         currentPage={page}
         totalPages={Math.ceil((data?.count || 0) / 10)}
         onPageChange={setpage}
-      /> */}
+      />
     </div>
   );
 };

@@ -59,7 +59,7 @@ const Button: React.FC<ButtonProps> = ({
         </div>
       ) : (
         <div className="flex items-center justify-center">
-          {icon && <span className="mr-2">{icon}</span>}
+          {icon && <span className="mr-1">{icon}</span>}
           {label}
           {rightIcon && <span className="ml-2">{rightIcon}</span>}
         </div>

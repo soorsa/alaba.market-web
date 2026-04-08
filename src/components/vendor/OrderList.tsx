@@ -1,10 +1,9 @@
+import { ArrowRightCircle } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../../utils/formatter";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { ArrowRightCircle } from "lucide-react";
-import type { OrderItem } from "../../hooks/querys/useGetVendorDashboardPage";
 type Props = {
   orders: OrderItem[];
   isLoading: boolean;
@@ -23,23 +22,25 @@ const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
             <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://api.alaba.market" + `${order.products.image}`}
-                alt={order.products.title}
+                src={`${order.product.image}`}
+                alt={order.product.title}
                 className="object-cover w-full h-full"
               />
             </div>
             <div className="flex-1 min-w-0 text-left overflow-hidden flex divide-x-1 divide-gray-200 text-sm items-start">
               <div className="px-2">
                 <div className="font-alaba-mid">Qty</div>
-                <div className="">{order.quantity}</div>
+                <div className="text-xs md:text-sm">{order.quantity}</div>
               </div>
               <div className="px-2">
                 <div className="font-alaba-mid">Product name</div>
-                <div className="">{order.products.title}</div>
+                <div className="text-xs md:text-sm">{order.product.title}</div>
               </div>
               <div className="px-2">
                 <div className="font-alaba-mid">Total</div>
-                <div className="">{formatPrice(order.vendor_total)}</div>
+                <div className="text-xs md:text-sm">
+                  {formatPrice(order.product.vendor_price)}
+                </div>
               </div>
             </div>
           </li>

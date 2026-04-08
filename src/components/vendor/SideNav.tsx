@@ -1,11 +1,15 @@
 import { MdOutlineDashboardCustomize } from "react-icons/md";
 import { RiNotificationBadgeLine } from "react-icons/ri";
 import { FiShoppingBag } from "react-icons/fi";
-import { LogOut, LucidePackageCheck } from "lucide-react";
+import {
+  LogOut,
+  //  LucidePackageCheck
+} from "lucide-react";
 import Button from "../general/Button";
 import { useLogout } from "../../hooks/Auth";
 import { Link } from "react-router-dom";
 import NavItem from "../staff/NavItem";
+import { LiaShippingFastSolid } from "react-icons/lia";
 
 const SideNav = () => {
   const { mutate: logout } = useLogout();
@@ -31,7 +35,8 @@ const SideNav = () => {
           />
           <NavItem
             label="Orders"
-            icon={<LucidePackageCheck className=" w-4 h-4" />}
+            icon={<LiaShippingFastSolid className=" w-4 h-4" />}
+            // icon={<LucidePackageCheck className=" w-4 h-4" />}
             path="/vendor/orders"
           />
           <NavItem

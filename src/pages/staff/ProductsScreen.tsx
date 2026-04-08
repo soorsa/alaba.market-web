@@ -1,23 +1,22 @@
 import { useState } from "react";
 import ProductListTable from "../../components/staff/ProductsListTable";
 // import { useModalStore } from "../../zustand/ModalStore";
-import { useFilterProducts } from "../../hooks/querys/filterProducts";
-import type { FilterPayload } from "../../types/ProductsTypes";
-import ProductsPaginationForFilter from "../../components/staff/ProductFilterPagination";
-import InfoCard from "../../components/staff/InfoCard";
-import { formatNumber } from "../../utils/formatter";
-import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
+import InfoCard from "../../components/staff/InfoCard";
+import ProductsPaginationForFilter from "../../components/staff/ProductFilterPagination";
+import { useGetProducts } from "../../hooks/querys/filterProducts";
+import { useGetStats } from "../../hooks/querys/useGetAllStats";
+import { formatNumber } from "../../utils/formatter";
 
 const ProductsScreen = () => {
   //   const { openModal } = useModalStore();
-  const [filters, setFilters] = useState<FilterPayload>({
+  const [filters, setFilters] = useState<ProductFilters>({
     category: "",
     order_by: "newest",
     page: 1,
   });
 
-  const { data, isLoading, isError } = useFilterProducts(filters);
+  const { data, isLoading, isError } = useGetProducts(filters);
   const {
     data: statsData,
     isLoading: isLoadingStats,

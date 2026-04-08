@@ -1,16 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
+import toast from "react-hot-toast";
 
 interface Payload {
   formData: FormData;
-  slug: string;
+  id: number;
 }
 
 export const updateCategory = async (payload: Payload): Promise<Product> => {
   const response = await alabaApi.put(
-    `/dashboard/category/${payload.slug}/update/`,
+    `/categories/${payload.id}/`,
     payload.formData,
     {
       headers: {
@@ -22,7 +21,6 @@ export const updateCategory = async (payload: Payload): Promise<Product> => {
 };
 
 export const useUpdateCategory = () => {
-  const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateCategory,
@@ -31,10 +29,10 @@ export const useUpdateCategory = () => {
       queryClient.invalidateQueries({
         queryKey: ["categories"],
       });
-      showToast("Updated category successfully!", "success");
+      toast.success("Updated category successfully!");
     },
     onError() {
-      showToast("Unable to create...try again later", "error");
+      toast.error("Unable to create...try again later");
     },
   });
 };

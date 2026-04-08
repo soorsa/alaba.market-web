@@ -1,44 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import alabaApi from "../ApiClient";
 
-interface Country {
-  id: number;
-  name: string;
-}
-
-interface State {
-  id: number;
-  name: string;
-  country: string;
-}
-
 export const useGetCountryandState = () => {
   // Fetch all countries
-  const countriesQuery = useQuery<Country[]>({
+  interface Response<T> {
+    results: T;
+  }
+  const fetchCountries = async (): Promise<Response<Country[]>> => {
+    const res = await alabaApi.get("/country/");
+    return res.data;
+  };
+  const fetchState = async (): Promise<Response<State[]>> => {
+    const res = await alabaApi.get("/state/");
+    return res.data;
+  };
+  const countriesQuery = useQuery({
     queryKey: ["countries"],
-    queryFn: () => alabaApi.get("/countries/").then((res) => res.data),
+    queryFn: () => fetchCountries(),
     staleTime: 60 * 60 * 1000, // Cache for 1 hour
   });
 
   // Fetch states for selected country
-  const statesQuery = useQuery<State[]>({
+  const statesQuery = useQuery({
     queryKey: ["states"],
-    queryFn: () => alabaApi.get("/states/").then((res) => res.data),
+    queryFn: () => fetchState(),
   });
 
-  // const statesQuery = useQuery<State[]>({
-  //   queryKey: ["states", selectedCountryId],
-  //   queryFn: () =>
-  //     alabaApi
-  //       .get(`/states/by-country/${selectedCountryId}/`)
-  //       .then((res) => res.data),
-  //   enabled: !!selectedCountryId, // Only fetch when country is selected
-  //   staleTime: 60 * 60 * 1000, // Cache for 1 hour
-  // });
-
   return {
-    countries: countriesQuery.data || [],
-    states: statesQuery.data || [],
+    countries: countriesQuery.data?.results || [],
+    states: statesQuery.data?.results || [],
     isLoading: countriesQuery.isLoading || statesQuery.isLoading,
     isError: countriesQuery.isError || statesQuery.isError,
     refetchCountries: countriesQuery.refetch,

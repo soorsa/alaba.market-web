@@ -1,11 +1,10 @@
-import React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ProductCard from "./ProductCard";
-import Button from "../general/Button";
+import React from "react";
 import { FiChevronRight } from "react-icons/fi";
-import type { Product } from "../../types/ProductsTypes";
 import { useNavigate } from "react-router-dom";
+import Button from "../general/Button";
+import ProductCard from "./ProductCard";
 
 interface Props {
   title: string;
@@ -42,7 +41,7 @@ const HorizontalProductSlider: React.FC<Props> = ({ title, products }) => {
   return (
     <div className="w-full my-7">
       <div className="flex items-center justify-between">
-        <h2 className="font-bold md:text-2xl">{title}</h2>
+        <h2 className="font-alaba-bold text-gray-600 md:text-2xl">{title}</h2>
         <Button
           label="More Products"
           rightIcon={<FiChevronRight />}

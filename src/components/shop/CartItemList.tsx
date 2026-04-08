@@ -1,5 +1,4 @@
 import React from "react";
-import type { CartItem } from "../../types/CartTypes";
 import * as CartItemsx from "./CartItem";
 interface Props {
   cartItems: CartItem[];

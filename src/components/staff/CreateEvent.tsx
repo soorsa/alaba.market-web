@@ -6,7 +6,7 @@ import ImageUploadField from "./ImageUploadField";
 import InputField from "../general/InputField";
 import CheckboxField from "../general/CheckBox";
 import { useModalStore } from "../../zustand/ModalStore";
-import { useUpdateEvents } from "../../hooks/mutations/useUpdateEvents";
+import { useCreateEvents } from "../../hooks/mutations/useUpdateEvents";
 
 const validationSchema = Yup.object().shape({
   // Required fields
@@ -21,7 +21,7 @@ const validationSchema = Yup.object().shape({
 });
 const CreateEvent: React.FC = () => {
   const { closeModal } = useModalStore();
-  const { mutate: update, isPending: creating } = useUpdateEvents();
+  const { mutate: create, isPending: creating } = useCreateEvents();
 
   const initialValues = {
     title: "",
@@ -42,7 +42,7 @@ const CreateEvent: React.FC = () => {
     const payload = {
       formData: formData,
     };
-    update(payload);
+    create(payload);
   };
 
   return (

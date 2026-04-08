@@ -1,21 +1,25 @@
 import { useState } from "react";
-import InfoCard from "../../components/staff/InfoCard";
-import { formatNumber } from "../../utils/formatter";
-import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
+import InfoCard from "../../components/staff/InfoCard";
 import Paginator from "../../components/staff/Paginator";
 import RequestListTable from "../../components/staff/RequestListTable";
-import { useGetVendorRequest } from "../../hooks/querys/useGetVendorRequest";
+import { useGetStats } from "../../hooks/querys/useGetAllStats";
+import { useGetVendorApplications } from "../../hooks/querys/useGetVendorRequest";
+import { formatNumber } from "../../utils/formatter";
 
 const RequestScreen = () => {
-  const [page, setpage] = useState(1);
-  const { data, isLoading, isError } = useGetVendorRequest(page);
+  const [filterParams, setFilterParams] =
+    useState<VendorApplicationFilterParams>({
+      page: 1,
+      status: "pending",
+    });
+  const { data, isLoading, isError } = useGetVendorApplications(filterParams);
   const {
     data: statsData,
     isLoading: isLoadingStats,
     isError: isErrorStats,
   } = useGetStats();
-
+  console.log(data);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-2">
@@ -46,14 +50,16 @@ const RequestScreen = () => {
         />
       </div>
       <RequestListTable
-        vendors={data?.results || []}
+        applications={data?.results || []}
         isError={isError}
         isLoading={isLoading}
+        filterParams={filterParams}
+        onSetParams={setFilterParams}
       />
       <Paginator
-        currentPage={page}
+        currentPage={filterParams.page}
         totalPages={Math.ceil((data?.count || 0) / 10)}
-        onPageChange={setpage}
+        onPageChange={(page) => setFilterParams((prev) => ({ ...prev, page }))}
       />
     </div>
   );

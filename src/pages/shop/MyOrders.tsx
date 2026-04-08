@@ -1,37 +1,18 @@
 // OrderHistoryPage.tsx
+import { Package2 } from "lucide-react";
 import { useState } from "react";
-import { useGetOrderHistory } from "../../hooks/querys/useGetOrderHistory";
+import { Link } from "react-router-dom";
 import { OrderHistorySkeleton } from "../../components/shop/OrderSkeleton";
+import { useGetOrderHistory } from "../../hooks/querys/useGetOrderHistory";
+import { formatPrice } from "../../utils/formatter";
 // import OrderTimeline from "../../components/shop/OrderTimeline";
-import { useModalStore } from "../../zustand/ModalStore";
-import OrderDetail from "../../components/shop/OrderDetail";
-import type { Order } from "../../hooks/querys/useGetOrders";
 
 const OrderHistoryPage = () => {
   const { data, isLoading } = useGetOrderHistory();
-  const orders = data || [];
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
-  const { openModal } = useModalStore();
-
-  const toggleOrder = (orderId: string) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId);
-  };
-  const tableHeaders = [
-    "Order ID",
-    "Date",
-    "Items",
-    "Status",
-    "Total",
-    "Action",
-  ];
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const orders = data?.results || [];
+  const tabs = ["All", "Delivered", "Pending", "On-route"] as const;
+  type Tab = (typeof tabs)[number];
+  const [activeTab, setActiveTab] = useState<Tab>("All");
 
   const getStatus = (order: Order) => {
     if (order.delivery_status === "Delivered") return "Delivered";
@@ -43,100 +24,91 @@ const OrderHistoryPage = () => {
 
   const getStatusColor = (order: Order) => {
     if (order.delivery_status === "Delivered")
-      return "bg-green-100 text-green-800";
+      return "bg-green-100 text-green-500 border border-green-300";
     if (order.delivery_status === "Confirmed")
-      return "bg-blue-100 text-blue-800";
+      return "bg-blue-100 text-blue-500 border border-blue-300";
     if (order.delivery_status === "On-route")
-      return "bg-purple-100 text-purple-800";
-    return "bg-yellow-100 text-yellow-800";
+      return "bg-purple-100 text-purple-500 border border-purple-300";
+    if (order.delivery_status === "Canceled")
+      return "bg-red-100 text-red-500 border border-red-300";
+    return "bg-orange-100 text-orange-500 border border-orange-300";
   };
 
   if (isLoading) {
     return <OrderHistorySkeleton />;
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8 w-full">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Order History</h1>
+  const filteredData =
+    activeTab === "All"
+      ? orders
+      : orders.filter((item) => {
+          if (activeTab === "Delivered")
+            return item.delivery_status === "Delivered";
+          if (activeTab === "Pending")
+            return item.delivery_status === "Pending";
+          if (activeTab === "On-route")
+            return item.delivery_status === "On-route";
+          return false;
+        });
 
-      {orders.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">
-            You haven't placed any orders yet.
-          </p>
+  return (
+    <div className="p-5 bg-white h-full">
+      <div className="mb-5">
+        <h2 className="text-2xl text-left font-alaba-bold">My Order History</h2>
+      </div>
+      <div className="">
+        <div className="flex gap-4 font-medium">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              className={`${
+                activeTab === tab
+                  ? "text-black font-alaba-mid border-b-2"
+                  : "text-gray-400"
+              } transition text-xs`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="mx-auto divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {tableHeaders.map((header, index) => (
-                  <th
-                    key={index}
-                    scope="col"
-                    className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 text-left">
-              {orders.map((order, index) => (
-                <>
-                  <tr
-                    key={order.order_id}
-                    className={`${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 cursor-pointer`}
-                    onClick={() => toggleOrder(order.order_id)}
-                  >
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      #{order.order_id.slice(0, 8)}
-                    </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(order.order_date)}
-                    </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.products.length} item
-                      {order.products.length !== 1 ? "s" : ""}
-                    </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      ₦{parseFloat(order.total).toLocaleString()}
-                    </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
-                          order
-                        )}`}
-                      >
-                        {getStatus(order)}
-                      </span>
-                    </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <button
-                        className="text-blue-600 hover:text-blue-900"
-                        onClick={() => {
-                          // e.stopPropagation();
-                          toggleOrder(order.order_id);
-                          openModal(
-                            <OrderDetail order={order} />,
-                            "Order Summary",
-                            "light"
-                          );
-                        }}
-                      >
-                        {expandedOrder === order.order_id ? "Hide" : "View"}{" "}
-                        Details
-                      </button>
-                    </td>
-                  </tr>
-                </>
-              ))}
-            </tbody>
-          </table>
+
+        <div className="mt-5 space-y-1">
+          {filteredData.map((item, i) => (
+            <div className="flex gap-2 odd:bg-gray-100" key={i}>
+              <div className="w-18 h-18 bg-alaba/50 flex items-center justify-center">
+                <Package2 />
+              </div>
+              <div className="flex-1 text-left space-y-2 py-2">
+                <div className="font-alaba-mid line-clamp-1">
+                  {item.products[0].product_title}{" "}
+                  {item.products.length > 1 && (
+                    <span className="text-xs border border-gray-300 rounded-2xl px-1">
+                      + {item.products.length - 1} other items
+                    </span>
+                  )}
+                </div>
+                <div
+                  className={`text-xs px-4 w-fit rounded-md ${getStatusColor(
+                    item
+                  )}`}
+                >
+                  {getStatus(item)}
+                </div>
+              </div>
+              <div className="p-2 text-sm space-y-2">
+                <div className="">{formatPrice(item.total)}</div>
+                <Link
+                  to={`/customer/orders/${item.order_id}`}
+                  className="text-blue-500 text-xs underline underline-offset-2"
+                >
+                  View details
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };

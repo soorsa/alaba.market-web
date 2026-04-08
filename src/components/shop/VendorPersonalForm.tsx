@@ -1,22 +1,21 @@
 import { Form, Formik } from "formik";
-import * as Yup from "yup";
+import { ChevronLeft, Info } from "lucide-react";
 import React from "react";
+import * as Yup from "yup";
+import { useGetCountryandState } from "../../hooks/querys/useGetCountryandState";
+import { useModalStore } from "../../zustand/ModalStore";
 import { useUserStore } from "../../zustand/useUserStore";
+import { useVendorApplicationPayload } from "../../zustand/vendor-application.payload";
+import Button from "../general/Button";
 import InputField from "../general/InputField";
 import SelectField from "../general/SelectField";
 import ImageUploadField from "../staff/ImageUploadField";
-import Button from "../general/Button";
-import { useModalStore } from "../../zustand/ModalStore";
+import BecomeVendorStart from "./BecomeVendorStart";
 import VendorBusinessForm from "./VendorBusinessForm";
-import { ChevronLeft, Info } from "lucide-react";
-import { useGetCountryandState } from "../../hooks/querys/useGetCountryandState";
-import { useVendorApplicationPayload } from "../../zustand/vendor-application.payload";
-type Props = {
-  goBack: () => void;
-};
-const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
+const VendorPersonalForm: React.FC = () => {
   const { user } = useUserStore();
-  const { updateVendorApplicationPayload } = useVendorApplicationPayload();
+  const { updateVendorApplicationPayload, vendorApplicationPayload } =
+    useVendorApplicationPayload();
   const modal = useModalStore();
   const {
     countries,
@@ -28,23 +27,22 @@ const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
     label: country.name,
   }));
 
-  const gotoPeronsalForm = () => {
-    modal.openModal(
-      <VendorPersonalForm goBack={goBack} />,
-      "Personal Info Form"
-    );
+  const goBack = () => {
+    modal.openModal(<BecomeVendorStart />, "Become a Vendor");
   };
   const initialValues = {
-    first_name: user?.first_name || "",
-    last_name: user?.last_name || "",
-    phone_number: user?.phone_number || "",
+    first_name: vendorApplicationPayload.first_name || user?.first_name,
+    last_name: vendorApplicationPayload.last_name || user?.last_name || "",
+    phone_number:
+      vendorApplicationPayload.phone_number || user?.phone_number || "",
     email: user?.email || "",
-    address: user?.address || "",
+    address: vendorApplicationPayload.address || user?.address || "",
     state: "",
     country: "",
-    nin: user?.nin || "",
-    profile_picture: user?.profile_pic,
-    userID_photo: user?.user_passport,
+    nin: vendorApplicationPayload.nin || user?.nin || "",
+    profile_picture:
+      vendorApplicationPayload.profile_picture || user?.profile_pic,
+    userID_photo: vendorApplicationPayload.user_passport || user?.user_passport,
   };
   const validationSchema = Yup.object({
     profile_picture: Yup.mixed().required("Required"),
@@ -65,29 +63,28 @@ const VendorPersonalForm: React.FC<Props> = ({ goBack }) => {
       phone_number: String(values.phone_number),
       address: String(values.address),
       nin: values.nin,
-      profile_pic:
+      profile_picture:
         typeof values.profile_picture === "string"
           ? null
           : values.profile_picture,
       user_passport:
         typeof values.userID_photo === "string" ? null : values.userID_photo,
     });
-    modal.openModal(
-      <VendorBusinessForm goBack={gotoPeronsalForm} />,
-      "Business Info form",
-      "light"
-    );
+    modal.openModal(<VendorBusinessForm />, "Business Info form", "light");
   };
   return (
-    <div>
+    <div className="w-sm md:w-md">
       <Formik
         initialValues={initialValues}
+        validateOnMount
         validationSchema={validationSchema}
         onSubmit={save}
       >
         {({ isValid, values }) => {
           const filteredStates = values.country
-            ? states.filter((state) => state.country === values.country)
+            ? states.filter(
+                (state) => String(state.country.id) === values.country
+              )
             : [];
 
           // State options (filtered by selected country)

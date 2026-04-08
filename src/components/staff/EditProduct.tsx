@@ -1,21 +1,20 @@
+import { Form, Formik } from "formik";
 import React from "react";
-import type { Product } from "../../types/ProductsTypes";
-import { Formik, Form } from "formik";
+import { IoInformationCircle } from "react-icons/io5";
 import * as Yup from "yup";
-import Button from "../general/Button";
-import ImageUploadField from "./ImageUploadField";
-import InputField from "../general/InputField";
 import {
   useUpdateProduct,
   type ProductPayload,
 } from "../../hooks/mutations/useUpdateProduct";
-import { IoInformationCircle } from "react-icons/io5";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
-import SelectField from "../general/SelectField";
-import CheckboxField from "../general/CheckBox";
-import { useModalStore } from "../../zustand/ModalStore";
+import { useGetBrands } from "../../hooks/querys/useEventsandTags";
 import { formatPrice } from "../../utils/formatter";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
+import CheckboxField from "../general/CheckBox";
+import InputField from "../general/InputField";
+import SelectField from "../general/SelectField";
+import ImageUploadField from "./ImageUploadField";
 
 const IdInfoSchema = Yup.object({
   image: Yup.mixed().required("Image is required"),
@@ -33,9 +32,9 @@ const EditProduct: React.FC<Props> = ({ product }) => {
   const { closeModal } = useModalStore();
   const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
   const { data: catData } = useFetchCategories();
-  const { data: brandsData } = useFetchBrands();
-  const categories = catData || [];
-  const brands = brandsData || [];
+  const { data: brandsData } = useGetBrands();
+  const categories = catData?.results || [];
+  const brands = brandsData?.results || [];
   const categoryOptions = categories.map((category) => ({
     value: category.id,
     label: category.title,
@@ -51,19 +50,19 @@ const EditProduct: React.FC<Props> = ({ product }) => {
     (brand) => brand.label === product.brand_name
   );
   const initialValues = {
-    product_id: product.product_id,
+    id: product.id,
     title: product.title,
     brand: brandValue?.value,
-    tag: product.tag_name,
+    event: product.event_name,
     category: catValue?.value,
     price: product.price,
     vendor_price: product.vendor_price,
     undiscounted_price: product.undiscounted_price,
     description: product.description,
     seller_percentage: product.seller_percentage,
-    image: "https://api.alaba.market" + product.image,
-    image2: "https://api.alaba.market" + product.image2,
-    image3: "https://api.alaba.market" + product.image3,
+    image: product.image,
+    image2: product.image2,
+    image3: product.image3,
     vendor: product.vendor,
     is_approved: product.is_approved,
     is_featured: product.is_featured,
@@ -78,10 +77,10 @@ const EditProduct: React.FC<Props> = ({ product }) => {
       formData.append("category", values.category.toString());
     }
     if (values.brand) {
-      formData.append("brand", values.brand);
+      formData.append("brand", String(values.brand));
     }
-    if (values.tag) {
-      formData.append("tag", values.tag);
+    if (values.event) {
+      formData.append("event", values.event);
     }
     // if (values.price) {
     //   formData.append("price", values.price);
@@ -117,7 +116,7 @@ const EditProduct: React.FC<Props> = ({ product }) => {
       formData.append("promote", values.promote.toString());
     }
     const payload: ProductPayload = {
-      product_id: product.product_id,
+      id: product.id,
       formData: formData,
     };
     updateProduct(payload, {
@@ -128,7 +127,7 @@ const EditProduct: React.FC<Props> = ({ product }) => {
   };
 
   return (
-    <div className="w-full h-[550px]">
+    <div className="w-md max-w-sm md:max-w-md h-[550px]">
       <Formik
         initialValues={initialValues}
         validationSchema={IdInfoSchema}
@@ -145,19 +144,19 @@ const EditProduct: React.FC<Props> = ({ product }) => {
                 <div className="flex md:grid grid-cols-3 gap-2 overflow-scroll scrollbar-hide">
                   <ImageUploadField
                     name="image"
-                    width={150}
+                    width={"100%"}
                     height={125}
                     theme="dark"
                   />
                   <ImageUploadField
                     name="image2"
-                    width={150}
+                    width={"100%"}
                     height={125}
                     theme="dark"
                   />
                   <ImageUploadField
                     name="image3"
-                    width={150}
+                    width={"100%"}
                     height={125}
                     theme="dark"
                   />
@@ -245,11 +244,11 @@ const EditProduct: React.FC<Props> = ({ product }) => {
                 />{" "}
               </div>
             </div>
-            <div className="flex justify-between">
+            <div className="grid grid-cols-2 gap-2">
               <Button
                 label="Back"
                 onClick={closeModal}
-                className="!w-fit px-4 bg-transparent text-sm"
+                className="px-4 bg-transparent border border-gray-700 text-sm"
               />
               <Button
                 label="Update"
@@ -257,7 +256,7 @@ const EditProduct: React.FC<Props> = ({ product }) => {
                 loadingLabel="Updating..."
                 isLoading={updating}
                 disabled={!isValid || updating}
-                className="!w-fit px-6 text-sm"
+                className="px-6 text-sm"
               />
             </div>
           </Form>

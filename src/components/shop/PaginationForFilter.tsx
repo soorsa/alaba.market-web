@@ -1,3 +1,5 @@
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
 // Pagination.tsx
 interface PaginationProps {
   currentPage: number;
@@ -5,20 +7,21 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const PaginationForFilter = ({
+const Paginator = ({
   currentPage,
   totalPages,
   onPageChange,
 }: PaginationProps) => {
   return (
     <div className="flex justify-center mt-8">
-      <nav className="flex items-center gap-1">
+      <nav className="flex items-center gap-1 text-sm">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 flex items-center gap-1 text-gray-900 py-1 border rounded-full disabled:text-gray-400"
         >
-          Previous
+          <ArrowLeft size={15} />
+          Prev
         </button>
 
         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -35,8 +38,10 @@ const PaginationForFilter = ({
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`px-3 py-1 border rounded ${
-                currentPage === page ? "bg-blue-500 text-white" : ""
+              className={`h-3 w-3 p-3 flex justify-center items-center text-center border rounded-full ${
+                currentPage === page
+                  ? "bg-alaba-dark-500 text-gray-100"
+                  : " text-gray-500"
               }`}
             >
               {page}
@@ -47,13 +52,14 @@ const PaginationForFilter = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-50"
+          className="px-3 py-1 flex items-center gap-1 border text-gray-900 rounded-full disabled:text-gray-400"
         >
           Next
+          <ArrowRight size={15} />
         </button>
       </nav>
     </div>
   );
 };
 
-export default PaginationForFilter;
+export default Paginator;

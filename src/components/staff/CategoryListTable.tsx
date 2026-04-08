@@ -1,53 +1,28 @@
-import React, { useEffect, useState } from "react";
+import { Check, Edit, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { MdAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import type { Category, FilterPayload } from "../../types/ProductsTypes";
-import { Check, Edit, Search, Trash2 } from "lucide-react";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useModalStore } from "../../zustand/ModalStore";
 import DeleteAllProducts from "./DeleteAllProduct";
-import Button from "../general/Button";
-import { MdAdd } from "react-icons/md";
 import DeleteCategory from "./DeleteCategory";
-import NewCategory from "./NewCategory";
 import EditCategory from "./EditCategory";
+import NewCategory from "./NewCategory";
 type Props = {
   categories: Category[];
   isLoading: boolean;
   isError: boolean;
-  filters: FilterPayload;
-  onFilterChange: (newFilters: FilterPayload) => void;
 };
 
 const CategoryListTable: React.FC<Props> = ({
   categories,
   isError,
   isLoading,
-  filters,
-  onFilterChange,
 }) => {
   const navigate = useNavigate();
   const { openModal } = useModalStore();
-  const [localFilters, setLocalFilters] = useState(filters);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onFilterChange(localFilters);
-    }, 500); // Debounce to avoid too many API calls
-
-    return () => clearTimeout(timer);
-  }, [localFilters, onFilterChange]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target as HTMLInputElement;
-
-    setLocalFilters((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
-  };
   const handleDelete = (category: Category) => {
     openModal(<DeleteCategory item={category} />, "Delete", "dark");
   };
@@ -120,7 +95,7 @@ const CategoryListTable: React.FC<Props> = ({
             >
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://api.alaba.market" + `${category.thumbnail}`}
+                src={`${category.thumbnail}`}
                 alt={category.title}
                 className="object-cover w-full h-full"
               />
@@ -190,27 +165,15 @@ const CategoryListTable: React.FC<Props> = ({
 
   return (
     <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
-      <div className="flex items-center justify-between mb-6 px-0">
-        <h4 className="text-sm text-left text-gray-200">Categories</h4>
-        <div className="flex flex-wrap justify-end items-center gap-2">
-          <div className="px-3 py-2 flex items-center border border-gray-700 text-gray-300 rounded-lg text-sm">
-            <input
-              type="text"
-              name="search"
-              id="search"
-              value={localFilters.search || ""}
-              onChange={handleChange}
-              placeholder="Search products..."
-              className="md:w-[250px] max-w-[400px] focus:outline-none focus:ring-blue-700 focus:border-blue-700"
-            />
-            <Search />
-          </div>
-        </div>
+      <div className="flex items-center justify-between mb-2 px-0">
+        <h4 className="font-alaba-mid text-left py-2 text-gray-200">
+          Categories
+        </h4>
       </div>
-      <div className="flex justify-between items-center mb-4 px-4 ">
+      <div className="flex justify-between items-center mb-4 ">
         <div className="flex gap-1 md:gap-4 text-sm font-medium">
           <Button
-            label="New Category"
+            label="New Categories"
             className="!bg-green-500 !w-fit text-xs px-2 !py-1 !rounded-md"
             icon={<MdAdd />}
             onClick={handleNewProduct}

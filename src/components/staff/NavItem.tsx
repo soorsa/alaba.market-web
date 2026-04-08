@@ -1,6 +1,6 @@
 import { type JSX, useState } from "react";
-import { NavLink } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 interface NavItemProps {
   label: string;

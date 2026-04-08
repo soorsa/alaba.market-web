@@ -1,10 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../zustand/ToastStore";
+import toast from "react-hot-toast";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
 
 export interface ProductPayload {
-  product_id: string;
+  id: string;
   formData: FormData;
 }
 
@@ -12,7 +11,7 @@ export const updateProduct = async (
   payload: ProductPayload
 ): Promise<Product> => {
   const response = await alabaApi.put(
-    `/dashboard/product/${payload.product_id}/`,
+    `/products/${payload.id}/`,
     payload.formData,
     {
       headers: {
@@ -24,7 +23,6 @@ export const updateProduct = async (
 };
 
 export const useUpdateProduct = () => {
-  const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateProduct,
@@ -39,10 +37,10 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ["stats"],
       });
-      showToast("Updated product successfully!", "success");
+      toast.success("Updated product successfully!");
     },
     onError() {
-      showToast("Unable to update...try again later", "error");
+      toast.error("Unable to update...try again later");
     },
   });
 };

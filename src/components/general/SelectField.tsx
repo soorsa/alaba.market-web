@@ -1,6 +1,6 @@
-import { Field, ErrorMessage, useField } from "formik";
-import { FaExclamationCircle, FaChevronDown } from "react-icons/fa";
+import { ErrorMessage, Field, useField } from "formik";
 import React from "react";
+import { FaChevronDown, FaExclamationCircle } from "react-icons/fa";
 
 interface SelectFieldProps {
   name: string;
@@ -28,7 +28,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
 
   return (
     <div className="w-full text-left">
-      <div className="text-sm">{label}</div>
+      <div className="text-xs text-gray-500">{label}</div>
 
       <div
         className={`w-full relative flex flex-row items-center border rounded-xl py-2 ${

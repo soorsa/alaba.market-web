@@ -24,13 +24,13 @@ const Modal = () => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-      onClick={closeModal}
+      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-md"
+      // onClick={closeModal}
     >
       <div
         className={`${
           theme === "light" ? `bg-white` : `bg-alaba-dark-500 text-gray-300`
-        } p-10 rounded-[25px] shadow-lg w-[90%] md:w-fit max-w-[550px] relative`}
+        } p-10 rounded-[25px] shadow-lg w-fit relative`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-4 left-10 text-lg font-alaba-mid">

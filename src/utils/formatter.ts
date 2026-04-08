@@ -1,7 +1,10 @@
+import { useCurrency } from "../zustand/currency.state";
+
+const { currency } = useCurrency.getState();
 export const formatPrice = (amount: number | string): string => {
-  return new Intl.NumberFormat("en-NG", {
+  return new Intl.NumberFormat(currency?.format, {
     style: "currency",
-    currency: "NGN",
+    currency: currency?.nation,
     // minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(Number(amount));

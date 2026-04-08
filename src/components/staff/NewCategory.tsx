@@ -30,7 +30,7 @@ const NewCategory: React.FC = () => {
   const { mutate: create, isPending: creating } = useCreateCategory();
   const { data: categories } = useFetchCategories();
   const categoriesOption =
-    categories?.map((item) => ({
+    categories?.results?.map((item) => ({
       value: item.id,
       label: item.title,
     })) || [];

@@ -1,27 +1,33 @@
-import React from "react";
-import { formatCompactPrice, formatNumber } from "../../utils/formatter";
-import { FiShoppingBag } from "react-icons/fi";
 import { DollarSign, LucidePackageCheck } from "lucide-react";
-import ProductList from "../../components/vendor/ProductList";
+import React from "react";
+import { FiShoppingBag } from "react-icons/fi";
 import InfoCard from "../../components/vendor/InfoCard";
-import { useGetVendorDashboardData } from "../../hooks/querys/useGetVendorDashboardPage";
-import { useUserStore } from "../../zustand/useUserStore";
-import { useFilterProducts } from "../../hooks/querys/filterProducts";
 import OrderList from "../../components/vendor/OrderList";
+import ProductList from "../../components/vendor/ProductList";
+import { useGetProducts } from "../../hooks/querys/filterProducts";
+import { useGetVendorDashboardData } from "../../hooks/querys/useGetVendorDashboardPage";
+import { useGetVendorOrders } from "../../hooks/querys/useVendorOrders";
+import { formatCompactPrice, formatNumber } from "../../utils/formatter";
+import { useUserStore } from "../../zustand/useUserStore";
 
 const VendorIndex: React.FC = () => {
   const { data, isLoading, isError } = useGetVendorDashboardData();
   const { user } = useUserStore();
   const filters = {
     page: 1,
-    vendor: user?.username || "",
+    vendor: user?.id,
   };
-
   const {
     data: productsdata,
     isLoading: gettingProducts,
     isError: productsError,
-  } = useFilterProducts(filters);
+  } = useGetProducts(filters);
+  const {
+    data: orderData,
+    isLoading: gettingOrders,
+    isError: isOrderError,
+  } = useGetVendorOrders(1);
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -66,9 +72,9 @@ const VendorIndex: React.FC = () => {
           isLoading={gettingProducts}
         />
         <OrderList
-          orders={data?.orders ?? []}
-          isError={isError}
-          isLoading={isLoading}
+          orders={orderData?.results ?? []}
+          isError={isOrderError}
+          isLoading={gettingOrders}
         />
       </div>
     </div>

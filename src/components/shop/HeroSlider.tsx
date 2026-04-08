@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import Button from "../general/Button";
-import type { Events } from "../../hooks/querys/useEventsandTags";
+import React, { useEffect, useState } from "react";
+import LinkButton from "../general/LinkButton";
 
 interface Props {
   items: Events[];
@@ -51,7 +50,7 @@ const HeroSlider: React.FC<Props> = ({ items }) => {
         {items.map((slide) => (
           <div key={slide.id} className="w-full h-full flex-shrink-0 relative">
             <img
-              src={slide.banner}
+              src={slide.banner || ""}
               alt={slide.title}
               className="w-full h-full object-cover"
             />
@@ -62,7 +61,11 @@ const HeroSlider: React.FC<Props> = ({ items }) => {
                     <h2 className="text-4xl font-bold mb-2">{slide.title}</h2>
                   )}
                   {slide.title && <p className="text-xl mb-4">{slide.title}</p>}
-                  <Button label="Shop Now" className="bg-white !text-black" />
+                  <LinkButton
+                    link={`/shop/?event=${slide.slug}`}
+                    label="Shop Now"
+                    className="bg-white !text-black"
+                  />
                 </div>
               </div>
             )}

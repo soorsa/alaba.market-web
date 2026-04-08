@@ -1,4 +1,6 @@
-import { FaArrowRightArrowLeft } from "react-icons/fa6";
+import { LogOut, LucidePackageCheck, Ship } from "lucide-react";
+import { FiShoppingBag } from "react-icons/fi";
+import { LiaShippingFastSolid } from "react-icons/lia";
 import {
   MdFormatListBulleted,
   MdOutlineDashboardCustomize,
@@ -8,13 +10,10 @@ import {
   //   RiLogoutBoxRFill,
   RiNotificationBadgeFill,
 } from "react-icons/ri";
-import NavItem from "./NavItem";
-import { FiShoppingBag } from "react-icons/fi";
-import { LogOut, LucidePackageCheck } from "lucide-react";
-import { LiaShippingFastSolid } from "react-icons/lia";
-import Button from "../general/Button";
 import { Link } from "react-router-dom";
 import { useLogout } from "../../hooks/Auth";
+import Button from "../general/Button";
+import NavItem from "./NavItem";
 
 const MobileSideNav = () => {
   const { mutate: logout } = useLogout();
@@ -38,9 +37,9 @@ const MobileSideNav = () => {
             path="/manager/categories"
           />
           <NavItem
-            label="Payments"
-            icon={<FaArrowRightArrowLeft className=" w-4 h-4" />}
-            path="/payments"
+            label="Shipping"
+            icon={<Ship className=" w-4 h-4" />}
+            path="/manager/shipping"
           />
           <NavItem
             label="Requests"
