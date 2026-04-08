@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import type { FilterPayload, Product } from "../../types/ProductsTypes";
 import {
   AlertCircle,
   Check,
@@ -8,24 +6,25 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { formatPrice } from "../../utils/formatter";
-import SmallLoader from "../general/SmallLoader";
-import NoProductFound from "../shop/NoProductFound";
+import React, { useEffect, useState } from "react";
+import { MdAdd } from "react-icons/md";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
+import { useGetBrands } from "../../hooks/querys/useEventsandTags";
+import { formatPrice } from "../../utils/formatter";
 import { useModalStore } from "../../zustand/ModalStore";
 import Button from "../general/Button";
-import { MdAdd } from "react-icons/md";
-import DeleteItem from "../staff/DeleteItem";
+import SmallLoader from "../general/SmallLoader";
+import NoProductFound from "../shop/NoProductFound";
 import DeleteAllProducts from "../staff/DeleteAllProduct";
+import DeleteItem from "../staff/DeleteItem";
 import CreateNewProduct from "./CreateNewVendorProduct";
 import EditVendorProduct from "./EditVendorProduct";
 type Props = {
   products: Product[];
   isLoading: boolean;
   isError: boolean;
-  filters: FilterPayload;
-  onFilterChange: (newFilters: FilterPayload) => void;
+  filters: ProductFilters;
+  onFilterChange: (newFilters: ProductFilters) => void;
 };
 
 const tabs = ["All", "Approved", "Pending"] as const;
@@ -39,7 +38,7 @@ const VendorProductListTable: React.FC<Props> = ({
   onFilterChange,
 }) => {
   const { data: categories } = useFetchCategories();
-  const { data: brands } = useFetchBrands();
+  const { data: brands } = useGetBrands();
   const { openModal } = useModalStore();
   const [activeTab, setActiveTab] = useState<Tab>("All");
   const [localFilters, setLocalFilters] = useState(filters);
@@ -87,7 +86,7 @@ const VendorProductListTable: React.FC<Props> = ({
   };
 
   const handleSelectAll = (isChecked: boolean) => {
-    setSelectedProducts(isChecked ? filteredData.map((p) => p.product_id) : []);
+    setSelectedProducts(isChecked ? filteredData.map((p) => p.id) : []);
   };
 
   const handleDeleteSelected = () => {
@@ -120,15 +119,15 @@ const VendorProductListTable: React.FC<Props> = ({
             <label className="flex justify-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={selectedProducts.includes(product.product_id)}
+                checked={selectedProducts.includes(product.id)}
                 onChange={(e) =>
-                  handleSelectProduct(product.product_id, e.target.checked)
+                  handleSelectProduct(product.id, e.target.checked)
                 }
                 className="w-6 h-6 peer hidden appearance-none border-1 border-gray-700 rounded-lg checked:bg-alaba hover:border-alaba/50 cursor-pointer"
               />
               <div
                 className={`p-1 border-1 peer-checked:text-alaba peer-checked:border-alaba border-gray-700 rounded-lg ${
-                  selectedProducts.includes(product.product_id)
+                  selectedProducts.includes(product.id)
                     ? "text-alaba border-alaba"
                     : "text-gray-700 hover:border-gray-300 hover:text-gray-300"
                 }`}
@@ -143,7 +142,7 @@ const VendorProductListTable: React.FC<Props> = ({
             >
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={"https://api.alaba.market" + `${product.image}`}
+                src={`${product.image}`}
                 alt={product.title}
                 className="object-cover w-full h-full"
               />
@@ -225,9 +224,9 @@ const VendorProductListTable: React.FC<Props> = ({
           <div className="px-3 py-2 flex items-center border border-gray-300 text-gray-600 rounded-lg text-sm">
             <input
               type="text"
-              name="search"
-              id="search"
-              value={localFilters.search || ""}
+              name="title"
+              id="title"
+              value={localFilters.title || ""}
               onChange={handleChange}
               placeholder="Search products..."
               className="w-2xs md:w-[250px] max-w-[400px] focus:outline-none focus:ring-blue-700 focus:border-blue-700"
@@ -244,7 +243,7 @@ const VendorProductListTable: React.FC<Props> = ({
               className="w-[150px] px-1 py-2 border border-gray-300 rounded-lg text-gray-600 focus:outline-none"
             >
               <option value="">All Categories</option>
-              {categories?.map((category) => (
+              {categories?.results.map((category) => (
                 <option
                   key={category.slug}
                   value={category.slug}
@@ -266,7 +265,7 @@ const VendorProductListTable: React.FC<Props> = ({
               className="w-[150px] px-1 py-2 border border-gray-300 rounded-lg text-gray-600 focus:outline-none"
             >
               <option value="">All Manufactures</option>
-              {brands?.map((brand, index) => (
+              {brands?.results.map((brand, index) => (
                 <option
                   key={index}
                   value={brand.slug}

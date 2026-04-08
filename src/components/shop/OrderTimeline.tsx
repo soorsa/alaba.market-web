@@ -1,80 +1,129 @@
+import {
+  CheckCircle,
+  PackageCheck,
+  ShoppingCart,
+  Truck,
+  XCircle,
+} from "lucide-react";
 import React from "react";
-import { Circle, CircleDot } from "lucide-react";
-import { IoCheckmarkCircle } from "react-icons/io5";
 
-type Step = {
-  title: string;
-  description: string;
-};
+interface Props {
+  order: Order;
+}
 
-type OrderTimelineProps = {
-  currentStep: number;
-};
-
-const steps: Step[] = [
+const steps = [
   {
-    title: "Order Placed",
-    description: "Order has been successfully placed by the customer",
+    key: "Pending",
+    label: "Order Placed",
+    desc: "order was placed my customer",
+    icon: ShoppingCart,
   },
   {
-    title: "Order Confirmed",
-    description:
-      "Order confirmation customer recieves a call or email to confirm order.",
+    key: "Confirmed",
+    label: "Order Confirmed",
+    desc: "order is Confirmed and is been processed.",
+
+    icon: CheckCircle,
   },
   {
-    title: "On Route",
-    description:
-      "Order has been successfully processed and verified and is on route to you.",
+    key: "On-route",
+    label: "On Route",
+    desc: "Order has been processed and is on route to customer.",
+
+    icon: Truck,
   },
   {
-    title: "Delivered",
-    description:
-      "The order is has been delivered successfully to the customer.",
+    key: "Delivered",
+    label: "Delivered",
+    desc: "order has been delivered and recieved by customer",
+    icon: PackageCheck,
   },
 ];
 
-const OrderTimeline: React.FC<OrderTimelineProps> = ({ currentStep }) => {
+const statusOrder: DeliveryStatus[] = [
+  "Pending",
+  "Confirmed",
+  "On-route",
+  "Delivered",
+];
+
+const OrderTrackingTimeline: React.FC<Props> = ({ order }) => {
+  const currentIndex = statusOrder.indexOf(order.delivery_status);
+
+  const isCanceled = order.delivery_status === "Canceled";
+
   return (
-    <div className="w-full max-w-md">
-      <h2 className="text-lg font-semibold mb-4">Timeline</h2>
-      <ol className="relative border-l border-gray-300 space-y-6">
+    <div className="bg-white p-6 rounded-2xl w-full text-left">
+      <h2 className="text-lg font-semibold mb-6">Activity</h2>
+
+      <div className="relative">
         {steps.map((step, index) => {
-          const isCompleted = index < currentStep;
-          const isActive = index === currentStep;
+          const Icon = step.icon;
+
+          const isCompleted = index <= currentIndex;
+          // const isActive = index === currentIndex;
 
           return (
-            <li key={index} className="ml-4">
-              <div className="absolute -left-3 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-300">
-                {isCompleted ? (
-                  <IoCheckmarkCircle className="w-4 h-4 text-green-500" />
-                ) : isActive ? (
-                  <CircleDot className="w-4 h-4 text-blue-500" />
+            <div
+              key={step.key}
+              className="flex items-start gap-4 mb-8 relative"
+            >
+              {/* Vertical Line */}
+              {index !== steps.length - 1 && (
+                <div
+                  className={`absolute left-4 top-8 h-full w-[2px] ${
+                    index < currentIndex ? "bg-green-200" : "bg-gray-200"
+                  }`}
+                />
+              )}
+
+              {/* Icon */}
+              <div
+                className={`z-10 flex items-center justify-center w-8 h-8 rounded-full 
+                ${
+                  isCanceled
+                    ? "bg-red-100"
+                    : isCompleted
+                    ? "bg-green-200"
+                    : "bg-gray-100"
+                }`}
+              >
+                {isCanceled ? (
+                  <XCircle className="text-red-500 w-4 h-4" />
                 ) : (
-                  <Circle className="w-4 h-4 text-gray-300" />
+                  <Icon
+                    className={`w-4 h-4 ${
+                      isCompleted ? "text-green-600" : "text-gray-400"
+                    }`}
+                  />
                 )}
               </div>
-              <div className="pl-2">
-                <h3
-                  className={`font-medium ${
-                    isCompleted || isActive ? "text-gray-900" : "text-gray-400"
-                  }`}
-                >
-                  {step.title}
-                </h3>
+
+              {/* Content */}
+              <div className="flex-1">
                 <p
-                  className={`text-xs ${
-                    isCompleted || isActive ? "text-gray-700" : "text-gray-400"
+                  className={`text-sm font-medium ${
+                    isCompleted ? "text-gray-900" : "text-gray-400"
                   }`}
                 >
-                  {step.description}
+                  {step.label}
                 </p>
+                <p className="text-xs text-gray-400">{step.desc}</p>
               </div>
-            </li>
+            </div>
           );
         })}
-      </ol>
+
+        {/* Canceled State */}
+        {isCanceled && (
+          <div className="flex items-center gap-3 text-red-500">
+            <XCircle size={16} />
+            <span className="text-sm font-medium">Order Canceled</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default OrderTimeline;
+export default OrderTrackingTimeline;

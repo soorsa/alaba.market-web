@@ -1,15 +1,17 @@
-import { useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useGetUsersByRole } from "../../hooks/querys/useGetUserByRole";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import type { User } from "../../zustand/useUserStore";
 import Paginator from "./Paginator";
-import { useGetStaff } from "../../hooks/querys/useGetCustomers";
 
 const StaffListTable = () => {
   const [selectedItem, setselectedItem] = useState<User[]>([]); // Store product_ids
-  const [page, setpage] = useState(1);
-  const { data, isLoading, isError } = useGetStaff(page);
+  const [params, setParams] = useState<usersFiltersParams>({
+    page: 1,
+    role: "manager",
+  });
+  const { data, isLoading, isError } = useGetUsersByRole(params);
   const customers = data?.results ?? [];
   const handleDelete = (user: User) => {
     console.log(user);
@@ -117,9 +119,14 @@ const StaffListTable = () => {
     <div className="">
       {renderContent()}
       <Paginator
-        currentPage={page}
+        currentPage={params.page || 1}
         totalPages={Math.ceil((data?.count || 0) / 10)}
-        onPageChange={setpage}
+        onPageChange={(page) =>
+          setParams((prev) => ({
+            ...prev,
+            page,
+          }))
+        }
       />
     </div>
   );

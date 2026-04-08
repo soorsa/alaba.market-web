@@ -5,7 +5,6 @@ import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
 // import type { Order } from "../../hooks/mutations/useCheckout";
 import { ArrowRightCircle } from "lucide-react";
-import type { Order } from "../../hooks/querys/useGetOrders";
 import { useModalStore } from "../../zustand/ModalStore";
 import OrderSummary from "./OrderSummary";
 type Props = {
@@ -31,9 +30,7 @@ const OrderList: React.FC<Props> = ({ orders, isError, isLoading }) => {
             <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
               <div className="bg-black/20 absolute inset-0"></div>
               <img
-                src={
-                  "https://api.alaba.market" + `${order.customer.profile_pic}`
-                }
+                src={`${order.products[0].product.image}`}
                 alt={order.order_id}
                 className="object-cover w-full h-full"
               />

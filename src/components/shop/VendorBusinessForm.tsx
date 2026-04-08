@@ -1,35 +1,35 @@
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-import React from "react";
-import ImageUploadField from "../staff/ImageUploadField";
-import InputField from "../general/InputField";
-import Button from "../general/Button";
-import { useModalStore } from "../../zustand/ModalStore";
 import { ChevronLeft, Info } from "lucide-react";
-import VendorBankForm from "./VendorBankForm";
+import React from "react";
+import { useModalStore } from "../../zustand/ModalStore";
 import { useUserStore } from "../../zustand/useUserStore";
 import { useVendorApplicationPayload } from "../../zustand/vendor-application.payload";
-type Props = {
-  goBack: () => void;
-};
-const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
+import Button from "../general/Button";
+import InputField from "../general/InputField";
+import ImageUploadField from "../staff/ImageUploadField";
+import VendorBankForm from "./VendorBankForm";
+import VendorPersonalForm from "./VendorPersonalForm";
+const VendorBusinessForm: React.FC = () => {
   const modal = useModalStore();
   const { user } = useUserStore();
-  const { updateVendorApplicationPayload } = useVendorApplicationPayload();
-  const gotoBusinessForm = () => {
-    modal.openModal(
-      <VendorBusinessForm goBack={goBack} />,
-      "Business Info Form"
-    );
+  const { updateVendorApplicationPayload, vendorApplicationPayload } =
+    useVendorApplicationPayload();
+  const goBack = () => {
+    modal.openModal(<VendorPersonalForm />, "Business Info Form");
   };
   const initialValues = {
-    business_name: user?.bank_name || "",
-    office_address: user?.office_address || "",
-    business_phone_number: user?.vendor_phone_number || "",
-    business_email: user?.business_email || "",
-    cac_number: user?.cac_number || "",
-    cac_image: user?.cac_upload || null,
+    business_name:
+      vendorApplicationPayload.business_name || user?.business_name || "",
+    office_address:
+      vendorApplicationPayload.office_address || user?.office_address || "",
+    business_phone_number:
+      vendorApplicationPayload.phone_number || user?.vendor_phone_number || "",
+    business_email:
+      vendorApplicationPayload.business_email || user?.business_email || "",
+    cac_number: vendorApplicationPayload.cac_number || user?.cac_number || "",
+    cac_image: vendorApplicationPayload.cac_upload || user?.cac_upload || null,
   };
   const validationSchema = Yup.object({
     cac_image: Yup.mixed().required("Required"),
@@ -50,13 +50,10 @@ const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
         typeof values.cac_image === "string" ? null : values.cac_image,
     });
 
-    modal.openModal(
-      <VendorBankForm goBack={gotoBusinessForm} />,
-      "Bank Details Form"
-    );
+    modal.openModal(<VendorBankForm />, "Bank Details Form");
   };
   return (
-    <div>
+    <div className="w-sm md:w-md">
       <div className="flex items-start text-left gap-2 text-xs text-gray-500 py-2">
         <Info size={15} />
         <span>
@@ -67,6 +64,7 @@ const VendorBusinessForm: React.FC<Props> = ({ goBack }) => {
 
       <Formik
         initialValues={initialValues}
+        validateOnMount
         validationSchema={validationSchema}
         onSubmit={save}
       >

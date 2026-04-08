@@ -6,9 +6,9 @@ const StaffRoutes = () => {
 
   // Redirect UNAUTHENTICATED users to login
   if (isLoggedIn) {
-    if (user?.is_staff) {
+    if (user?.role === "manager") {
       return <Outlet />;
-    } else if (user?.vendor_active && user.is_vendor) {
+    } else if (user?.role === "vendor") {
       return <Navigate to="/vendor" replace />;
     } else {
       return <Navigate to="/" replace />;

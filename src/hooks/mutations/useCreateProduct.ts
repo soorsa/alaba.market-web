@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
+import toast from "react-hot-toast";
 
 export interface NewProductPayload {
   formData: FormData;
@@ -10,20 +9,15 @@ export interface NewProductPayload {
 export const createProduct = async (
   payload: NewProductPayload
 ): Promise<Product> => {
-  const response = await alabaApi.post(
-    `/dashboard/product/create/`,
-    payload.formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const response = await alabaApi.post(`/products/`, payload.formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
 export const useCreateProduct = () => {
-  const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createProduct,
@@ -35,10 +29,10 @@ export const useCreateProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ["stats"],
       });
-      showToast("Created product successfully!", "success");
+      toast.success("Created product successfully!");
     },
     onError() {
-      showToast("Unable to create...try again later", "error");
+      toast.error("Unable to create...try again later");
     },
   });
 };

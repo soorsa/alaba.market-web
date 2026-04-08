@@ -1,20 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import alabaApi from "../ApiClient";
 import { useUserStore } from "../../zustand/useUserStore";
-import type { Order } from "./useGetOrders";
+import alabaApi from "../ApiClient";
 
-export const getOrderHistory = async (username: string): Promise<Order[]> => {
-  const response = await alabaApi.get(`/${username}/orderhistory`);
+export const getOrderHistory = async (): Promise<OrderHistoryResponse> => {
+  const response = await alabaApi.get(`/orders/`);
   return response.data;
+};
+const getOrderByID = async (id: string): Promise<Order> => {
+  const res = await alabaApi.get(`/orders/${id}`);
+  return res.data;
 };
 
 // Query hook to get user Cart
 export const useGetOrderHistory = () => {
-  const { user } = useUserStore.getState();
-  const username = user?.username || "";
-  return useQuery<Order[]>({
+  const { token } = useUserStore.getState();
+  return useQuery<OrderHistoryResponse>({
     queryKey: ["orders"],
-    queryFn: () => getOrderHistory(username),
-    enabled: !!username,
+    queryFn: () => getOrderHistory(),
+    enabled: !!token,
+  });
+};
+export const useGetOrderByID = (id: string) => {
+  return useQuery<Order>({
+    queryKey: ["orders", id],
+    queryFn: () => getOrderByID(id),
+    enabled: !!id,
   });
 };

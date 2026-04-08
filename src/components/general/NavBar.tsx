@@ -1,38 +1,41 @@
-import React, { useState } from "react";
 import clsx from "clsx";
+import React, { useState } from "react";
 
+import { BsBoxSeam } from "react-icons/bs";
 import {
-  FiSearch,
-  FiShoppingCart,
-  FiUser,
+  FiArrowRight,
   FiChevronDown,
   FiLogIn,
   FiLogOut,
-  FiArrowRight,
+  FiSearch,
+  FiShoppingCart,
+  FiUser,
 } from "react-icons/fi";
-import { BsBoxSeam } from "react-icons/bs";
-import { useUserStore } from "../../zustand/useUserStore";
 import { useModalStore } from "../../zustand/ModalStore";
+import { useUserStore } from "../../zustand/useUserStore";
 import Login from "../auth/Login";
 // import { logout } from "../../hooks/Auth";
-import { X } from "lucide-react";
+import { CircleX, X } from "lucide-react";
 import { IoMenu, IoStorefrontOutline } from "react-icons/io5";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { MdOutlineSupportAgent, MdOutlineWidgets } from "react-icons/md";
-import { useFetchUserCart } from "../../hooks/querys/useGetUserCart";
-import { useLogout } from "../../hooks/Auth";
-import CartItemList from "../shop/CartItemList";
-import { formatPrice } from "../../utils/formatter";
-import Button from "./Button";
-import SmallLoader from "./SmallLoader";
-import NotAuthenticated from "../shop/NotAuthenticated";
-import EmptyCart from "../shop/EmptyCart";
 import { Link, useNavigate } from "react-router-dom";
-import MobileMenuList from "./MobileMenuList";
+import { useLogout } from "../../hooks/Auth";
+import { useClearCart } from "../../hooks/mutations/useCart";
+import { useFetchUserCart } from "../../hooks/querys/useGetUserCart";
+import { formatPrice } from "../../utils/formatter";
+import { useCurrency, type Currency } from "../../zustand/currency.state";
+import CartItemList from "../shop/CartItemList";
+import EmptyCart from "../shop/EmptyCart";
+import NotAuthenticated from "../shop/NotAuthenticated";
+import Button from "./Button";
 import MobileCategoryList from "./MobileCategoryList";
+import MobileMenuList from "./MobileMenuList";
+import SmallLoader from "./SmallLoader";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const { setCurrency } = useCurrency();
   const { user, isLoggedIn } = useUserStore();
   const { openModal } = useModalStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,9 +43,8 @@ const Navbar: React.FC = () => {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const { mutate: logout } = useLogout();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { data: cartData, isLoading: isGettingCart } = useFetchUserCart(
-    user?.username || ""
-  );
+  const { data: cartData, isLoading: isGettingCart } = useFetchUserCart();
+  const { mutate: clear, isPending: clearing } = useClearCart();
   const cartQty = cartData?.cartquantity || 0; // Sample cart item count
   const cartItems = cartData?.cartitems || [];
   const tabs = ["Menu", "categories"];
@@ -53,6 +55,23 @@ const Navbar: React.FC = () => {
     e.preventDefault();
     console.log("Searching for:", searchQuery);
     // Implement search functionality
+  };
+
+  const handleChangeCurrency = (value: string) => {
+    if (value === "usd") {
+      const crry: Currency = {
+        nation: "USD",
+        format: "en-US",
+      };
+      setCurrency(crry);
+    }
+    if (value === "ngn") {
+      const crry: Currency = {
+        nation: "NGN",
+        format: "en-NG",
+      };
+      setCurrency(crry);
+    }
   };
 
   const openAuthModal = () => {
@@ -66,9 +85,9 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center w-[200px]">
-            <a href="/" className="text-2xl font-bold">
+            <Link to="/" className="text-2xl font-bold">
               <img src="/alaba_hor.png" />
-            </a>
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -153,23 +172,23 @@ const Navbar: React.FC = () => {
               )}
 
               {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-5 z-50">
-                  <div className="px-2">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-50 rounded-md shadow-lg py-5 z-50">
+                  <div className="px-2" onClick={() => setIsProfileOpen(false)}>
                     <Link
-                      to="/profile"
+                      to="/customer"
                       className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
                     >
                       <FiUser />
                       <span>My Profile</span>
                     </Link>
                     <Link
-                      to="/orders"
+                      to="/customer/orders"
                       className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
                     >
                       <BsBoxSeam />
                       <span>My Orders</span>
                     </Link>
-                    {user?.is_staff && (
+                    {user?.role === "manager" && (
                       <Link
                         to="/manager"
                         className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
@@ -178,7 +197,7 @@ const Navbar: React.FC = () => {
                         Store Manager
                       </Link>
                     )}
-                    {user?.is_vendor && (
+                    {user?.role === "vendor" && (
                       <Link
                         to="/vendor"
                         className="cursor-pointer flex items-center gap-1 p-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-md"
@@ -245,14 +264,24 @@ const Navbar: React.FC = () => {
                         {formatPrice(cartData?.grandtotal || 0)}
                       </div>
                     </div>
-                    <Button
-                      label="Proceed to Checkout"
-                      onClick={() => {
-                        navigate("/checkout");
-                        setIsCartOpen(false);
-                      }}
-                      rightIcon={<FiArrowRight />}
-                    />
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        label="Clear"
+                        icon={<CircleX size={15} />}
+                        className="text-red-500! bg-black/5"
+                        onClick={clear}
+                        isLoading={clearing}
+                      />
+                      <Button
+                        label="Proceed to Checkout"
+                        onClick={() => {
+                          navigate("/checkout");
+                          setIsCartOpen(false);
+                        }}
+                        className="col-span-2"
+                        rightIcon={<FiArrowRight />}
+                      />
+                    </div>
                   </div>
                 </div>
               )
@@ -263,9 +292,17 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Bottom Row - Categories */}
-        <div className="relative b-row hidden md:flex">
+        <div className="relative b-row hidden md:flex gap-2">
+          <select
+            onChange={(e) => handleChangeCurrency(e.target.value)}
+            className="text-xs rounded-xl text-gray-600 px-2 border border-gray-400"
+          >
+            <option value="ngn">NGN</option>
+            <option value="gdp">GBP</option>
+            <option value="usd">USD</option>
+          </select>
           {/* Search Bar */}
-          <div className="hidden md:flex flex-1 mx-10">
+          <div className="hidden md:flex flex-1">
             <form onSubmit={handleSearch} className="w-full flex">
               <div className="relative flex-1">
                 <input

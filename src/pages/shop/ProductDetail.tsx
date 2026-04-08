@@ -1,19 +1,29 @@
+import { ArrowRight, Minus, Plus, SearchX } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import { IoCartOutline } from "react-icons/io5";
-import { useUserStore } from "../../zustand/useUserStore";
-import { useToastStore } from "../../zustand/ToastStore";
-import { useModalStore } from "../../zustand/ModalStore";
-import { useAddtoCart } from "../../hooks/mutations/useAddtoCart";
-import { useGetProductByID } from "../../hooks/querys/useGetProductByID";
+import { useNavigate, useParams } from "react-router-dom";
 import Login from "../../components/auth/Login";
-import { formatPrice } from "../../utils/formatter";
 import Button from "../../components/general/Button";
-import { ArrowRight } from "lucide-react";
-
+import ErrorPlaceholder from "../../components/general/ErrorPlaceholder";
+import { useAddtoCart } from "../../hooks/mutations/useCart";
+import { useGetProductByID } from "../../hooks/querys/useGetProductByID";
+import { formatPrice } from "../../utils/formatter";
+import { useModalStore } from "../../zustand/ModalStore";
+import { useToastStore } from "../../zustand/ToastStore";
+import { useUserStore } from "../../zustand/useUserStore";
+interface ErrorRes {
+  name: string;
+  message: string;
+  response?: {
+    status: number;
+    statusText: string;
+  };
+}
 const ProductDetail = () => {
   const { product_id } = useParams<{ product_id: string }>();
   const [currentImage, setCurrentImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
   const { user, isLoggedIn } = useUserStore();
   const { showToast } = useToastStore();
@@ -23,11 +33,15 @@ const ProductDetail = () => {
     data: product,
     isLoading,
     isError,
+    error,
   } = useGetProductByID(product_id || "");
-
   const handleAddToCart = () => {
     if (user && isLoggedIn) {
-      addToCart({ productID: product_id || "", username: user.username });
+      if (quantity > 0) {
+        addToCart({ product_id: product_id || "", quantity: quantity });
+      } else {
+        toast.error("Quantity must be greater than 0");
+      }
     } else {
       showToast("Please login to proceed", "info");
       openModal(<Login />);
@@ -36,16 +50,23 @@ const ProductDetail = () => {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    navigate("/checkout");
+    if (quantity > 0) {
+      navigate("/checkout");
+    }
   };
 
   if (isLoading) return <ProductDetailSkeleton />;
-  if (isError)
+
+  if (isError) {
+    const err: ErrorRes = error;
     return (
-      <div className="text-center py-12 text-red-500">
-        Failed to get Product
-      </div>
+      <ErrorPlaceholder
+        title={`${err.response?.status} - ${err.response?.statusText}`}
+        desc={err.message}
+        icon={<SearchX size={40} />}
+      />
     );
+  }
   if (!product)
     return <div className="text-center py-12">Product not found</div>;
 
@@ -63,7 +84,7 @@ const ProductDetail = () => {
           <div className="sticky top-4">
             <div className="h-96 w-full bg-gray-100 rounded-lg overflow-hidden mb-4">
               <img
-                src={`https://api.alaba.market` + images[currentImage]}
+                src={images[currentImage]}
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
@@ -78,7 +99,7 @@ const ProductDetail = () => {
                   }`}
                 >
                   <img
-                    src={`https://api.alaba.market` + img}
+                    src={img}
                     alt={`${product.title} thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
@@ -106,26 +127,50 @@ const ProductDetail = () => {
 
           <div className="mb-6">
             <h2 className="text-lg font-alaba-mid mb-2">Description</h2>
-            <p className="text-gray-700 whitespace-pre-line">
+            <p className="text-gray-700 whitespace-pre-line min-h-56">
               {product.description}
             </p>
           </div>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 mb-8 bg-white p-4 rounded-2xl">
+            <div className="grid grid-cols-3 gap-1 mx-auto md:mx-0 w-2/3 md:w-1/3">
+              <div
+                onClick={() => setQuantity(quantity - 1)}
+                className="cursor-pointer flex items-center justify-center p-1 md:p-2 border border-gray-200 rounded-md"
+              >
+                <Minus />
+              </div>
+              <input
+                type="text"
+                value={quantity}
+                className="border border-gray-200 px-2 md:px-4 rounded-md"
+                onChange={(e) => {
+                  setQuantity(Number(e.target.value));
+                }}
+              />
+              <div
+                onClick={() => setQuantity(quantity + 1)}
+                className="cursor-pointer flex items-center justify-center p-1 md:p-2 border border-gray-200 rounded-md"
+              >
+                <Plus />
+              </div>
+            </div>
 
-          <div className="flex flex-row gap-4 mb-8">
-            <Button
-              icon={<IoCartOutline />}
-              label="Add to Cart"
-              onClick={handleAddToCart}
-              isLoading={isPending}
-              loadingLabel="Adding..."
-              className=""
-            />
-            <Button
-              label="Buy Now"
-              className="bg-black"
-              rightIcon={<ArrowRight />}
-              onClick={handleBuyNow}
-            />
+            <div className="flex flex-row gap-2 w-full md:w-2/3">
+              <Button
+                icon={<IoCartOutline />}
+                label="Add to Cart"
+                onClick={handleAddToCart}
+                isLoading={isPending}
+                loadingLabel="Adding..."
+                className=""
+              />
+              <Button
+                label="Buy Now"
+                className="bg-black"
+                rightIcon={<ArrowRight />}
+                onClick={handleBuyNow}
+              />
+            </div>
           </div>
 
           <div className="border-t border-t-gray-300 pt-4">

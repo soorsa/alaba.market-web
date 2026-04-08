@@ -6,10 +6,10 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BsFullscreenExit } from "react-icons/bs";
-interface Image {
-  src: string;
+export interface Image {
+  src: string | File | undefined;
   alt: string;
 }
 interface Props {
@@ -184,7 +184,11 @@ const ImageViewer: React.FC<Props> = ({
         >
           <img
             ref={imageRef}
-            src={currentImage.src}
+            src={
+              typeof currentImage.src === "string"
+                ? currentImage.src
+                : currentImage.src && URL.createObjectURL(currentImage.src)
+            }
             alt={currentImage.alt || `Image ${currentIndex + 1}`}
             onLoad={handleImageLoad}
             loading="eager"
@@ -216,7 +220,11 @@ const ImageViewer: React.FC<Props> = ({
                 aria-label={`View image ${index + 1}`}
               >
                 <img
-                  src={image.src}
+                  src={
+                    typeof image.src === "string"
+                      ? image.src
+                      : image.src && URL.createObjectURL(image.src)
+                  }
                   alt={image.alt || `Thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                   loading="lazy"

@@ -1,8 +1,7 @@
 import React from "react";
-import type { Product } from "../../types/ProductsTypes";
-import Button from "../general/Button";
-import { useModalStore } from "../../zustand/ModalStore";
 import { useDeleteProduct } from "../../hooks/mutations/useDeleteProduct";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
 import SmallLoader from "../general/SmallLoader";
 interface Props {
   item: Product;
@@ -28,7 +27,7 @@ const DeleteItem: React.FC<Props> = ({ item }) => {
           <Button
             label="Yes, Delete"
             className="bg-red-700 !text-gray-300"
-            onClick={() => deleteProduct(item.product_id)}
+            onClick={() => deleteProduct(item.id)}
           />
           <Button
             label="No, Cancel"

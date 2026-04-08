@@ -1,7 +1,6 @@
-import { useUserStore } from "./../../zustand/useUserStore";
 import { useQuery } from "@tanstack/react-query";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
+import { useUserStore } from "./../../zustand/useUserStore";
 export interface OrderItem {
   id: number;
   products: Product;

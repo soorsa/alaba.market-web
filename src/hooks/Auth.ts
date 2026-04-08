@@ -1,22 +1,27 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../zustand/ToastStore";
+// import { useToastStore } from "../zustand/ToastStore";
 import { login, register } from "./api";
 import type { AxiosError } from "axios";
 import { useUserStore } from "../zustand/useUserStore";
 import { useModalStore } from "../zustand/ModalStore";
 import { useShoppingBagStore } from "../zustand/ShoppingCartStore";
+import toast from "react-hot-toast";
 
-const { showToast } = useToastStore.getState();
+// const { showToast } = useToastStore.getState();
 const { closeModal } = useModalStore.getState();
-const { setUser, setIsLoggedIn } = useUserStore.getState();
+const { setUser, setIsLoggedIn, setToken } = useUserStore.getState();
 type LoginError = {
+  non_field_errors: string;
   error: string;
   errors: string[];
 };
 type RegisterError = {
+  non_field_errors: string[];
   error: string;
   errors: string[];
   username: string[];
+  email: string[];
+  password: string[];
 };
 export const useLogin = () => {
   const queryClient = useQueryClient();
@@ -27,9 +32,10 @@ export const useLogin = () => {
         queryKey: ["user"],
       });
       const username = response.user.first_name || response.user.username;
-      showToast(`Logged in Successfully... ${username}`, "success");
+      toast.success(`Logged in Successfully... ${username}`);
       setUser(response.user);
       setIsLoggedIn(true);
+      setToken(response.token);
       closeModal();
     },
     onError: (error: AxiosError<LoginError>) => {
@@ -37,11 +43,13 @@ export const useLogin = () => {
       if (error.response) {
         const errorData = error.response.data;
         // Use the error message from the response
-        const errorMessage = errorData.error || "Login failed";
-        showToast(errorMessage, "error");
+        const errorMessage = errorData.non_field_errors || "Login failed";
+        // showToast(errorMessage, "error");
+        toast.error(errorMessage);
       } else {
         // Handle non-Axios errors or network errors
-        showToast("Loggin Failed!", "error");
+        toast.error("Login Failed");
+        // showToast("Loggin Failed!", "error");
       }
     },
   });
@@ -55,21 +63,25 @@ export const useRegister = () => {
         queryKey: ["user"],
       });
       const username = response.user.first_name || response.user.username;
-      showToast(`Logged in Successfully... ${username}`, "success");
+      toast.success(`Logged in Successfully... ${username}`);
       setUser(response.user);
       setIsLoggedIn(true);
+      setToken(response.token);
       closeModal();
     },
     onError: (error: AxiosError<RegisterError>) => {
-      // Check if this is an Axios error with response data
-      if (error.response) {
+      if (error.response?.data) {
         const errorData = error.response.data;
-        // Use the error message from the response
-        const errorMessage = errorData.username[0] || "Registeration failed";
-        showToast(errorMessage, "error");
+
+        Object.values(errorData).forEach((messages) => {
+          if (Array.isArray(messages)) {
+            messages.forEach((message) => {
+              toast.error(message);
+            });
+          }
+        });
       } else {
-        // Handle non-Axios errors or network errors
-        showToast("Registeration Failed!", "error");
+        toast.error("Registration Failed!");
       }
     },
   });
@@ -95,5 +107,5 @@ export const logout = async () => {
   useShoppingBagStore.getState().resetCart();
   localStorage.removeItem("user-state"); // Clear persisted user state
   // window.location.reload(); // Optional: Refresh page to clear UI state
-  showToast("Logged out successfully!", "success"); // Show logout success message
+  toast.success("Logged out successfully!"); // Show logout success message
 };

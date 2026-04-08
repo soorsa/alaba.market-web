@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Check, Edit, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { MdAdd } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useModalStore } from "../../zustand/ModalStore";
-import DeleteAllProducts from "./DeleteAllProduct";
-import Button from "../general/Button";
-import { MdAdd } from "react-icons/md";
-import type { Events } from "../../hooks/querys/useEventsandTags";
-import EditEvent from "./EditEvent";
 import CreateEvent from "./CreateEvent";
+import DeleteAllProducts from "./DeleteAllProduct";
+import DeleteEvent from "./DeleteEvent";
+import EditEvent from "./EditEvent";
 type Props = {
   events: Events[];
   isLoading: boolean;
@@ -20,8 +20,7 @@ const EventsListTable: React.FC<Props> = ({ events, isError, isLoading }) => {
   const navigate = useNavigate();
   const { openModal } = useModalStore();
   const handleDelete = (event: Events) => {
-    console.log(event);
-    // openModal(<DeleteCategory item={category} />, "Delete", "dark");
+    openModal(<DeleteEvent item={event} />, "Delete", "dark");
   };
   const handleDeleteAll = () => {
     openModal(<DeleteAllProducts />, "Delete All", "dark");
@@ -161,10 +160,10 @@ const EventsListTable: React.FC<Props> = ({ events, isError, isLoading }) => {
 
   return (
     <div className="border-1 border-gray-700 py-4 px-2 rounded-lg w-full">
-      <div className="flex items-center justify-between mb-6 px-0">
-        <h4 className="text-sm text-left py-2 text-gray-200">Categories</h4>
+      <div className="flex items-center justify-between mb-2 px-0">
+        <h4 className="font-alaba-mid text-left py-2 text-gray-200">Events</h4>
       </div>
-      <div className="flex justify-between items-center mb-4 px-4 ">
+      <div className="flex justify-between items-center mb-4 px-0 ">
         <div className="flex gap-1 md:gap-4 text-sm font-medium">
           <Button
             label="New Event"

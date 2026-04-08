@@ -8,7 +8,7 @@ export interface VendorApplicationPayload {
   last_name?: string;
 
   // Customer fields (from personal form)
-  profile_pic?: File | null;
+  profile_picture?: File | null;
   phone_number?: string;
   address?: string;
 
@@ -25,7 +25,7 @@ export interface VendorApplicationPayload {
   bvn?: string;
   bank_account_name?: string;
   bank_name?: string;
-  account_number?: string;
+  bank_account_number?: string;
 
   // Note: vendor_phone_number and company_name removed as they're not in serializer
 }

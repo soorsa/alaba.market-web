@@ -1,9 +1,8 @@
 import React from "react";
-import Button from "../general/Button";
 import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
 // import SmallLoader from "../general/SmallLoader";
 import { IoInformationCircle } from "react-icons/io5";
-import type { Order } from "../../hooks/querys/useGetOrders";
 import { useDeleteAllOrder } from "../../hooks/mutations/useDeleteOrder";
 interface Props {
   setselectedOrder: (order: Order[]) => void;

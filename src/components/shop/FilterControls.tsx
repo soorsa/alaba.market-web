@@ -1,8 +1,7 @@
 // components/FilterControls.tsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
-import type { FilterPayload } from "../../types/ProductsTypes";
+import { useGetBrands } from "../../hooks/querys/useEventsandTags";
 import Button from "../general/Button";
 
 interface FilterControlsProps {
@@ -19,7 +18,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
 
   // Fetch categories and brands for dropdowns
   const { data: categories } = useFetchCategories();
-  const { data: brands } = useFetchBrands();
+  const { data: brands } = useGetBrands();
 
   // Sync local filters with parent
   useEffect(() => {
@@ -63,7 +62,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-md mb-6 h-fit">
+    <div className="bg-white p-4 rounded-2xl mb-6 h-fit">
       <div className="grid grid-cols-1 divide-y-1 divide-gray-200">
         {/* Price Range */}
         <div className="text-sm py-4">
@@ -126,7 +125,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
             className="w-[150px] px-1 py-2 border border-gray-300 rounded-md focus:outline-none"
           >
             <option value="">All Categories</option>
-            {categories?.map((category) => (
+            {categories?.results?.map((category) => (
               <option key={category.slug} value={category.slug}>
                 {category.title}
               </option>
@@ -150,7 +149,7 @@ const FilterControls = ({ filters, onFilterChange }: FilterControlsProps) => {
             className="w-[150px] px-1 py-2 border border-gray-300 rounded-md focus:outline-none"
           >
             <option value="">All Brands</option>
-            {brands?.map((brand) => (
+            {brands?.results.map((brand) => (
               <option key={brand.slug} value={brand.slug}>
                 {brand.title}
               </option>

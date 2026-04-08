@@ -1,11 +1,13 @@
 import React from "react";
 import HeroSlider from "./HeroSlider";
 import { useGetEvents } from "../../hooks/querys/useEventsandTags";
+import LinkButton from "../general/LinkButton";
+import { ArrowUpRightFromSquare } from "lucide-react";
 
 const HeroGrid: React.FC = () => {
   const { data, isLoading } = useGetEvents();
-  const eventsData = data ?? [];
-  const events = eventsData.filter((event) => event.is_banner === true);
+  const eventsData = data?.results ?? [];
+  const events = eventsData.filter((event) => event.is_banner === true) || [];
   if (isLoading) {
     return (
       <div className="w-full h-[400px] max-h-[450px]">
@@ -38,13 +40,45 @@ const HeroGrid: React.FC = () => {
           {/* <img src="/image.jpg" alt="" className="h-full w-full" /> */}
           <HeroSlider items={events} />
         </div>
-        <div className="rounded-2xl overflow-hidden">
+        <div className="rounded-2xl overflow-hidden relative">
           {" "}
-          <img src={events[0].banner} alt="" className="h-full w-full" />
+          <img
+            src={events[0]?.banner || ""}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <div className="space-y-2">
+              <div className="text-white font-alaba-bold text-xl">
+                {events[0]?.title}
+              </div>
+              <LinkButton
+                label="Shop"
+                className="bg-white/20 text-sm w-fit! mx-auto hover:bg-white/40 px-4"
+                rightIcon={<ArrowUpRightFromSquare size={15} />}
+              />
+            </div>
+          </div>
         </div>
-        <div className="rounded-2xl overflow-hidden">
+        <div className="rounded-2xl overflow-hidden relative">
           {" "}
-          <img src={events[1].banner} alt="" className="h-full w-full" />
+          <img
+            src={events[1]?.banner || ""}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <div className="space-y-2">
+              <div className="text-white font-alaba-bold text-xl">
+                {events[1]?.title}
+              </div>
+              <LinkButton
+                label="Shop"
+                className="bg-white/20 text-sm w-fit! mx-auto hover:bg-white/40 px-4"
+                rightIcon={<ArrowUpRightFromSquare size={15} />}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

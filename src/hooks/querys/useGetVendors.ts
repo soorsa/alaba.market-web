@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import alabaApi from "../ApiClient";
-import type { PaginatedResponse } from "../../types/PaginationTypes";
 
 export interface Vendor {
   id: number;

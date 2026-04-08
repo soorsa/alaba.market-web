@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../zustand/ToastStore";
+import toast from "react-hot-toast";
 import alabaApi from "../ApiClient";
-import type { Events } from "../querys/useEventsandTags";
 
 interface Payload {
   formData: FormData;
@@ -21,20 +20,19 @@ export const updateEvent = async (payload: Payload): Promise<Events> => {
   return response.data;
 };
 export const createEvent = async (payload: Payload): Promise<Events> => {
-  const response = await alabaApi.put(
-    `/dashboard/events/create/`,
-    payload.formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const response = await alabaApi.post(`/events/`, payload.formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+export const deleteEvent = async (id: number): Promise<Events> => {
+  const response = await alabaApi.delete(`/events/${id}/`);
   return response.data;
 };
 
 export const useUpdateEvents = () => {
-  const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateEvent,
@@ -43,27 +41,42 @@ export const useUpdateEvents = () => {
       queryClient.invalidateQueries({
         queryKey: ["events"],
       });
-      showToast("Updated Events successfully!", "success");
+      toast.success("Updated Events successfully!");
     },
     onError() {
-      showToast("Unable to create...try again later", "error");
+      toast.error("Unable to create...try again later");
     },
   });
 };
 export const useCreateEvents = () => {
-  const { showToast } = useToastStore();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: updateEvent,
+    mutationFn: createEvent,
     onSuccess: () => {
       // Refetch relevant data if needed
       queryClient.invalidateQueries({
         queryKey: ["events"],
       });
-      showToast("Created Events successfully!", "success");
+      toast.success("Created Events successfully");
     },
     onError() {
-      showToast("Unable to create...try again later", "error");
+      toast.error("Unable to create...try again later");
+    },
+  });
+};
+export const useDeleteEvents = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteEvent,
+    onSuccess: () => {
+      // Refetch relevant data if needed
+      queryClient.invalidateQueries({
+        queryKey: ["events"],
+      });
+      toast.success("Deleted Events successfully!");
+    },
+    onError() {
+      toast.error("Unable to delete...try again later");
     },
   });
 };

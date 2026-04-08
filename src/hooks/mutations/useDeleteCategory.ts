@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
-import type { Category } from "../../types/ProductsTypes";
 import { useModalStore } from "../../zustand/ModalStore";
+import toast from "react-hot-toast";
 
-export const deleteCategory = async (slug: string): Promise<Category> => {
-  const response = await alabaApi.delete(`/dashboard/category/${slug}/`, {
+export const deleteCategory = async (id: number): Promise<Category> => {
+  const response = await alabaApi.delete(`/categories/${id}/`, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -14,7 +13,6 @@ export const deleteCategory = async (slug: string): Promise<Category> => {
 };
 
 export const useDeleteCategory = () => {
-  const { showToast } = useToastStore();
   const { closeModal } = useModalStore();
   const queryClient = useQueryClient();
   return useMutation({
@@ -24,11 +22,11 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({
         queryKey: ["categories"],
       });
-      showToast("Deleted category successfully!", "success");
+      toast.success("Deleted category successfully!");
       closeModal();
     },
     onError() {
-      showToast("Unable to Delete...try again later", "error");
+      toast.error("Unable to Delete...try again later");
     },
   });
 };

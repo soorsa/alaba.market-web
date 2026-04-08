@@ -1,19 +1,18 @@
+import { Form, Formik } from "formik";
 import React from "react";
-import type { Product } from "../../types/ProductsTypes";
-import { Formik, Form } from "formik";
+import { IoInformationCircle } from "react-icons/io5";
 import * as Yup from "yup";
-import Button from "../general/Button";
-import InputField from "../general/InputField";
 import {
   useUpdateProduct,
   type ProductPayload,
 } from "../../hooks/mutations/useUpdateProduct";
-import { IoInformationCircle } from "react-icons/io5";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
-import SelectField from "../general/SelectField";
-import CheckboxField from "../general/CheckBox";
+import { useGetBrands } from "../../hooks/querys/useEventsandTags";
 import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
+import CheckboxField from "../general/CheckBox";
+import InputField from "../general/InputField";
+import SelectField from "../general/SelectField";
 import ImageUploadField from "../staff/ImageUploadField";
 
 const IdInfoSchema = Yup.object({
@@ -29,9 +28,9 @@ const EditVendorProduct: React.FC<Props> = ({ product }) => {
   const { closeModal } = useModalStore();
   const { mutate: updateProduct, isPending: updating } = useUpdateProduct();
   const { data: catData } = useFetchCategories();
-  const { data: brandsData } = useFetchBrands();
-  const categories = catData || [];
-  const brands = brandsData || [];
+  const { data: brandsData } = useGetBrands();
+  const categories = catData?.results || [];
+  const brands = brandsData?.results || [];
   const categoryOptions = categories.map((category) => ({
     value: category.id,
     label: category.title,
@@ -47,23 +46,23 @@ const EditVendorProduct: React.FC<Props> = ({ product }) => {
     (brand) => brand.label === product.brand_name
   );
   const initialValues = {
-    product_id: product.product_id,
+    product_id: product.id,
     title: product.title,
     brand: brandValue?.value,
-    tag: product.tag_name,
+    event: product.event_name,
     category: catValue?.value,
     price: product.price,
     owner: "Owned by me",
 
     vendor_price: product.vendor_price,
     description: product.description,
-    image: "https://api.alaba.market" + product.image,
-    image2: "https://api.alaba.market" + product.image2,
-    image3: "https://api.alaba.market" + product.image3,
+    image: product.image,
+    image2: product.image2,
+    image3: product.image3,
     vendor: product.vendor,
     // is_approved: product.is_approved,
-    // is_featured: product.is_featured,
-    // promote: product.promote,
+    is_featured: product.is_featured,
+    promote: product.promote,
   };
   const handleSubmit = (values: typeof initialValues) => {
     const formData = new FormData();
@@ -74,10 +73,10 @@ const EditVendorProduct: React.FC<Props> = ({ product }) => {
       formData.append("category", values.category.toString());
     }
     if (values.brand) {
-      formData.append("brand", values.brand);
+      formData.append("brand", String(values.brand));
     }
-    if (values.tag) {
-      formData.append("tag", values.tag);
+    if (values.event) {
+      formData.append("event", values.event);
     }
     if (values.vendor_price) {
       formData.append("vendor_price", values.vendor_price);
@@ -97,14 +96,14 @@ const EditVendorProduct: React.FC<Props> = ({ product }) => {
     // if (values.is_approved !== undefined) {
     //   formData.append("is_approved", values.is_approved.toString());
     // }
-    // if (values.is_featured !== undefined) {
-    //   formData.append("is_featured", values.is_featured.toString());
-    // }
-    // if (values.promote !== undefined) {
-    //   formData.append("promote", values.promote.toString());
-    // }
+    if (values.is_featured) {
+      formData.append("is_featured", values.is_featured.toString());
+    }
+    if (values.promote) {
+      formData.append("promote", values.promote.toString());
+    }
     const payload: ProductPayload = {
-      product_id: product.product_id,
+      id: product.id,
       formData: formData,
     };
     updateProduct(payload, {
@@ -115,7 +114,7 @@ const EditVendorProduct: React.FC<Props> = ({ product }) => {
   };
 
   return (
-    <div className="w-full h-[550px]">
+    <div className="w-sm md:w-md h-[550px]">
       <Formik
         initialValues={initialValues}
         validationSchema={IdInfoSchema}

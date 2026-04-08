@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from "react";
 import { Check, Edit, Trash2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { formatDate, formatPrice } from "../../utils/formatter";
+import { useModalStore } from "../../zustand/ModalStore";
+import { useToastStore } from "../../zustand/ToastStore";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useModalStore } from "../../zustand/ModalStore";
-import type { Order } from "../../hooks/querys/useGetOrders";
-import type { OrderFilters } from "../../pages/staff/OrdersScreen";
-import DeleteOrder from "./DeleteOrder";
-import { useToastStore } from "../../zustand/ToastStore";
 import DeleteAllOrder from "./DeleteAllOrders";
+import DeleteOrder from "./DeleteOrder";
 import OrderSummary from "./OrderSummary";
 type Props = {
   orders: Order[];
   isLoading: boolean;
   isError: boolean;
-  filters: OrderFilters;
+  filters: OrderFilterParams;
   onPageChange: (page: number) => void;
-  onFilterChange: (newFilters: OrderFilters) => void;
+  onFilterChange: (newFilters: OrderFilterParams) => void;
 };
 
 const tabs = ["All", "Pending", "Confirmed", "On-route", "Delivered"] as const;
@@ -125,7 +123,7 @@ const OrderListTable: React.FC<Props> = ({
         {orders.map((order, index) => (
           <li
             key={index}
-            className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-center`}
+            className={`p-2 cursor-pointer rounded-lg gap-2 text-gray-300 even:bg-alaba-dark-800 flex justify-between items-start`}
           >
             <label className="flex justify-center cursor-pointer">
               <input
@@ -148,22 +146,24 @@ const OrderListTable: React.FC<Props> = ({
               className="flex-1 min-w-0 text-left overflow-hidden"
               onClick={() => viewOrder(order)}
             >
-              <div className="min-w-0">
-                <div className="font-semibold text-xs md:text-sm truncate">
-                  {order.products.length} item(s) ordered by{" "}
+              <div className="min-w-0 text-xs">
+                <div className="font-semibold md:text-sm truncate">
+                  Customer:{" "}
                   <span className=" hover:underline underline-offset-2 text-gray-400">
-                    {order.customer.first_name}
+                    {order.deliver_address.user.first_name}{" "}
+                    {order.deliver_address.user.last_name}
                   </span>{" "}
-                  on {formatDate(order.order_date)}
                 </div>
-                <div className="text-xs truncate">
+                <div className="">Qty: {order.products.length} item(s)</div>
+                <div className="">Date: {formatDate(order.order_date)}</div>
+                <div className="truncate">
                   <span>Payment method: </span>
                   <span
                     className={
-                      order.pay_on_delivery ? "text-blue-500" : "text-green-500"
+                      order.payment_method ? "text-blue-500" : "text-green-500"
                     }
                   >
-                    {order.pay_on_delivery ? "Pay on delivery" : "Paystack"}
+                    {order.payment_method ? "Pay on delivery" : "Paystack"}
                   </span>
                 </div>{" "}
               </div>
@@ -173,7 +173,7 @@ const OrderListTable: React.FC<Props> = ({
               <div className="flex gap-2 justify-end">
                 <div
                   className="flex gap-1 items-center text-blue-300"
-                  //   onClick={() => handleEdit(order)}
+                  onClick={() => viewOrder(order)}
                 >
                   <Edit size={15} />
                 </div>

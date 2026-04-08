@@ -1,10 +1,9 @@
 // hooks/useCategories.ts
 import { useQuery } from "@tanstack/react-query";
-import type { Category } from "../../types/ProductsTypes";
 import alabaApi from "../ApiClient";
 
 export const useFetchCategories = () => {
-  return useQuery<Category[]>({
+  return useQuery<CategoryResponse>({
     queryKey: ["categories"],
     queryFn: async () => {
       const response = await alabaApi.get("/categories/"); // Adjust endpoint

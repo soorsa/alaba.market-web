@@ -1,14 +1,29 @@
-import InfoCard from "../../components/staff/InfoCard";
-import { FiShoppingBag, FiUsers } from "react-icons/fi";
-import ProductList from "../../components/staff/ProductList";
-import { useGetDashboardData } from "../../hooks/querys/useGetDashboardData";
-import OrderList from "../../components/staff/OrderList";
-import { formatCompactPrice, formatNumber } from "../../utils/formatter";
 import { LucidePackageCheck } from "lucide-react";
 import { BsGraphUpArrow } from "react-icons/bs";
+import { FiShoppingBag, FiUsers } from "react-icons/fi";
+import InfoCard from "../../components/staff/InfoCard";
+import OrderList from "../../components/staff/OrderList";
+import ProductList from "../../components/staff/ProductList";
+import { useFilterProducts } from "../../hooks/querys/filterProducts";
+import { useGetDashboardData } from "../../hooks/querys/useGetDashboardData";
+import { useGetOrdersDashboard } from "../../hooks/querys/useGetOrders";
+import { formatCompactPrice, formatNumber } from "../../utils/formatter";
 
 const DashboardIndexScreen = () => {
   const { data, isLoading, isError } = useGetDashboardData();
+  const params: OrderFilterParams = {
+    ordering: "order_date",
+  };
+  const {
+    data: productsData,
+    isLoading: loadingProducts,
+    isError: errorProducts,
+  } = useFilterProducts();
+  const {
+    data: orderData,
+    isPending: loadingOrders,
+    isError: errorOrders,
+  } = useGetOrdersDashboard(params, 1);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -48,14 +63,14 @@ const DashboardIndexScreen = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <ProductList
-          products={data?.products || []}
-          isError={isError}
-          isLoading={isLoading}
+          products={productsData?.results || []}
+          isError={errorProducts}
+          isLoading={loadingProducts}
         />
         <OrderList
-          orders={data?.orders || []}
-          isError={isError}
-          isLoading={isLoading}
+          orders={orderData?.results || []}
+          isError={errorOrders}
+          isLoading={loadingOrders}
         />
       </div>
     </div>

@@ -1,21 +1,14 @@
 import { useState } from "react";
-import InfoCard from "../../components/staff/InfoCard";
-import { formatNumber } from "../../utils/formatter";
-import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
-import { useGetOrdersDashboard } from "../../hooks/querys/useGetOrders";
+import InfoCard from "../../components/staff/InfoCard";
 import OrderListTable from "../../components/staff/OrderListTable";
 import Paginator from "../../components/staff/Paginator";
-type Status = "Pending" | "Confirmed" | "On-route" | "Delivered";
-export interface OrderFilters {
-  delivery_status?: Status;
-  order_date__gte?: string;
-  order_date__lte?: string;
-  paid?: string;
-}
+import { useGetStats } from "../../hooks/querys/useGetAllStats";
+import { useGetOrdersDashboard } from "../../hooks/querys/useGetOrders";
+import { formatNumber } from "../../utils/formatter";
 
 const OrdersScreen = () => {
-  const [filters, setFilters] = useState<OrderFilters>({});
+  const [filters, setFilters] = useState<OrderFilterParams>({});
   const [page, setpage] = useState(1);
   const { data, isLoading, isError } = useGetOrdersDashboard(filters, page);
   const {

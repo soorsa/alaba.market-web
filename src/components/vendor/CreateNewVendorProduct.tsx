@@ -1,66 +1,34 @@
+import { Form, Formik } from "formik";
 import React from "react";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
-import Button from "../general/Button";
-import InputField from "../general/InputField";
 import { IoInformationCircle } from "react-icons/io5";
-import { useFetchCategories } from "../../hooks/querys/getCategories";
-import { useFetchBrands } from "../../hooks/querys/getBrands";
-import SelectField from "../general/SelectField";
-import CheckboxField from "../general/CheckBox";
-import { useModalStore } from "../../zustand/ModalStore";
+import * as Yup from "yup";
 import {
   useCreateProduct,
   type NewProductPayload,
 } from "../../hooks/mutations/useCreateProduct";
-import ImageUploadField from "../staff/ImageUploadField";
+import { useFetchCategories } from "../../hooks/querys/getCategories";
+import {
+  useGetBrands,
+  useGetEvents,
+} from "../../hooks/querys/useEventsandTags";
+import { useModalStore } from "../../zustand/ModalStore";
 import { useUserStore } from "../../zustand/useUserStore";
-
-const validationSchema = Yup.object().shape({
-  // Required fields
-  title: Yup.string()
-    .required("Product title is required")
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title cannot exceed 100 characters"),
-
-  category: Yup.string().required("Category is required"),
-
-  brand: Yup.string().required("Manufacturer is required"),
-
-  vendor_price: Yup.number()
-    .required("Price is required")
-    .positive("Price must be positive")
-    .typeError("Price must be a number"),
-
-  description: Yup.string()
-    .required("Description is required")
-    .min(10, "Description should be at least 10 characters")
-    .max(2000, "Description cannot exceed 2000 characters"),
-
-  // Image validations
-  image: Yup.mixed().required("Primary image is required"),
-
-  image2: Yup.mixed().required("Second image is required"),
-
-  image3: Yup.mixed().required("Third image is required"),
-
-  // Optional fields with validation
-  tag: Yup.string().max(50, "Tag cannot exceed 50 characters"),
-
-  vendor: Yup.string().required(),
-  //   is_approved: Yup.boolean(),
-  //   is_featured: Yup.boolean(),
-  //   promote: Yup.boolean(),
-});
+import Button from "../general/Button";
+import CheckboxField from "../general/CheckBox";
+import InputField from "../general/InputField";
+import SelectField from "../general/SelectField";
+import ImageUploadField from "../staff/ImageUploadField";
 
 const CreateNewProduct: React.FC = () => {
   const { closeModal } = useModalStore();
   const { user } = useUserStore();
   const { mutate: create, isPending: creating } = useCreateProduct();
   const { data: catData } = useFetchCategories();
-  const { data: brandsData } = useFetchBrands();
-  const categories = catData || [];
-  const brands = brandsData || [];
+  const { data: brandsData } = useGetBrands();
+  const { data: eventsData } = useGetEvents();
+  const categories = catData?.results || [];
+  const brands = brandsData?.results || [];
+  const events = eventsData?.results || [];
   const categoryOptions = categories.map((category) => ({
     value: category.id,
     label: category.title,
@@ -69,12 +37,16 @@ const CreateNewProduct: React.FC = () => {
     value: brand.id,
     label: brand.title,
   }));
+  const eventOptions = events.map((event) => ({
+    value: event.id,
+    label: event.title,
+  }));
 
   const initialValues = {
     product_id: "",
     title: "",
     brand: "",
-    tag: "",
+    event: "",
     category: "",
     vendor_price: "",
     description: "",
@@ -82,11 +54,42 @@ const CreateNewProduct: React.FC = () => {
     image2: null,
     image3: null,
     vendor: user?.vendor_id || "",
-    owner: "Owned by me",
-    // is_approved: false,
-    // is_featured: false,
-    // promote: false,
+    is_approved: false,
+    is_featured: false,
+    promote: false,
   };
+  const validationSchema = Yup.object().shape({
+    // Required fields
+    title: Yup.string()
+      .required("Product title is required")
+      .min(3, "Title must be at least 3 characters")
+      .max(100, "Title cannot exceed 100 characters"),
+
+    category: Yup.string().required("Category is required"),
+
+    // brand: Yup.string().required("Manufacturer is required"),
+
+    vendor_price: Yup.number()
+      .required("Price is required")
+      .positive("Price must be positive")
+      .typeError("Price must be a number"),
+
+    description: Yup.string()
+      .required("Description is required")
+      .min(10, "Description should be at least 10 characters")
+      .max(2000, "Description cannot exceed 2000 characters"),
+
+    // Image validations
+    image: Yup.mixed().required("Primary image is required"),
+
+    image2: Yup.mixed().required("Second image is required"),
+
+    image3: Yup.mixed().required("Third image is required"),
+
+    // Optional fields with validation
+    event: Yup.string().max(50, "Event cannot exceed 50 characters"),
+  });
+
   const handleSubmit = (values: typeof initialValues) => {
     const formData = new FormData();
     if (values.title) {
@@ -98,8 +101,8 @@ const CreateNewProduct: React.FC = () => {
     if (values.brand) {
       formData.append("brand", values.brand);
     }
-    if (values.tag) {
-      formData.append("tag", values.tag);
+    if (values.event) {
+      formData.append("event", values.event);
     }
     if (values.vendor) {
       formData.append("vendor", values.vendor);
@@ -119,15 +122,13 @@ const CreateNewProduct: React.FC = () => {
     if (values.image3) {
       formData.append("image3", values.image3);
     }
-    // if (values.is_approved !== undefined) {
-    //   formData.append("is_approved", values.is_approved.toString());
-    // }
-    // if (values.is_featured !== undefined) {
-    //   formData.append("is_featured", values.is_featured.toString());
-    // }
-    // if (values.promote !== undefined) {
-    //   formData.append("promote", values.promote.toString());
-    // }
+    formData.append("is_approved", "false");
+    if (values.is_featured) {
+      formData.append("is_featured", values.is_featured.toString());
+    }
+    if (values.promote) {
+      formData.append("promote", values.promote.toString());
+    }
     const payload: NewProductPayload = {
       formData: formData,
     };
@@ -139,9 +140,10 @@ const CreateNewProduct: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-[550px]">
+    <div className="w-sm md:w-md h-[550px]">
       <Formik
         initialValues={initialValues}
+        validateOnMount
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -174,14 +176,22 @@ const CreateNewProduct: React.FC = () => {
                   formatMoney
                   placeholder="Your Price"
                 />
-                <InputField name="owner" label="Vendor" className="" readonly />
+
                 <SelectField
                   name="category"
+                  label="Category"
                   options={categoryOptions}
                   placeholder="Select Category"
                 />
                 <SelectField
+                  name="event"
+                  label="Event"
+                  options={eventOptions}
+                  placeholder="Select Event"
+                />
+                <SelectField
                   name="brand"
+                  label="Brand"
                   options={brandOptions}
                   placeholder="Select Manufacturer"
                 />
@@ -200,11 +210,11 @@ const CreateNewProduct: React.FC = () => {
                 <CheckboxField name="is_featured" label="Featured" />{" "}
               </div>
             </div>
-            <div className="flex justify-between">
+            <div className="grid grid-cols-2 gap-2">
               <Button
-                label="Back"
+                label="Cancel"
                 onClick={closeModal}
-                className="!w-fit px-4 bg-transparent text-sm"
+                className=" px-4 bg-gray-200 text-gray-800! text-sm"
               />
               <Button
                 label="Save"
@@ -212,7 +222,7 @@ const CreateNewProduct: React.FC = () => {
                 loadingLabel="Saving..."
                 isLoading={creating}
                 disabled={!isValid || creating}
-                className="!w-fit px-6 text-sm"
+                className=" px-6 text-sm"
               />
             </div>
           </Form>

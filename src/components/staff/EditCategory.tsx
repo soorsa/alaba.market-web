@@ -8,7 +8,6 @@ import CheckboxField from "../general/CheckBox";
 import { useModalStore } from "../../zustand/ModalStore";
 import { useFetchCategories } from "../../hooks/querys/getCategories";
 import SelectField from "../general/SelectField";
-import type { Category } from "../../types/ProductsTypes";
 import { useUpdateCategory } from "../../hooks/mutations/useUpdateCategory";
 
 const validationSchema = Yup.object().shape({
@@ -33,7 +32,7 @@ const EditCategory: React.FC<Props> = ({ item }) => {
   const { mutate: update, isPending: creating } = useUpdateCategory();
   const { data: categories } = useFetchCategories();
   const categoriesOption =
-    categories?.map((item) => ({
+    categories?.results?.map((item) => ({
       value: item.id,
       label: item.title,
     })) || [];
@@ -42,7 +41,7 @@ const EditCategory: React.FC<Props> = ({ item }) => {
     title: item.title,
     // slug: item.slug,
     parent: item.parent_category,
-    thumbnail: "https://api.alaba.market" + item.thumbnail,
+    thumbnail: item.thumbnail,
     is_featured: item.is_top,
   };
   const handleSubmit = (values: typeof initialValues) => {
@@ -64,7 +63,7 @@ const EditCategory: React.FC<Props> = ({ item }) => {
     }
     const payload = {
       formData: formData,
-      slug: item.slug,
+      id: item.id,
     };
     update(payload);
   };

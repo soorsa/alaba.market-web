@@ -1,10 +1,10 @@
+import { ChartLine, ShoppingBag } from "lucide-react";
 import React from "react";
 import Button from "../../components/general/Button";
-import { ChartLine, ShoppingBag } from "lucide-react";
-import { useModalStore } from "../../zustand/ModalStore";
 import BecomeVendorStart from "../../components/shop/BecomeVendorStart";
-import { useUserStore } from "../../zustand/useUserStore";
+import { useModalStore } from "../../zustand/ModalStore";
 import { useToastStore } from "../../zustand/ToastStore";
+import { useUserStore } from "../../zustand/useUserStore";
 
 const BecomeVendorPage: React.FC = () => {
   const modal = useModalStore();
@@ -15,7 +15,7 @@ const BecomeVendorPage: React.FC = () => {
       toast.showToast("Your have already applied!", "info");
     } else {
       modal.openModal(
-        <BecomeVendorStart goBack={getStarted} />,
+        <BecomeVendorStart />,
         `Hello, ${user?.first_name}`
         // "light"
       );

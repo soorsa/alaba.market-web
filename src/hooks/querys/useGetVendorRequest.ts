@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import alabaApi from "../ApiClient";
-import type { PaginatedResponse } from "../../types/PaginationTypes";
-import type { Vendor } from "./useGetVendors";
 
-type RequestsResponse = PaginatedResponse<Vendor>;
-export const getVendorRequest = async (
-  page: number
+type RequestsResponse = PaginatedResponse<VendorApplication>;
+export const getVendorApplications = async (
+  params: VendorApplicationFilterParams
 ): Promise<RequestsResponse> => {
-  const response = await alabaApi.get(`/vendor-request/?page=${page}`);
+  const response = await alabaApi.get(`/vendor-applications/`, { params });
   return response.data;
 };
 // Query hook to get user Cart
-export const useGetVendorRequest = (page: number) => {
+export const useGetVendorApplications = (
+  params: VendorApplicationFilterParams
+) => {
   return useQuery<RequestsResponse>({
-    queryKey: ["vendor-request", page],
-    queryFn: () => getVendorRequest(page),
+    queryKey: ["vendor-applications", params],
+    queryFn: () => getVendorApplications(params),
   });
 };

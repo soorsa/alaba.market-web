@@ -1,13 +1,21 @@
-import React, { useState } from "react";
-import type { Vendor } from "../../hooks/querys/useGetVendors";
-import Button from "../general/Button";
 import { Check, X } from "lucide-react";
+import React, { useState } from "react";
+import {
+  useAcceptVendorRequest,
+  useRejectVendorRequest,
+} from "../../hooks/mutations/useBecomeAVendor";
+import { formatDate } from "../../utils/formatter";
+import Button from "../general/Button";
 import ImageViewer from "./ImageViewer";
 interface Props {
-  vendor: Vendor;
+  application: VendorApplication;
 }
-const VendorDetail: React.FC<Props> = ({ vendor }) => {
+const VendorDetail: React.FC<Props> = ({ application }) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const { mutate: accept, isPending: accepting } = useAcceptVendorRequest();
+  const { mutate: reject, isPending: rejecting } = useRejectVendorRequest();
+
+  const { vendor, id, application_date, status } = application;
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const images = [
     {
@@ -29,6 +37,16 @@ const VendorDetail: React.FC<Props> = ({ vendor }) => {
   };
   return (
     <div className="md:w-[350px]">
+      <div className="text-gray-400 text-xs divide-y divide-gray-700 mt-3">
+        <div className="grid grid-cols-3 text-left py-1">
+          <div className="truncate">Applicate date:</div>
+          <div className="col-span-2 ">{formatDate(application_date)}</div>
+        </div>
+        <div className="grid grid-cols-3 text-left py-1">
+          <div className="truncate">Application status:</div>
+          <div className="col-span-2 ">{status}</div>
+        </div>
+      </div>
       <div className="grid grid-cols-3 gap-2 mt-4">
         {images.map((image, index) => (
           <div
@@ -125,17 +143,23 @@ const VendorDetail: React.FC<Props> = ({ vendor }) => {
           <div className="font-alaba-mid min-w-[100px] w-[120px] truncate">
             Bank Account No.:
           </div>
-          <div className="">{vendor.account_number || "..."}</div>
+          <div className="">{vendor.bank_account_number || "..."}</div>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2 pt-0">
         <Button
           label="Approve"
           icon={<Check size={15} />}
+          isLoading={accepting}
+          disabled={accepting}
+          onClick={() => accept(id)}
           className="bg-green-500 text-xs md:text-sm"
         />
         <Button
           label="Reject"
+          isLoading={rejecting}
+          disabled={rejecting}
+          onClick={() => reject(id)}
           icon={<X size={15} />}
           className="bg-red-500 text-xs md:text-sm"
         />

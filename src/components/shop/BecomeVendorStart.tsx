@@ -1,20 +1,12 @@
-import React from "react";
 import { Info } from "lucide-react";
-import Button from "../general/Button";
+import React from "react";
 import { useModalStore } from "../../zustand/ModalStore";
+import Button from "../general/Button";
 import VendorPersonalForm from "./VendorPersonalForm";
-type Props = { goBack: () => void };
-const BecomeVendorStart: React.FC<Props> = () => {
+const BecomeVendorStart: React.FC = () => {
   const modal = useModalStore();
-  const gotoStart = () =>
-    modal.openModal(
-      <BecomeVendorStart goBack={modal.closeModal} />,
-      "Personal Info form",
-      "light"
-    );
-
   return (
-    <div className="text-left">
+    <div className="text-left w-sm md:w-md">
       <h3 className="font-alaba-bold">Welcome to</h3>
       <h2>Alaba.market Vendor Programme</h2>
       <div className="mt-4">
@@ -49,7 +41,7 @@ const BecomeVendorStart: React.FC<Props> = () => {
           label="I agree, Continue"
           onClick={() =>
             modal.openModal(
-              <VendorPersonalForm goBack={gotoStart} />,
+              <VendorPersonalForm />,
               "Personal Info form",
               "light"
             )

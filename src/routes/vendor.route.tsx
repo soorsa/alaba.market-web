@@ -6,9 +6,9 @@ const VendorRoutes = () => {
 
   // Redirect UNAUTHENTICATED users to login
   if (isLoggedIn) {
-    if (user?.is_vendor && user.vendor_active) {
+    if (user?.role === "vendor") {
       return <Outlet />;
-    } else if (user?.is_staff) {
+    } else if (user?.role === "manager") {
       return <Navigate to="/manager" replace />;
     } else {
       return <Navigate to="/" replace />;

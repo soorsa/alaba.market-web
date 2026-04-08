@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
-import type { Order } from "./useGetOrders";
 interface DashboardResponse {
   total_orders: number;
   total_customers: number;

@@ -1,29 +1,28 @@
-import { useState } from "react";
-// import { useModalStore } from "../../zustand/ModalStore";
-import type { FilterPayload } from "../../types/ProductsTypes";
-import InfoCard from "../../components/staff/InfoCard";
-import { formatNumber } from "../../utils/formatter";
-import { useGetStats } from "../../hooks/querys/useGetAllStats";
 import { FiShoppingBag } from "react-icons/fi";
-import { useFetchCategories } from "../../hooks/querys/getCategories";
+import BrandsListTable from "../../components/staff/BrandsListTable";
 import CategoryListTable from "../../components/staff/CategoryListTable";
-import { useGetEvents } from "../../hooks/querys/useEventsandTags";
 import EventsListTable from "../../components/staff/EventsListTable";
+import InfoCard from "../../components/staff/InfoCard";
+import { useFetchCategories } from "../../hooks/querys/getCategories";
+import {
+  useGetBrands,
+  useGetEvents,
+} from "../../hooks/querys/useEventsandTags";
+import { useGetStats } from "../../hooks/querys/useGetAllStats";
+import { formatNumber } from "../../utils/formatter";
 
 const CategoriesScreen = () => {
-  //   const { openModal } = useModalStore();
-  const [filters, setFilters] = useState<FilterPayload>({
-    category: "",
-    order_by: "-views",
-    page: 1,
-  });
-
   const { data: categories, isError, isLoading } = useFetchCategories();
   const {
     data: events,
     isError: eventError,
     isLoading: isGettingEvents,
   } = useGetEvents();
+  const {
+    data: brands,
+    isError: brandsError,
+    isLoading: isGettingBrands,
+  } = useGetBrands();
   const {
     data: statsData,
     isLoading: isLoadingStats,
@@ -59,16 +58,19 @@ const CategoriesScreen = () => {
           icon={<FiShoppingBag size={24} />}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         <CategoryListTable
-          categories={categories || []}
+          categories={categories?.results || []}
           isError={isError}
           isLoading={isLoading}
-          filters={filters}
-          onFilterChange={setFilters}
+        />
+        <BrandsListTable
+          brands={brands?.results || []}
+          isError={brandsError}
+          isLoading={isGettingBrands}
         />
         <EventsListTable
-          events={events || []}
+          events={events?.results || []}
           isError={eventError}
           isLoading={isGettingEvents}
         />

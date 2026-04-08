@@ -1,13 +1,9 @@
-import type { AddtoCartPayload, Cart } from "../types/CartTypes";
-import type { LandingPageResponse } from "../types/LandingPagetype";
-import type { ProductListResponse } from "../types/ProductsTypes";
-import type { ShippingResponse } from "../types/ShippingTypes";
 import type { LoginPayload, RegisterPayload } from "./../types/AuthTypes";
 import alabaApi from "./ApiClient";
 export const login = async (payload: LoginPayload) => {
   const formData = new FormData();
-  if (payload.username !== undefined)
-    formData.append("username", payload.username.toString());
+  if (payload.email !== undefined)
+    formData.append("email", payload.email.toString());
   if (payload.password !== undefined)
     formData.append("password", payload.password.toString());
 
@@ -18,8 +14,6 @@ export const login = async (payload: LoginPayload) => {
 };
 export const register = async (payload: RegisterPayload) => {
   const formData = new FormData();
-  if (payload.username !== undefined)
-    formData.append("username", payload.username.toString());
   if (payload.email !== undefined)
     formData.append("email", payload.email.toString());
   if (payload.first_name !== undefined)
@@ -28,6 +22,8 @@ export const register = async (payload: RegisterPayload) => {
     formData.append("last_name", payload.last_name.toString());
   if (payload.password !== undefined)
     formData.append("password", payload.password.toString());
+  if (payload.username !== undefined)
+    formData.append("username", payload.username.toString());
 
   const response = await alabaApi.post("/register/", formData, {
     headers: { "Content-Type": "application/json" },
@@ -36,26 +32,37 @@ export const register = async (payload: RegisterPayload) => {
 };
 
 // GET USER CART
-export const fetchUserCart = async (username: string): Promise<Cart> => {
-  const response = await alabaApi.get(`/cart/${username}`);
+export const fetchUserCart = async (): Promise<Cart> => {
+  const response = await alabaApi.get(`/cart/`);
   return response.data;
 };
 // Add to cart
 export const addToCart = async (payload: AddtoCartPayload): Promise<Cart> => {
   const formData = new FormData();
-  if (payload.username) {
-    formData.append("username", payload.username);
+  if (payload.product_id) {
+    formData.append("product_id", payload.product_id);
   }
-  if (payload.productID) {
-    formData.append("productID", payload.productID);
+  if (payload.quantity) {
+    formData.append("quantity", String(payload.quantity));
   }
-  console.log("formData", formData);
-  const response = await alabaApi.post("/addtocart/", formData, {
+  const response = await alabaApi.post("/cart/add/", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
   return response.data;
+};
+export const minusFromCart = async (payload: MinusFromCartPayload) => {
+  const formData = new FormData();
+  if (payload.item_id) {
+    formData.append("item_id", String(payload.item_id));
+  }
+  const res = await alabaApi.post(`/cart/minus/`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
 };
 export const fetchUserShipping = async (
   username: string
@@ -64,41 +71,20 @@ export const fetchUserShipping = async (
   return response.data;
 };
 // Add to cart
-export const removeFromCart = async (
-  payload: AddtoCartPayload
+export const deleteCartItem = async (
+  item_id: number | string
 ): Promise<Cart> => {
-  const formData = new FormData();
-  if (payload.username) {
-    formData.append("username", payload.username);
-  }
-  if (payload.productID) {
-    formData.append("productID", payload.productID);
-  }
-  console.log("formData", formData);
-  const response = await alabaApi.post("/removefromcart/", formData, {
+  const response = await alabaApi.delete(`/cart/${item_id}/remove/`, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
   return response.data;
 };
-export const deleteCartItem = async (
-  payload: AddtoCartPayload
-): Promise<Cart> => {
-  const formData = new FormData();
-  if (payload.username) {
-    formData.append("username", payload.username);
-  }
-  if (payload.productID) {
-    formData.append("productID", payload.productID);
-  }
-  console.log("formData", formData);
-  const response = await alabaApi.post("/deletecartitem/", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
+
+export const clearCart = async () => {
+  const res = await alabaApi.delete("/cart/clear/");
+  return res.data;
 };
 
 export const searchProducts = async (query: string) => {
@@ -108,26 +94,10 @@ export const searchProducts = async (query: string) => {
   return response.data;
 };
 
-//LandingPage
-export const getLandingPageData = async (): Promise<LandingPageResponse> => {
-  const response = await alabaApi.get(`/landing-page/`);
-  return response.data;
-};
-
 // api.ts
-export const getFilteredProducts = async (params: {
-  min_price?: number;
-  max_price?: number;
-  category?: string;
-  brand?: string;
-  tag?: string;
-  vendor?: string;
-  featured?: boolean;
-  promote?: boolean;
-  approved?: boolean;
-  search?: string;
-  order_by?: string;
-}): Promise<ProductListResponse> => {
-  const response = await alabaApi.get(`/products/filter/`, { params });
+export const getFilteredProducts = async (
+  params: ProductFilters
+): Promise<ProductListResponse> => {
+  const response = await alabaApi.get(`/products-filter/`, { params });
   return response.data;
 };

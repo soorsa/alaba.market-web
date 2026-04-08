@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useModalStore } from "../../zustand/ModalStore";
 import { useToastStore } from "../../zustand/ToastStore";
 import alabaApi from "../ApiClient";
-import type { Product } from "../../types/ProductsTypes";
-import { useModalStore } from "../../zustand/ModalStore";
 
 export const deleteAllProducts = async (): Promise<Product> => {
   const response = await alabaApi.delete(`/dashboard/product/delete-all/`, {

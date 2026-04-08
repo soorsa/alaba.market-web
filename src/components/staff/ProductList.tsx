@@ -1,11 +1,10 @@
+import { ArrowRightCircle, Edit, Trash2 } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
-import type { Product } from "../../types/ProductsTypes";
-import { ArrowRightCircle, Edit, Trash2 } from "lucide-react";
 import { formatPrice } from "../../utils/formatter";
+import { useModalStore } from "../../zustand/ModalStore";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import { useModalStore } from "../../zustand/ModalStore";
 import DeleteItem from "./DeleteItem";
 import EditProduct from "./EditProduct";
 type Props = {
@@ -35,7 +34,7 @@ const ProductList: React.FC<Props> = ({ products, isError, isLoading }) => {
               <div className="h-10 min-w-10 max-w-10 relative rounded-md overflow-hidden">
                 <div className="bg-black/20 absolute inset-0"></div>
                 <img
-                  src={"https://api.alaba.market" + `${product.image}`}
+                  src={`${product.image}`}
                   alt={product.title}
                   className="object-cover w-full h-full"
                 />

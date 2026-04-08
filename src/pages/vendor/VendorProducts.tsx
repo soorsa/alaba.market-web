@@ -1,24 +1,23 @@
 import { useState } from "react";
-import { useFilterProducts } from "../../hooks/querys/filterProducts";
-import type { FilterPayload } from "../../types/ProductsTypes";
-import { formatNumber } from "../../utils/formatter";
 import { FiShoppingBag } from "react-icons/fi";
 import InfoCard from "../../components/vendor/InfoCard";
 import VendorProductListTable from "../../components/vendor/VendorProductListTable";
 import VendorProductsPaginationForFilter from "../../components/vendor/VendorProductPagination";
-import { useUserStore } from "../../zustand/useUserStore";
+import { useGetProducts } from "../../hooks/querys/filterProducts";
 import { useGetVendorDashboardData } from "../../hooks/querys/useGetVendorDashboardPage";
+import { formatNumber } from "../../utils/formatter";
+import { useUserStore } from "../../zustand/useUserStore";
 
 const VendorProductsScreen = () => {
   const { user } = useUserStore();
-  const [filters, setFilters] = useState<FilterPayload>({
+  const [filters, setFilters] = useState<ProductFilters>({
     category: "",
     order_by: "-views",
     page: 1,
-    vendor: user?.username || "",
+    vendor: user?.id,
   });
 
-  const { data, isLoading, isError } = useFilterProducts(filters);
+  const { data, isLoading, isError } = useGetProducts(filters);
   const {
     data: statsData,
     isLoading: isLoadingStats,

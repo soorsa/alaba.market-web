@@ -1,59 +1,53 @@
-import React, { useState } from "react";
+import React from "react";
 import { formatDate, formatPrice } from "../../utils/formatter";
 import SmallLoader from "../general/SmallLoader";
 import NoProductFound from "../shop/NoProductFound";
-import type { VendorOrder } from "../../hooks/querys/useVendorOrders";
 type Props = {
-  orders: VendorOrder[];
+  orders: OrderItem[];
   isLoading: boolean;
   isError: boolean;
 };
 
-const tabs = ["All", "Pending", "Confirmed", "On-route", "Delivered"] as const;
-type Tab = (typeof tabs)[number];
-
 const OrderListTable: React.FC<Props> = ({ orders, isError, isLoading }) => {
-  const [activeTab, setActiveTab] = useState<Tab>("All");
-  const [filtered, setFiltered] = useState<typeof orders>(orders);
-  const handleTabChange = (tab: Tab) => {
-    setActiveTab(tab);
-    if (tab === "All") {
-      setFiltered(orders);
-    } else {
-      const result = orders.filter((order) => order.delivery_status === tab);
-      setFiltered(result);
-    }
-    console.log(tab, filtered);
-  };
-
   const renderList = () => {
     return (
       <ul className="space-y-2 text-left md:p-4">
-        <div className="grid grid-cols-5 px-4">
+        <div className="grid grid-cols-4 md:grid-cols-7 px-4 bg-gray-100 py-2 rounded-lg">
+          <div className="col-span-2 md:col-span-3">Product</div>
           <div className="">Qty</div>
 
-          <div className="">Paid</div>
-
-          <div className="">Status</div>
+          <div className="hidden md:block">Status</div>
 
           <div className="">Amount</div>
 
-          <div className="">Date</div>
+          <div className="hidden md:block">Date</div>
         </div>
-        {filtered.map((order, index) => (
+        {orders.map((order, index) => (
           <li
             key={index}
-            className={`py-2 px-4 cursor-pointer rounded-lg text-gray-700 even:bg-gray-100 grid grid-cols-5 items-center`}
+            className={`py-2 px-4 text-sm cursor-pointer rounded-lg text-gray-700 hover:bg-gray-100 odd:bg-gray-100 grid grid-cols-4 md:grid-cols-7 items-center`}
           >
-            <div className="">{order.vendor_item_count}</div>
+            <div className="col-span-2 md:col-span-3 flex gap-2">
+              <div className="h-10 w-10 overflow-hidden rounded-md">
+                <img
+                  src={order.product.image}
+                  className="h-16 w-16 object-cover"
+                  alt=""
+                />
+              </div>
+              <div className="line-clamp-2">{order.product_title}</div>
+            </div>
+            <div className="">{order.quantity} item(s)</div>
 
-            <div className="">{order.paid ? "Yes" : "No"}</div>
+            <div className={`text-green-500 hidden md:block`}>order placed</div>
 
-            <div className="">{order.delivery_status}</div>
+            <div className="">
+              {formatPrice(Number(order.product.vendor_price) * order.quantity)}
+            </div>
 
-            <div className="">{formatPrice(order.vendor_order_total)}</div>
-
-            <div className="">{formatDate(order.order_date)}</div>
+            <div className="hidden md:block">
+              {formatDate(order.created_at)}
+            </div>
           </li>
         ))}
       </ul>
@@ -73,7 +67,7 @@ const OrderListTable: React.FC<Props> = ({ orders, isError, isLoading }) => {
       );
     }
 
-    if (filtered.length === 0) {
+    if (orders.length === 0) {
       return (
         <div className="text-center py-4">
           <NoProductFound />
@@ -87,22 +81,7 @@ const OrderListTable: React.FC<Props> = ({ orders, isError, isLoading }) => {
   return (
     <div className="border-1 border-gray-300 py-4 px-2 rounded-lg w-full">
       <div className="mb-6 px-4">
-        <h4 className="text-lg text-left text-gray-800">{activeTab} Orders</h4>
-      </div>
-      <div className="mb-4 px-4 ">
-        <div className="flex gap-1 justify-between md:justify-normal md:gap-4 text-sm font-medium">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              className={`${
-                activeTab === tab ? "border-b-2" : "text-gray-700"
-              } transition text-xs`}
-              onClick={() => handleTabChange(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        <h4 className="text-lg text-left text-gray-800">My Orders</h4>
       </div>
       {/* LIST */}
       {renderContent()}
