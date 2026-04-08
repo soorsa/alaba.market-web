@@ -1,11 +1,11 @@
 import axios from "axios";
-import { useUserStore } from "../zustand/useUserStore";
 import toast from "react-hot-toast";
+import { useUserStore } from "../zustand/useUserStore";
 import { openLogin } from "./OpenLogin";
 
 const alabaApi = axios.create({
-  baseURL: "http://127.0.0.1:8000/api", // Replace with your actual API URL
-  // baseURL: "https://api.alaba.market/api", // Replace with your actual API URL
+  // baseURL: "http://127.0.0.1:8000/api", // Replace with your actual API URL
+  baseURL: "https://api.alaba.market/api", // Replace with your actual API URL
   headers: {
     "Content-Type": "application/json",
   },
